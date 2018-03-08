@@ -1,4 +1,4 @@
-package com.github.automain.request.bean;
+package com.github.automain.user.bean;
 
 import com.github.fastjdbc.common.BaseBean;
 import com.github.fastjdbc.util.RequestUtil;
@@ -40,16 +40,6 @@ public class TbMenu extends RequestUtil implements BaseBean<TbMenu> {
 
     // ========== additional column begin ==========
 
-    // 父级名称
-    private String parentName;
-
-    public String getParentName() {
-        return parentName;
-    }
-
-    public void setParentName(String parentName) {
-        this.parentName = parentName;
-    }
 
     // ========== additional column end ==========
 
@@ -142,32 +132,32 @@ public class TbMenu extends RequestUtil implements BaseBean<TbMenu> {
 
     @Override
     public Map<String, Object> notNullColumnMap() {
-        Map<String, Object> notNullColumnMap = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<String, Object>();
         if (this.getRequestUrl() != null) {
-            notNullColumnMap.put("request_url", this.getRequestUrl());
+            map.put("request_url", this.getRequestUrl());
         }
         if (this.getMenuName() != null) {
-            notNullColumnMap.put("menu_name", this.getMenuName());
+            map.put("menu_name", this.getMenuName());
         }
         if (this.getMenuIcon() != null) {
-            notNullColumnMap.put("menu_icon", this.getMenuIcon());
+            map.put("menu_icon", this.getMenuIcon());
         }
         if (this.getParentId() != null) {
-            notNullColumnMap.put("parent_id", this.getParentId());
+            map.put("parent_id", this.getParentId());
         }
         if (this.getTopId() != null) {
-            notNullColumnMap.put("top_id", this.getTopId());
+            map.put("top_id", this.getTopId());
         }
         if (this.getSequenceNumber() != null) {
-            notNullColumnMap.put("sequence_number", this.getSequenceNumber());
+            map.put("sequence_number", this.getSequenceNumber());
         }
         if (this.getIsLeaf() != null) {
-            notNullColumnMap.put("is_leaf", this.getIsLeaf());
+            map.put("is_leaf", this.getIsLeaf());
         }
         if (this.getIsDelete() != null) {
-            notNullColumnMap.put("is_delete", this.getIsDelete());
+            map.put("is_delete", this.getIsDelete());
         }
-        return notNullColumnMap;
+        return map;
     }
 
     @Override
@@ -199,5 +189,4 @@ public class TbMenu extends RequestUtil implements BaseBean<TbMenu> {
         bean.setIsDelete(getInt("isDelete", request, 0));
         return bean;
     }
-
 }

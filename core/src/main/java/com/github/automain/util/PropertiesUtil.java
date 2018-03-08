@@ -51,6 +51,10 @@ public class PropertiesUtil {
     public static final boolean OPEN_CACHE = Boolean.parseBoolean(CONFIG_PROPERTIES.getProperty("openCache", "false"));
     public static final String CACHE_PATH = CONFIG_PROPERTIES.getProperty("cachePath");
 
+    private static final Properties DB_PROPERTIES = getProperties("db.properties");
+    private static final String url = DB_PROPERTIES.getProperty(DB_PROPERTIES.getProperty("pool_names").split(",")[0] + "_jdbcUrl");
+    public static final String DATABASE_NAME = url.substring(url.lastIndexOf("/") + 1, url.indexOf("?"));
+
     public static Properties getProperties(String fileName) {
         return PROPERTIES_MAP.get(fileName);
     }
