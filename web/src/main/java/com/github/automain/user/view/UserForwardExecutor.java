@@ -38,8 +38,8 @@ public class UserForwardExecutor extends BaseExecutor {
                 TbUploadRelation uploadRelation = new TbUploadRelation();
                 if (sessionUser != null) {
                     uploadRelation.setRecordTableName(sessionUser.tableName());
+                    uploadRelation.setRecordId(sessionUser.getUserId());
                 }
-                uploadRelation.setRecordId(sessionUser.getUserId());
                 String imgPath = UploadUtil.getLastFile(connection, request, uploadRelation);
                 request.setAttribute("imgPath", imgPath);
                 jspPath = "user/user_info";

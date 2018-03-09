@@ -5,7 +5,7 @@ import java.io.PrintWriter;
 
 public class JspPrintWriter extends PrintWriter {
 
-    ByteArrayOutputStream byteArrayOutputStream;
+    private ByteArrayOutputStream byteArrayOutputStream;
 
     public JspPrintWriter(ByteArrayOutputStream out) {
         super(out);
