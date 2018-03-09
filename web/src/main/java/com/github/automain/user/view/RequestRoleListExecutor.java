@@ -18,6 +18,6 @@ public class RequestRoleListExecutor extends BaseExecutor {
         Long requestMappingId = getLong("requestMappingId", request, 0L);
         PageBean<TbRole> pageBean = TB_ROLE_SERVICE.selectTableForForRequest(connection, bean, request, requestMappingId);
         request.setAttribute(PAGE_BEAN_PARAM, pageBean);
-        return "request/request_role_list";
+        return "user/request_role_list";
     }
 }

@@ -27,17 +27,17 @@ public class MenuForwardExecutor extends BaseExecutor {
         request.setAttribute("menuId", menuId);
         switch (forwardType) {
             case "add":
-                jspPath = "request/menu_add";
+                jspPath = "user/menu_add";
                 TbMenu parent = TB_MENU_SERVICE.selectTableById(connection, parentId);
                 request.setAttribute("parent", parent);
                 break;
             case "update":
                 TbMenu bean = TB_MENU_SERVICE.selectTableById(connection, menuId);
                 request.setAttribute("bean", bean);
-                jspPath = "request/menu_update";
+                jspPath = "user/menu_update";
                 break;
             case "role":
-                jspPath = "request/menu_role";
+                jspPath = "user/menu_role";
                 break;
             default:
                 List<MenuBreadcrumbVO> parentList = new ArrayList<MenuBreadcrumbVO>();
@@ -57,7 +57,7 @@ public class MenuForwardExecutor extends BaseExecutor {
                         request.setAttribute("parentList", parentList);
                     }
                 }
-                jspPath = "request/menu_tab";
+                jspPath = "user/menu_tab";
         }
         return jspPath;
     }

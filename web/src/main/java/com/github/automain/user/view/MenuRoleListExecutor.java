@@ -18,6 +18,6 @@ public class MenuRoleListExecutor extends BaseExecutor {
         Long menuId = getLong("menuId", request, 0L);
         PageBean<TbRole> pageBean = TB_ROLE_SERVICE.selectTableForForMenu(connection, bean, request, menuId);
         request.setAttribute(PAGE_BEAN_PARAM, pageBean);
-        return "request/menu_role_list";
+        return "user/menu_role_list";
     }
 }

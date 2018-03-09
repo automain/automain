@@ -6,23 +6,23 @@
 </head>
 <body>
 <form class="layui-form layui-form-pane" action="">
-    <input type="hidden" name="requestMappingId" value="${tbRequestMapping.requestMappingId}">
+    <input type="hidden" name="requestMappingId" value="${bean.requestMappingId}">
     <div class="layui-form-item layui-form-text">
         <label class="layui-form-label">请求相对路径</label>
         <div class="layui-input-block">
-            <textarea class="layui-textarea" name="requestUrl" lay-verify="request_url"><c:out value="${tbRequestMapping.requestUrl}"/></textarea>
+            <textarea class="layui-textarea" name="requestUrl" lay-verify="request_url"><c:out value="${bean.requestUrl}"/></textarea>
         </div>
     </div>
     <div class="layui-form-item layui-form-text">
         <label class="layui-form-label">请求处理类的全路径</label>
         <div class="layui-input-block">
-            <textarea class="layui-textarea" name="operationClass" lay-verify="operation_class"><c:out value="${tbRequestMapping.operationClass}"/></textarea>
+            <textarea class="layui-textarea" name="operationClass" lay-verify="operation_class"><c:out value="${bean.operationClass}"/></textarea>
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label">注释</label>
         <div class="layui-input-block">
-            <input type="text" class="layui-input" autocomplete="off" name="urlComment" lay-verify="url_comment" value="<c:out value="${tbRequestMapping.urlComment}"/>">
+            <input type="text" class="layui-input" autocomplete="off" name="urlComment" lay-verify="url_comment" value="<c:out value="${bean.urlComment}"/>">
         </div>
     </div>
     <div class="layui-form-item">

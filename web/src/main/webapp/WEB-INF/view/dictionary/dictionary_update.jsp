@@ -6,12 +6,12 @@
 </head>
 <body>
 <form class="layui-form layui-form-pane" action="">
-    <input type="hidden" name="dictionaryId" value="${tbDictionary.dictionaryId}">
+    <input type="hidden" name="dictionaryId" value="${bean.dictionaryId}">
     <div class="layui-form-item">
         <label class="layui-form-label">表名</label>
         <div class="layui-input-block">
             <select class="layui-select" disabled>
-                <option value="${tbDictionary.dictTableName}"><c:out value="${tbDictionary.dictTableName}"/></option>
+                <option value="${bean.dictTableName}"><c:out value="${bean.dictTableName}"/></option>
             </select>
         </div>
     </div>
@@ -19,26 +19,26 @@
         <label class="layui-form-label">字段名</label>
         <div class="layui-input-block">
             <select class="layui-select" disabled>
-                <option value="${tbDictionary.dictColumnName}"><c:out value="${tbDictionary.dictColumnName}"/></option>
+                <option value="${bean.dictColumnName}"><c:out value="${bean.dictColumnName}"/></option>
             </select>
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label">字典名</label>
         <div class="layui-input-block">
-            <input type="text" class="layui-input" autocomplete="off" name="dictionaryName" lay-verify="dictionary_name" value="<c:out value="${tbDictionary.dictionaryName}"/>">
+            <input type="text" class="layui-input" autocomplete="off" name="dictionaryName" lay-verify="dictionary_name" value="<c:out value="${bean.dictionaryName}"/>">
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label">字典值</label>
         <div class="layui-input-block">
-            <input type="text" class="layui-input" autocomplete="off" name="dictionaryValue" lay-verify="dictionary_value" value="<c:out value="${tbDictionary.dictionaryValue}"/>">
+            <input type="text" class="layui-input" autocomplete="off" name="dictionaryValue" lay-verify="dictionary_value" value="<c:out value="${bean.dictionaryValue}"/>">
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label">排序标识</label>
         <div class="layui-input-block">
-            <input type="number" class="layui-input" autocomplete="off" name="sequenceNumber" lay-verify="sequence_number" value="${tbDictionary.sequenceNumber}">
+            <input type="number" class="layui-input" autocomplete="off" name="sequenceNumber" lay-verify="sequence_number" value="${bean.sequenceNumber}">
         </div>
     </div>
     <div class="layui-form-item">

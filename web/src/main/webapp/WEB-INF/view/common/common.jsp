@@ -6,11 +6,11 @@
 <%--网站编码--%>
 <meta charset="utf-8"/>
 <%--网站关键字--%>
-<meta name="keywords"content="CRM"/>
+<meta name="keywords"content="automain"/>
 <%--网站描述--%>
-<meta name="description"content="基于automain的CRM系统"/>
+<meta name="description"content="automain"/>
 <%--网站应用技术--%>
-<meta name="generator"content="servlet,automain"/>
+<meta name="generator"content="servlet,fastjdbc,automain"/>
 <%--忽略页面中的数字识别为电话号码,邮箱格式识别为邮箱--%>
 <meta name="format-detection" content="telephone=no,email=no"/>
 <%--优先使用 IE 最新版本和 Chrome--%>

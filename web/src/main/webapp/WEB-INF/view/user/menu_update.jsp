@@ -6,32 +6,31 @@
 </head>
 <body>
 <form class="layui-form layui-form-pane" action="">
-    <input type="hidden" name="parentId" value="${parentId}">
-    <input type="hidden" name="topId" value="${topId}">
+    <input type="hidden" name="menuId" value="${bean.menuId}">
     <div class="layui-form-item layui-form-text">
         <label class="layui-form-label">请求路径</label>
         <div class="layui-input-block">
-            <textarea class="layui-textarea" name="requestUrl" lay-verify="request_url"></textarea>
+            <textarea class="layui-textarea" name="requestUrl" lay-verify="request_url"><c:out value="${bean.requestUrl}"/></textarea>
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label">菜单名称</label>
         <div class="layui-input-block">
-            <input type="text" class="layui-input" autocomplete="off" name="menuName" lay-verify="menu_name">
+            <input type="text" class="layui-input" autocomplete="off" name="menuName" lay-verify="menu_name" value="<c:out value="${bean.menuName}"/>">
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label">菜单图标</label>
         <div class="layui-input-block">
-            <input type="text" class="layui-input" autocomplete="off" name="menuIcon" id="menu-icon" onblur="showIcon()" lay-verify="menu_icon">
+            <input type="text" class="layui-input" autocomplete="off" name="menuIcon" id="menu-icon" onblur="showIcon()" lay-verify="menu_icon" value="<c:out value="${bean.menuIcon}"/>">
         </div>
         <div class="layui-form-mid layui-word-aux">图标代码参考<a href="http://fontawesome.io/icons/" target="_blank">font awesome</a>
-            &nbsp;<i id="icon-show" class="fa fa-<c:out value="${tbMenu.menuIcon}"/>"></i></div>
+        &nbsp;<i id="icon-show" class="fa fa-<c:out value="${bean.menuIcon}"/>"></i></div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label">菜单排序</label>
         <div class="layui-input-block">
-            <input type="number" class="layui-input" autocomplete="off" name="sequenceNumber" lay-verify="sequence_number">
+            <input type="number" class="layui-input" autocomplete="off" name="sequenceNumber" lay-verify="sequence_number" value="${bean.sequenceNumber}">
         </div>
     </div>
     <div class="layui-form-item">
@@ -58,7 +57,7 @@
             if (!submitBtn.hasClass("layui-btn-disabled")) {
                 submitBtn.addClass("layui-btn-disabled");
                 var index = parent.layer.getFrameIndex(window.name);
-                $.post("${ctx}/menu/add", data.field, function (data) {
+                $.post("${ctx}/menu/update", data.field, function (data) {
                     layer.msg(data.msg);
                     if (data.code == code_success) {
                         parent.layer.close(index);

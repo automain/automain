@@ -17,6 +17,6 @@ public class MenuListExecutor extends BaseExecutor {
         bean = bean.beanFromRequest(request);
         PageBean<TbMenu> pageBean = TB_MENU_SERVICE.selectTableForCustomPage(connection, bean, request);
         request.setAttribute(PAGE_BEAN_PARAM, pageBean);
-        return "request/menu_list";
+        return "user/menu_list";
     }
 }

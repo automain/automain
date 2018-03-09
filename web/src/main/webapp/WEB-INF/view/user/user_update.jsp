@@ -6,23 +6,23 @@
 </head>
 <body>
 <form class="layui-form layui-form-pane" action="">
-    <input type="hidden" name="userId" value="${tbUser.userId}">
+    <input type="hidden" name="userId" value="${bean.userId}">
     <div class="layui-form-item">
         <label class="layui-form-label">用户名</label>
         <div class="layui-input-block">
-            <input type="text" class="layui-input" autocomplete="off" name="userName" lay-verify="user_name" value="<c:out value="${tbUser.userName}"/>">
+            <input type="text" class="layui-input" autocomplete="off" name="userName" lay-verify="user_name" value="<c:out value="${bean.userName}"/>">
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label">手机号</label>
         <div class="layui-input-block">
-            <input type="text" class="layui-input" autocomplete="off" name="cellphone" maxlength="11" lay-verify="cellphone|phone" value="<c:out value="${tbUser.cellphone}"/>">
+            <input type="text" class="layui-input" autocomplete="off" name="cellphone" maxlength="11" lay-verify="cellphone|phone" value="<c:out value="${bean.cellphone}"/>">
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label">邮箱</label>
         <div class="layui-input-block">
-            <input type="text" class="layui-input" autocomplete="off" name="email" lay-verify="myemail|email" value="<c:out value="${tbUser.email}"/>">
+            <input type="text" class="layui-input" autocomplete="off" name="email" lay-verify="myemail|email" value="<c:out value="${bean.email}"/>">
         </div>
     </div>
     <div class="layui-form-item">
@@ -49,7 +49,7 @@
                     async: false,
                     data: {
                         userName: value,
-                        userId: '${tbUser.userId}'
+                        userId: '${bean.userId}'
                     },
                     dataType: "json",
                     success: function (data) {

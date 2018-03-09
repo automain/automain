@@ -18,18 +18,18 @@ public class RequestForwardExecutor extends BaseExecutor {
         request.setAttribute("requestMappingId", requestMappingId);
         switch (forwardType) {
             case "add":
-                jspPath = "request/request_add";
+                jspPath = "user/request_add";
                 break;
             case "role":
-                jspPath = "request/request_role";
+                jspPath = "user/request_role";
                 break;
             case "update":
                 TbRequestMapping bean = TB_REQUEST_MAPPING_SERVICE.selectTableById(connection, requestMappingId);
                 request.setAttribute("bean", bean);
-                jspPath = "request/request_update";
+                jspPath = "user/request_update";
                 break;
             default:
-                jspPath = "request/request_tab";
+                jspPath = "user/request_tab";
         }
         return jspPath;
     }

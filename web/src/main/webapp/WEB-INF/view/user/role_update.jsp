@@ -6,17 +6,17 @@
 </head>
 <body>
 <form class="layui-form layui-form-pane" action="">
-    <input type="hidden" name="roleId" value="${tbRole.roleId}">
+    <input type="hidden" name="roleId" value="${bean.roleId}">
     <div class="layui-form-item">
         <label class="layui-form-label">角色名称</label>
         <div class="layui-input-block">
-            <input type="text" class="layui-input" autocomplete="off" name="roleName" lay-verify="role_name" value="<c:out value="${tbRole.roleName}"/>">
+            <input type="text" class="layui-input" autocomplete="off" name="roleName" lay-verify="role_name" value="<c:out value="${bean.roleName}"/>">
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label">角色标识</label>
         <div class="layui-input-block">
-            <input type="text" class="layui-input" autocomplete="off" name="roleLabel" lay-verify="role_label" value="<c:out value="${tbRole.roleLabel}"/>">
+            <input type="text" class="layui-input" autocomplete="off" name="roleLabel" lay-verify="role_label" value="<c:out value="${bean.roleLabel}"/>">
         </div>
     </div>
     <div class="layui-form-item">

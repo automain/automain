@@ -17,6 +17,6 @@ public class RequestListExecutor extends BaseExecutor {
         bean = bean.beanFromRequest(request);
         PageBean<TbRequestMapping> pageBean = TB_REQUEST_MAPPING_SERVICE.selectTableForCustomPage(connection, bean, request);
         request.setAttribute(PAGE_BEAN_PARAM, pageBean);
-        return "request/request_list";
+        return "user/request_list";
     }
 }
