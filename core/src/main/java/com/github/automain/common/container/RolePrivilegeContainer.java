@@ -56,7 +56,7 @@ public class RolePrivilegeContainer implements ServiceContainer {
                 Set<String> requestUrlSet = TB_ROLE_REQUEST_MAPPING_SERVICE.selectRequestUrlByRoleId(connection, roleId);
                 rolePrivilegeMap.put(roleId, requestUrlSet);
 
-                List<TbMenu> menuList = TB_MENU_SERVICE.selectTbMenuByRoleId(connection, roleId);
+                List<TbMenu> menuList = TB_MENU_SERVICE.selectTableByRoleId(connection, roleId);
                 roleMenuMap.put(roleId, menuList);
 
                 Set<Long> userSet = TB_USER_ROLE_SERVICE.selectUserIdByRoleId(connection, roleId);

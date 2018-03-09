@@ -147,13 +147,13 @@ public class HTTPUtil {
     }
 
     private static String commonRequest(String url, String data, String requestMethod, boolean isHttps) throws Exception {
-        HttpURLConnection conn = null;
+        HttpURLConnection connection = null;
         StringBuilder sb = new StringBuilder();
         InputStreamReader streamReader = null;
         try {
             URL realUrl = new URL(url);
             if (isHttps) {
-                HttpsURLConnection connection = (HttpsURLConnection) realUrl.openConnection();
+                HttpsURLConnection httpsURLConnection = (HttpsURLConnection) realUrl.openConnection();
                 SSLContext sc = SSLContext.getInstance("SSL");
                 sc.init(null, new TrustManager[]{new X509TrustManager() {
                     @Override
@@ -171,44 +171,44 @@ public class HTTPUtil {
                         return new X509Certificate[]{};
                     }
                 }}, new SecureRandom());
-                connection.setSSLSocketFactory(sc.getSocketFactory());
-                connection.setHostnameVerifier(new HostnameVerifier() {
+                httpsURLConnection.setSSLSocketFactory(sc.getSocketFactory());
+                httpsURLConnection.setHostnameVerifier(new HostnameVerifier() {
                     @Override
                     public boolean verify(String s, SSLSession sslSession) {
                         return true;
                     }
                 });
-                conn = connection;
+                connection = httpsURLConnection;
             } else {
-                conn = (HttpURLConnection) realUrl.openConnection();
+                connection = (HttpURLConnection) realUrl.openConnection();
             }
             if (POST_METHOD.equals(requestMethod)) {
-                conn.setDoInput(true);
-                conn.setDoOutput(true);
-                conn.setUseCaches(false);
-                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-                conn.setRequestProperty("accept", "*/*");
-                conn.setRequestProperty("Charset", PropertiesUtil.DEFAULT_CHARSET);
+                connection.setDoInput(true);
+                connection.setDoOutput(true);
+                connection.setUseCaches(false);
+                connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                connection.setRequestProperty("accept", "*/*");
+                connection.setRequestProperty("Charset", PropertiesUtil.DEFAULT_CHARSET);
             }
-            conn.setConnectTimeout(DEFAULT_CONNECTION_TIME_OUT);
-            conn.setRequestMethod(requestMethod);
-            conn.connect();
+            connection.setConnectTimeout(DEFAULT_CONNECTION_TIME_OUT);
+            connection.setRequestMethod(requestMethod);
+            connection.connect();
             if (POST_METHOD.equals(requestMethod)) {
-                PrintWriter writer = new PrintWriter(conn.getOutputStream());
+                PrintWriter writer = new PrintWriter(connection.getOutputStream());
                 writer.print(data);
                 writer.flush();
                 writer.close();
             }
 
-            int responseCode = conn.getResponseCode();
+            int responseCode = connection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                streamReader = new InputStreamReader(conn.getInputStream(), PropertiesUtil.DEFAULT_CHARSET);
+                streamReader = new InputStreamReader(connection.getInputStream(), PropertiesUtil.DEFAULT_CHARSET);
             }
         } catch (Exception e) {
             e.printStackTrace();
             try {
-                if (conn != null) {
-                    streamReader = new InputStreamReader(conn.getErrorStream(), PropertiesUtil.DEFAULT_CHARSET);
+                if (connection != null) {
+                    streamReader = new InputStreamReader(connection.getErrorStream(), PropertiesUtil.DEFAULT_CHARSET);
                 }
                 throw e;
             } catch (Exception e1) {
@@ -227,8 +227,8 @@ public class HTTPUtil {
                     throw e;
                 }
             }
-            if (conn != null) {
-                conn.disconnect();
+            if (connection != null) {
+                connection.disconnect();
             }
         }
         return sb.toString();

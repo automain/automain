@@ -19,10 +19,27 @@ public class TbMenuService extends BaseService<TbMenu, TbMenuDao> {
     public PageBean<TbMenu> selectTableForCustomPage(ConnectionBean connection, TbMenu bean, HttpServletRequest request) throws Exception {
         int page = getInt("page", request, 1);
         int limit = getInt("limit", request, 1);
-        return getDao().selectTableForCustomPage(connection, bean, page, limit);
+        PageBean<TbMenu> pageBean = getDao().selectTableForCustomPage(connection, bean, page, limit);
+        List<TbMenu> data = pageBean.getData();
+        for (TbMenu menu : data) {
+            Long parentId = menu.getParentId();
+            if (parentId != null && !parentId.equals(0L)) {
+                TbMenu parent = selectTableById(connection, menu.getParentId());
+                if (parent != null) {
+                    menu.setParentName(parent.getMenuName());
+                    continue;
+                }
+            }
+            menu.setParentName("无");
+        }
+        return pageBean;
     }
 
-    public List<TbMenu> selectTbMenuByRoleId(ConnectionBean connection, Long roleId) throws SQLException {
-        return getDao().selectTbMenuByRoleId(connection, getBean(), roleId);
+    public List<TbMenu> selectTableByRoleId(ConnectionBean connection, Long roleId) throws SQLException {
+        return getDao().selectTableByRoleId(connection, getBean(), roleId);
+    }
+
+    public List<Long> selectMenuIdByParentId(ConnectionBean connection, Long parentId) throws SQLException {
+        return getDao().selectMenuIdByParentId(connection, parentId);
     }
 }

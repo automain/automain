@@ -55,4 +55,9 @@ public class TbUserRoleDao extends BaseDao<TbUserRole> {
         return resultSet;
     }
 
+    public int clearUserRoleByUserId(ConnectionBean connection, Long userId) throws SQLException {
+        String sql = "UPDATE tb_user_role SET is_delete = '1' WHERE user_id = ?";
+        return executeUpdate(connection, sql, Collections.singletonList(userId));
+    }
+
 }

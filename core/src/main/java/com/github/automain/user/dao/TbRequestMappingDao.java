@@ -20,8 +20,8 @@ public class TbRequestMappingDao extends BaseDao<TbRequestMapping> {
     private String setSearchCondition(TbRequestMapping bean, List<Object> parameterList) {
         StringBuilder sql = new StringBuilder("SELECT * FROM tb_request_mapping WHERE 1 = 1 ");
         if (bean.getRequestUrl() != null) {
-            sql.append(" AND request_url = ?");
-            parameterList.add(bean.getRequestUrl());
+            sql.append(" AND request_url LIKE ?");
+            parameterList.add(bean.getRequestUrl() + "%");
         }
         if (bean.getOperationClass() != null) {
             sql.append(" AND operation_class = ?");

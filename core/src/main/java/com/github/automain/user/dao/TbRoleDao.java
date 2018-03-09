@@ -18,18 +18,14 @@ public class TbRoleDao extends BaseDao<TbRole> {
     }
 
     private String setSearchCondition(TbRole bean, List<Object> parameterList) {
-        StringBuilder sql = new StringBuilder("SELECT * FROM tb_role WHERE 1 = 1 ");
+        StringBuilder sql = new StringBuilder("SELECT * FROM tb_role WHERE is_delete = '0' ");
         if (bean.getRoleLabel() != null) {
             sql.append(" AND role_label = ?");
             parameterList.add(bean.getRoleLabel());
         }
         if (bean.getRoleName() != null) {
-            sql.append(" AND role_name = ?");
-            parameterList.add(bean.getRoleName());
-        }
-        if (bean.getIsDelete() != null) {
-            sql.append(" AND is_delete = ?");
-            parameterList.add(bean.getIsDelete());
+            sql.append(" AND role_name LIKE ?");
+            parameterList.add(bean.getRoleName() + "%");
         }
         return sql.toString();
     }

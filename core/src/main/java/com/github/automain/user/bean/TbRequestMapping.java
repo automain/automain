@@ -25,6 +25,16 @@ public class TbRequestMapping extends RequestUtil implements BaseBean<TbRequestM
 
     // ========== additional column begin ==========
 
+    // 是否有该权限(0:否,1:是)
+    private Integer hasRole;
+
+    public Integer getHasRole() {
+        return hasRole;
+    }
+
+    public void setHasRole(Integer hasRole) {
+        this.hasRole = hasRole;
+    }
 
     // ========== additional column end ==========
 

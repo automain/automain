@@ -33,13 +33,9 @@ CREATE TABLE `tb_dictionary` (
   PRIMARY KEY (`dictionary_id`),
   KEY `idx_order_label` (`sequence_number`),
   KEY `idx_table_column_parent` (`dict_table_name`,`dict_column_name`,`parent_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Data for the table `tb_dictionary` */
-
-insert  into `tb_dictionary`(`dictionary_id`,`dict_table_name`,`dict_column_name`,`dictionary_name`,`dictionary_value`,`sequence_number`,`parent_id`,`is_leaf`,`is_delete`) values 
-(1,'tb_test','test_type','普通','1',1,0,1,0),
-(2,'tb_test','test_type','文艺','2',2,0,1,0);
 
 /*Table structure for table `tb_menu` */
 
@@ -58,11 +54,11 @@ CREATE TABLE `tb_menu` (
   PRIMARY KEY (`menu_id`),
   KEY `idx_parent_id` (`parent_id`),
   KEY `idx_menu_name` (`menu_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;
 
 /*Data for the table `tb_menu` */
 
-insert  into `tb_menu`(`menu_id`,`request_url`,`menu_name`,`menu_icon`,`parent_id`,`top_id`,`sequence_number`,`is_leaf`,`is_delete`) values 
+insert  into `tb_menu`(`menu_id`,`request_url`,`menu_name`,`menu_icon`,`parent_id`,`top_id`,`sequence_number`,`is_leaf`,`is_delete`) values
 (1,NULL,'系统管理','gears',0,0,1,0,0),
 (2,'/request/forward','请求路径映射','random',1,0,1,1,0),
 (3,'/dictionary/forward','字典管理','book',1,0,2,1,0),
@@ -70,10 +66,7 @@ insert  into `tb_menu`(`menu_id`,`request_url`,`menu_name`,`menu_icon`,`parent_i
 (5,'/role/forward','角色管理','user-secret',1,0,4,1,0),
 (6,'/menu/forward','菜单管理','navicon',1,0,5,1,0),
 (7,'/reload/cache/forward','刷新缓存','refresh',1,0,6,1,0),
-(8,'/notice/forward','上线公告','arrow-circle-o-up',1,0,7,1,0),
-(9,NULL,'测试','bug',0,0,2,0,0),
-(10,NULL,'测试1','flag',9,9,1,0,0),
-(11,'/test/forward','测试2','flag',10,9,1,1,0);
+(8,'/notice/forward','上线公告','arrow-circle-o-up',1,0,7,1,0);
 
 /*Table structure for table `tb_request_mapping` */
 
@@ -86,67 +79,62 @@ CREATE TABLE `tb_request_mapping` (
   `url_comment` varchar(32) DEFAULT NULL COMMENT '注释',
   PRIMARY KEY (`request_mapping_id`),
   UNIQUE KEY `uniq_request_url` (`request_url`)
-) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8mb4;
 
 /*Data for the table `tb_request_mapping` */
 
-insert  into `tb_request_mapping`(`request_mapping_id`,`request_url`,`operation_class`,`url_comment`) values 
-(1,'/request/forward','com.github.automain.request.view.RequestForwardExecutor','请求路径映射跳转'),
-(2,'/request/list','com.github.automain.request.view.RequestListExecutor','请求路径列表'),
-(3,'/request/add','com.github.automain.request.action.RequestAddExecutor','请求路径添加'),
-(4,'/request/update','com.github.automain.request.action.RequestUpdateExecutor','请求路径编辑'),
-(5,'/request/role/list','com.github.automain.request.view.RequestRoleListExecutor','权限角色列表'),
-(6,'/test/forward','com.github.automain.test.view.TestForwardExecutor','测试跳转'),
-(7,'/test/list','com.github.automain.test.view.TestListExecutor','测试列表'),
-(8,'/test/add','com.github.automain.test.action.TestAddExecutor','测试添加'),
-(9,'/test/update','com.github.automain.test.action.TestUpdateExecutor','测试编辑'),
-(10,'/test/delete','com.github.automain.test.action.TestDeleteExecutor','测试删除'),
-(11,'/dictionary/forward','com.github.automain.dictionary.view.DictionaryForwardExecutor','字典跳转'),
-(12,'/dictionary/list','com.github.automain.dictionary.view.DictionaryListExecutor','字典列表'),
-(13,'/dictionary/add','com.github.automain.dictionary.action.DictionaryAddExecutor','字典添加'),
-(14,'/dictionary/update','com.github.automain.dictionary.action.DictionaryUpdateExecutor','字典编辑'),
-(15,'/dictionary/delete','com.github.automain.dictionary.action.DictionaryDeleteExecutor','字典删除'),
-(16,'/dictionary/column/list','com.github.automain.dictionary.action.ColumnListExecutor','字典查询获取字段名'),
-(17,'/reload/cache/forward','com.github.automain.common.ForwardReloadCacheExecutor','清除缓存跳转'),
-(18,'/reload/cache','com.github.automain.common.ReloadCacheExecutor','重新加载缓存'),
-(19,'/user/captcha','com.github.automain.user.action.CaptchaExecutor','获取验证码图片'),
-(20,'/user/login/action','com.github.automain.user.action.LoginActionExecutor','用户登录'),
-(21,'/user/logout/action','com.github.automain.user.action.LogoutActionExecutor','用户退出登录'),
-(22,'/user/frame','com.github.automain.user.view.FrameExecutor','用户主框架'),
-(23,'/user/forward','com.github.automain.user.view.UserForwardExecutor','用户跳转'),
-(24,'/user/list','com.github.automain.user.view.UserListExecutor','用户列表'),
-(25,'/user/add','com.github.automain.user.action.UserAddExecutor','用户添加'),
-(26,'/user/update','com.github.automain.user.action.UserUpdateExecutor','用户编辑'),
-(27,'/user/delete','com.github.automain.user.action.UserDeleteExecutor','用户删除'),
-(28,'/user/check/exist','com.github.automain.user.action.CheckUserExistExecutor','检查用户名重复'),
-(29,'/user/update/pwd','com.github.automain.user.action.UserUpdatePwdExecutor','用户更新密码'),
-(30,'/user/reset/pwd','com.github.automain.user.action.ResetPwdExecutor','用户重置密码'),
-(31,'/user/role/list','com.github.automain.user.view.UserRoleListExecutor','用户角色列表'),
-(32,'/user/grant/role','com.github.automain.user.action.UserGrantRoleExecutor','用户授权'),
-(33,'/menu/forward','com.github.automain.request.view.MenuForwardExecutor','菜单跳转'),
-(34,'/menu/list','com.github.automain.request.view.MenuListExecutor','菜单列表'),
-(35,'/menu/add','com.github.automain.request.action.MenuAddExecutor','菜单添加'),
-(36,'/menu/update','com.github.automain.request.action.MenuUpdateExecutor','菜单编辑'),
-(37,'/menu/delete','com.github.automain.request.action.MenuDeleteExecutor','菜单删除'),
-(38,'/menu/role/list','com.github.automain.request.view.MenuRoleListExecutor','菜单角色列表'),
-(39,'/menu/grant/role','com.github.automain.request.action.MenuGrantRoleExecutor','菜单授权'),
-(40,'/menu/revoke/role','com.github.automain.request.action.MenuRevokeRoleExecutor','菜单取消分配角色'),
-(41,'/role/forward','com.github.automain.user.view.RoleForwardExecutor','角色跳转'),
-(42,'/role/list','com.github.automain.user.view.RoleListExecutor','角色列表'),
-(43,'/role/add','com.github.automain.user.action.RoleAddExecutor','角色添加'),
-(44,'/role/update','com.github.automain.user.action.RoleUpdateExecutor','角色编辑'),
-(45,'/role/delete','com.github.automain.user.action.RoleDeleteExecutor','角色删除'),
-(46,'/role/grant/menu','com.github.automain.user.action.RoleGrantMenuExecutor','角色分配菜单'),
-(47,'/role/grant/user','com.github.automain.user.action.RoleGrantUserExecutor','角色分配用户'),
-(48,'/role/grant/request','com.github.automain.user.action.RoleGrantRequestExecutor','角色分配权限'),
-(49,'/role/user/list','com.github.automain.user.view.RoleUserListExecutor','角色用户列表'),
-(50,'/role/request/list','com.github.automain.user.view.RoleRequestListExecutor','角色权限列表'),
-(51,'/role/revoke/user','com.github.automain.user.action.RoleRevokeUserExecutor','角色取消分配用户'),
-(52,'/role/revoke/request','com.github.automain.user.action.RoleRevokeRequestExecutor','角色取消分配权限'),
-(53,'/upload/forward','com.github.automain.common.UploadForwardExecutor','上传文件跳转'),
-(54,'/notice/forward','com.github.automain.notice.view.NoticeForwardExecutor','公告跳转'),
-(55,'/notice/add','com.github.automain.notice.action.NoticeAddExecutor','公告添加'),
-(56,'/notice/delete','com.github.automain.notice.action.NoticeDeleteExecutor','公告清除');
+insert  into `tb_request_mapping`(`request_mapping_id`,`request_url`,`operation_class`,`url_comment`) values
+(1,'/dictionary/forward','com.github.automain.dictionary.view.DictionaryForwardExecutor','字典跳转'),
+(2,'/dictionary/list','com.github.automain.dictionary.view.DictionaryListExecutor','字典列表'),
+(3,'/dictionary/add','com.github.automain.dictionary.action.DictionaryAddExecutor','字典添加'),
+(4,'/dictionary/update','com.github.automain.dictionary.action.DictionaryUpdateExecutor','字典编辑'),
+(5,'/dictionary/delete','com.github.automain.dictionary.action.DictionaryDeleteExecutor','字典删除'),
+(6,'/dictionary/column/list','com.github.automain.dictionary.action.ColumnListExecutor','字典查询获取字段名'),
+(7,'/reload/cache/forward','com.github.automain.common.ForwardReloadCacheExecutor','清除缓存跳转'),
+(8,'/reload/cache','com.github.automain.common.ReloadCacheExecutor','重新加载缓存'),
+(9,'/upload/forward','com.github.automain.common.UploadForwardExecutor','上传文件跳转'),
+(10,'/notice/forward','com.github.automain.notice.view.NoticeForwardExecutor','公告跳转'),
+(11,'/notice/add','com.github.automain.notice.action.NoticeAddExecutor','公告添加'),
+(12,'/notice/delete','com.github.automain.notice.action.NoticeDeleteExecutor','公告清除'),
+(13,'/request/forward','com.github.automain.user.view.RequestForwardExecutor','请求路径映射跳转'),
+(14,'/request/list','com.github.automain.user.view.RequestListExecutor','请求路径列表'),
+(15,'/request/add','com.github.automain.user.action.RequestAddExecutor','请求路径添加'),
+(16,'/request/update','com.github.automain.user.action.RequestUpdateExecutor','请求路径编辑'),
+(17,'/request/role/list','com.github.automain.user.view.RequestRoleListExecutor','权限角色列表'),
+(18,'/user/captcha','com.github.automain.user.action.CaptchaExecutor','获取验证码图片'),
+(19,'/user/login/action','com.github.automain.user.action.LoginActionExecutor','用户登录'),
+(20,'/user/logout/action','com.github.automain.user.action.LogoutActionExecutor','用户退出登录'),
+(21,'/user/frame','com.github.automain.user.view.FrameExecutor','用户主框架'),
+(22,'/user/forward','com.github.automain.user.view.UserForwardExecutor','用户跳转'),
+(23,'/user/list','com.github.automain.user.view.UserListExecutor','用户列表'),
+(24,'/user/add','com.github.automain.user.action.UserAddExecutor','用户添加'),
+(25,'/user/update','com.github.automain.user.action.UserUpdateExecutor','用户编辑'),
+(26,'/user/delete','com.github.automain.user.action.UserDeleteExecutor','用户删除'),
+(27,'/user/check/exist','com.github.automain.user.action.CheckUserExistExecutor','检查用户名重复'),
+(28,'/user/update/pwd','com.github.automain.user.action.UserUpdatePwdExecutor','用户更新密码'),
+(29,'/user/reset/pwd','com.github.automain.user.action.ResetPwdExecutor','用户重置密码'),
+(30,'/user/role/list','com.github.automain.user.view.UserRoleListExecutor','用户角色列表'),
+(31,'/user/grant/role','com.github.automain.user.action.UserGrantRoleExecutor','用户授权'),
+(32,'/menu/forward','com.github.automain.user.view.MenuForwardExecutor','菜单跳转'),
+(33,'/menu/list','com.github.automain.user.view.MenuListExecutor','菜单列表'),
+(34,'/menu/add','com.github.automain.user.action.MenuAddExecutor','菜单添加'),
+(35,'/menu/update','com.github.automain.user.action.MenuUpdateExecutor','菜单编辑'),
+(36,'/menu/delete','com.github.automain.user.action.MenuDeleteExecutor','菜单删除'),
+(37,'/menu/role/list','com.github.automain.user.view.MenuRoleListExecutor','菜单角色列表'),
+(38,'/menu/grant/role','com.github.automain.user.action.MenuGrantRoleExecutor','菜单授权'),
+(39,'/menu/revoke/role','com.github.automain.user.action.MenuRevokeRoleExecutor','菜单取消分配角色'),
+(40,'/role/forward','com.github.automain.user.view.RoleForwardExecutor','角色跳转'),
+(41,'/role/list','com.github.automain.user.view.RoleListExecutor','角色列表'),
+(42,'/role/add','com.github.automain.user.action.RoleAddExecutor','角色添加'),
+(43,'/role/update','com.github.automain.user.action.RoleUpdateExecutor','角色编辑'),
+(44,'/role/delete','com.github.automain.user.action.RoleDeleteExecutor','角色删除'),
+(45,'/role/grant/menu','com.github.automain.user.action.RoleGrantMenuExecutor','角色分配菜单'),
+(46,'/role/grant/user','com.github.automain.user.action.RoleGrantUserExecutor','角色分配用户'),
+(47,'/role/grant/request','com.github.automain.user.action.RoleGrantRequestExecutor','角色分配权限'),
+(48,'/role/user/list','com.github.automain.user.view.RoleUserListExecutor','角色用户列表'),
+(49,'/role/request/list','com.github.automain.user.view.RoleRequestListExecutor','角色权限列表'),
+(50,'/role/revoke/user','com.github.automain.user.action.RoleRevokeUserExecutor','角色取消分配用户'),
+(51,'/role/revoke/request','com.github.automain.user.action.RoleRevokeRequestExecutor','角色取消分配权限');
 
 /*Table structure for table `tb_role` */
 
@@ -159,13 +147,12 @@ CREATE TABLE `tb_role` (
   `is_delete` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否删除(0:否,1:是)',
   PRIMARY KEY (`role_id`),
   UNIQUE KEY `uniq_role_label` (`role_label`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
 
 /*Data for the table `tb_role` */
 
-insert  into `tb_role`(`role_id`,`role_name`,`role_label`,`is_delete`) values 
-(1,'管理员','admin',0),
-(2,'测试','test',0);
+insert  into `tb_role`(`role_id`,`role_name`,`role_label`,`is_delete`) values
+(1,'管理员','admin',0);
 
 /*Table structure for table `tb_role_menu` */
 
@@ -197,28 +184,6 @@ CREATE TABLE `tb_role_request_mapping` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Data for the table `tb_role_request_mapping` */
-
-/*Table structure for table `tb_test` */
-
-DROP TABLE IF EXISTS `tb_test`;
-
-CREATE TABLE `tb_test` (
-  `test_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '测试ID',
-  `test_name` varchar(32) DEFAULT NULL COMMENT '测试名称',
-  `test_area` varchar(129) DEFAULT NULL COMMENT '测试textarea',
-  `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
-  `test_amount` decimal(10,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '测试数量',
-  `test_type` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '测试类型(1:普通,2文艺)',
-  `is_delete` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否删除(0:否,1:是)',
-  PRIMARY KEY (`test_id`),
-  KEY `idx_test_type` (`test_type`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
-
-/*Data for the table `tb_test` */
-
-insert  into `tb_test`(`test_id`,`test_name`,`test_area`,`create_time`,`test_amount`,`test_type`,`is_delete`) values 
-(1,'<script>alert(1)<script>','<script>alert(1)<script>','2018-03-07 00:00:00',1.00,1,0),
-(2,'<script>alert(2)<script>','<script>alert(2)<script>','2018-03-07 00:00:00',2.00,1,0);
 
 /*Table structure for table `tb_upload_file` */
 
@@ -272,13 +237,12 @@ CREATE TABLE `tb_user` (
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `uniq_user_name` (`user_name`),
   KEY `idx_cellphone` (`cellphone`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
 
 /*Data for the table `tb_user` */
 
-insert  into `tb_user`(`user_id`,`user_name`,`password_md5`,`cellphone`,`create_time`,`email`,`is_delete`) values 
-(1,'admin','e10adc3949ba59abbe56e057f20f883e','13111111111','2018-03-07 00:00:00','zhangyu13393@sina.com',0),
-(2,'test','e10adc3949ba59abbe56e057f20f883e','13111111111','2018-03-07 00:00:00','zhangyu13393@sina.com',0);
+insert  into `tb_user`(`user_id`,`user_name`,`password_md5`,`cellphone`,`create_time`,`email`,`is_delete`) values
+(1,'admin','e10adc3949ba59abbe56e057f20f883e','13111111111','2018-03-07 00:00:00','zhangyu13393@sina.com',0);
 
 /*Table structure for table `tb_user_role` */
 
@@ -292,13 +256,12 @@ CREATE TABLE `tb_user_role` (
   PRIMARY KEY (`user_role_id`),
   KEY `idx_user_id` (`user_id`),
   KEY `idx_role_id` (`role_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
 
 /*Data for the table `tb_user_role` */
 
-insert  into `tb_user_role`(`user_role_id`,`user_id`,`role_id`,`is_delete`) values 
-(1,1,1,0),
-(2,2,2,0);
+insert  into `tb_user_role`(`user_role_id`,`user_id`,`role_id`,`is_delete`) values
+(1,1,1,0);
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

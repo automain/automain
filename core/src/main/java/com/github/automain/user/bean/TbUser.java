@@ -46,6 +46,17 @@ public class TbUser extends RequestUtil implements BaseBean<TbUser> {
         this.createTimeRange = createTimeRange;
     }
 
+    // 是否有该权限(0:否,1:是)
+    private Integer hasRole;
+
+    public Integer getHasRole() {
+        return hasRole;
+    }
+
+    public void setHasRole(Integer hasRole) {
+        this.hasRole = hasRole;
+    }
+
     // ========== additional column end ==========
 
     public Long getUserId() {

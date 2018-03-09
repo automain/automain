@@ -40,6 +40,16 @@ public class TbMenu extends RequestUtil implements BaseBean<TbMenu> {
 
     // ========== additional column begin ==========
 
+    // 父级名称
+    private String parentName;
+
+    public String getParentName() {
+        return parentName;
+    }
+
+    public void setParentName(String parentName) {
+        this.parentName = parentName;
+    }
 
     // ========== additional column end ==========
 

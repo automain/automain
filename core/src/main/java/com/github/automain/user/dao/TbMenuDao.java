@@ -2,11 +2,14 @@ package com.github.automain.user.dao;
 
 import com.github.automain.user.bean.TbMenu;
 import com.github.fastjdbc.bean.ConnectionBean;
+import com.github.fastjdbc.bean.ConnectionPool;
 import com.github.fastjdbc.bean.PageBean;
 import com.github.fastjdbc.common.BaseDao;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class TbMenuDao extends BaseDao<TbMenu> {
@@ -55,7 +58,7 @@ public class TbMenuDao extends BaseDao<TbMenu> {
         return sql.toString();
     }
 
-    public List<TbMenu> selectTbMenuByRoleId(ConnectionBean connection, TbMenu bean, Long roleId) throws SQLException {
+    public List<TbMenu> selectTableByRoleId(ConnectionBean connection, TbMenu bean, Long roleId) throws SQLException {
         String sql = "SELECT tm.* FROM tb_menu tm LEFT JOIN tb_role_menu trm ON trm.menu_id = tm.menu_id AND trm.is_delete = '0' AND tm.is_delete = '0'";
         List<Object> paramList = new ArrayList<Object>(1);
         if (!roleId.equals(1L)) {
@@ -64,4 +67,20 @@ public class TbMenuDao extends BaseDao<TbMenu> {
         }
         return executeSelectReturnList(connection, sql, paramList, bean);
     }
+
+    public List<Long> selectMenuIdByParentId(ConnectionBean connection, Long parentId) throws SQLException {
+        String sql = "SELECT menu_id FROM tb_menu WHERE parent_id = ? AND is_delete = '0'";
+        ResultSet rs = null;
+        List<Long> menuIdList = new ArrayList<Long>();
+        try {
+            rs = executeSelectReturnResultSet(connection, sql, Collections.singletonList(parentId));
+            while (rs.next()) {
+                menuIdList.add(rs.getLong(1));
+            }
+        } finally {
+            ConnectionPool.close(rs);
+        }
+        return menuIdList;
+    }
+
 }

@@ -18,18 +18,14 @@ public class TbUserDao extends BaseDao<TbUser> {
     }
 
     private String setSearchCondition(TbUser bean, List<Object> parameterList) throws Exception {
-        StringBuilder sql = new StringBuilder("SELECT * FROM tb_user WHERE 1 = 1 ");
+        StringBuilder sql = new StringBuilder("SELECT * FROM tb_user WHERE is_delete = '0' ");
         if (bean.getCellphone() != null) {
             sql.append(" AND cellphone = ?");
             parameterList.add(bean.getCellphone());
         }
         if (bean.getUserName() != null) {
-            sql.append(" AND user_name = ?");
-            parameterList.add(bean.getUserName());
-        }
-        if (bean.getPasswordMd5() != null) {
-            sql.append(" AND password_md5 = ?");
-            parameterList.add(bean.getPasswordMd5());
+            sql.append(" AND user_name LIKE ?");
+            parameterList.add(bean.getUserName() + "%");
         }
         if (bean.getCreateTimeRange() != null) {
             sql.append(" AND create_time >= ? AND create_time <= ?");
@@ -38,10 +34,6 @@ public class TbUserDao extends BaseDao<TbUser> {
         if (bean.getEmail() != null) {
             sql.append(" AND email = ?");
             parameterList.add(bean.getEmail());
-        }
-        if (bean.getIsDelete() != null) {
-            sql.append(" AND is_delete = ?");
-            parameterList.add(bean.getIsDelete());
         }
         return sql.toString();
     }

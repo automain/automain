@@ -26,4 +26,8 @@ public class TbUserRoleService extends BaseService<TbUserRole, TbUserRoleDao> {
         return getDao().selectUserIdByRoleId(connection, roleId);
     }
 
+    public int clearUserRoleByUserId(ConnectionBean connection, Long userId) throws SQLException {
+        return getDao().clearUserRoleByUserId(connection, userId);
+    }
+
 }
