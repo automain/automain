@@ -27,7 +27,7 @@ public class UploadExecutor extends BaseExecutor {
     }
 
     @Override
-    protected String doAction(ConnectionBean conn, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    protected String doAction(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         try {
             Collection<Part> parts = request.getParts();
             if (parts == null) {
@@ -69,7 +69,7 @@ public class UploadExecutor extends BaseExecutor {
                         uploadFile.setImageWidth(imageWidth);
                         uploadFile.setUploadTime(new Timestamp(System.currentTimeMillis()));
                         uploadFile.setFileMd5(fileMd5);
-                        Long uploadFileId = TB_UPLOAD_FILE_SERVICE.insertIntoTableReturnId(conn, uploadFile);
+                        Long uploadFileId = TB_UPLOAD_FILE_SERVICE.insertIntoTableReturnId(connection, uploadFile);
                         if (!uploadFileId.equals(0L)) {
                             request.setAttribute("uploadFileId", uploadFileId);
                             if (imageWidth > 0 && imageHeight > 0) {

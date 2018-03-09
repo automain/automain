@@ -25,7 +25,7 @@ public class TbRoleService extends BaseService<TbRole, TbRoleDao> implements Ser
         return getDao().selectTableForCustomPage(connection, bean, page, limit);
     }
 
-    public PageBean<TbRole> selectTableForForRequest(ConnectionBean connection, HttpServletRequest request, TbRole bean, Long requestMappingId) throws Exception {
+    public PageBean<TbRole> selectTableForForRequest(ConnectionBean connection, TbRole bean, HttpServletRequest request, Long requestMappingId) throws Exception {
         PageBean<TbRole> pageBean = selectTableForCustomPage(connection, bean, request);
         List<TbRole> data = pageBean.getData();
         TbRoleRequestMapping roleRequestMappingParam = new TbRoleRequestMapping();
@@ -43,7 +43,7 @@ public class TbRoleService extends BaseService<TbRole, TbRoleDao> implements Ser
         return pageBean;
     }
 
-    public PageBean<TbRole> selectTableForForUser(ConnectionBean connection, HttpServletRequest request, TbRole bean, Long userId) throws Exception {
+    public PageBean<TbRole> selectTableForForUser(ConnectionBean connection, TbRole bean, HttpServletRequest request, Long userId) throws Exception {
         PageBean<TbRole> pageBean = selectTableForCustomPage(connection, bean, request);
         List<TbRole> data = pageBean.getData();
         TbUserRole userRoleParam = new TbUserRole();
@@ -61,7 +61,7 @@ public class TbRoleService extends BaseService<TbRole, TbRoleDao> implements Ser
         return pageBean;
     }
 
-    public PageBean<TbRole> selectTableForForMenu(ConnectionBean connection, HttpServletRequest request, TbRole bean, Long menuId) throws Exception {
+    public PageBean<TbRole> selectTableForForMenu(ConnectionBean connection, TbRole bean, HttpServletRequest request, Long menuId) throws Exception {
         PageBean<TbRole> pageBean = selectTableForCustomPage(connection, bean, request);
         List<TbRole> data = pageBean.getData();
         TbRoleMenu roleMenuParam = new TbRoleMenu();

@@ -9,6 +9,7 @@ import com.github.fastjdbc.bean.PageBean;
 import com.github.fastjdbc.common.BaseService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.sql.SQLException;
 import java.util.List;
 
 public class TbUserService extends BaseService<TbUser, TbUserDao> implements ServiceContainer {
@@ -23,7 +24,7 @@ public class TbUserService extends BaseService<TbUser, TbUserDao> implements Ser
         return getDao().selectTableForCustomPage(connection, bean, page, limit);
     }
 
-    public PageBean<TbUser> selectTableForUserRole(ConnectionBean connection, HttpServletRequest request, TbUser bean, Long roleId) throws Exception {
+    public PageBean<TbUser> selectTableForUserRole(ConnectionBean connection, TbUser bean, HttpServletRequest request, Long roleId) throws Exception {
         PageBean<TbUser> pageBean = selectTableForCustomPage(connection, bean, request);
         List<TbUser> data = pageBean.getData();
         TbUserRole userRoleParam = new TbUserRole();
@@ -41,4 +42,9 @@ public class TbUserService extends BaseService<TbUser, TbUserDao> implements Ser
         return pageBean;
     }
 
+    public TbUser selectTableByUserName(ConnectionBean connection, String userName) throws SQLException{
+        TbUser bean = new TbUser();
+        bean.setUserName(userName);
+        return getDao().selectOneTableByBean(connection, bean);
+    }
 }

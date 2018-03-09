@@ -1,5 +1,6 @@
 package com.github.automain.common;
 
+import com.github.automain.user.view.LoginExecutor;
 import com.github.automain.util.HTTPUtil;
 import com.github.automain.util.PropertiesUtil;
 import com.github.fastjdbc.bean.ConnectionPool;
@@ -62,7 +63,7 @@ public class DispatcherController extends HttpServlet {
             String uri = HTTPUtil.getRequestUri(req);
             try {
                 if ("/".equals(uri)) {
-//                    executor = new LoginExecutor();
+                    executor = new LoginExecutor();
                 } else {
                     Class<?> c = RequestMappingContainer.getRequestMapping(uri);
                     if (c != null) {

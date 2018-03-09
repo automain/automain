@@ -9,6 +9,7 @@ import com.github.fastjdbc.bean.PageBean;
 import com.github.fastjdbc.common.BaseService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.sql.SQLException;
 import java.util.List;
 
 public class TbRequestMappingService extends BaseService<TbRequestMapping, TbRequestMappingDao> implements ServiceContainer {
@@ -17,10 +18,14 @@ public class TbRequestMappingService extends BaseService<TbRequestMapping, TbReq
         super(bean, dao);
     }
 
-    public PageBean<TbRequestMapping> selectTableForCustomPage(ConnectionBean connection, TbRequestMapping bean, HttpServletRequest request, Long roleId) throws Exception {
+    public PageBean<TbRequestMapping> selectTableForCustomPage(ConnectionBean connection, TbRequestMapping bean, HttpServletRequest request) throws Exception {
         int page = getInt("page", request, 1);
         int limit = getInt("limit", request, 1);
-        PageBean<TbRequestMapping> pageBean = getDao().selectTableForCustomPage(connection, bean, page, limit);
+        return getDao().selectTableForCustomPage(connection, bean, page, limit);
+    }
+
+    public PageBean<TbRequestMapping> selectTableForRole(ConnectionBean connection, TbRequestMapping bean, HttpServletRequest request, Long roleId) throws Exception {
+        PageBean<TbRequestMapping> pageBean = selectTableForCustomPage(connection, bean, request);
         List<TbRequestMapping> data = pageBean.getData();
         TbRoleRequestMapping roleRequestMappingParam = new TbRoleRequestMapping();
         roleRequestMappingParam.setRoleId(roleId);
@@ -37,4 +42,9 @@ public class TbRequestMappingService extends BaseService<TbRequestMapping, TbReq
         return pageBean;
     }
 
+    public TbRequestMapping selectTableByRequestUrl(ConnectionBean connection, String requestUrl) throws SQLException {
+        TbRequestMapping bean = new TbRequestMapping();
+        bean.setRequestUrl(requestUrl);
+        return TB_REQUEST_MAPPING_SERVICE.selectOneTableByBean(connection, bean);
+    }
 }

@@ -59,12 +59,12 @@ public class TbRoleMenuDao extends BaseDao<TbRoleMenu> {
         }
     }
 
-    public List<Long> selectMenuIdByRoleId(ConnectionBean conn, Long roleId) throws SQLException {
+    public List<Long> selectMenuIdByRoleId(ConnectionBean connection, Long roleId) throws SQLException {
         String sql = "SELECT menu_id FROM tb_role_menu WHERE is_delete = '0' AND role_id = ?";
         ResultSet rs = null;
         List<Long> menuIdList = new ArrayList<Long>();
         try {
-            rs = executeSelectReturnResultSet(conn, sql, Collections.singletonList(roleId));
+            rs = executeSelectReturnResultSet(connection, sql, Collections.singletonList(roleId));
             while (rs.next()) {
                 menuIdList.add(rs.getLong(1));
             }

@@ -37,7 +37,7 @@ public class ReloadCacheExecutor extends BaseExecutor {
     }
 
     @Override
-    protected String doAction(ConnectionBean conn, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    protected String doAction(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         String reloadLabel = getString("reloadLabel", request);
         String logReloadLabel = null;
         if (reloadLabel != null) {
