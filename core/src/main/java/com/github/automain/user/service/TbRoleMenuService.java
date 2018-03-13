@@ -17,9 +17,7 @@ public class TbRoleMenuService extends BaseService<TbRoleMenu, TbRoleMenuDao> {
     }
 
     public PageBean<TbRoleMenu> selectTableForCustomPage(ConnectionBean connection, TbRoleMenu bean, HttpServletRequest request) throws Exception {
-        int page = getInt("page", request, 1);
-        int limit = getInt("limit", request, 1);
-        return getDao().selectTableForCustomPage(connection, bean, page, limit);
+        return getDao().selectTableForCustomPage(connection, bean,  pageFromRequest(request), limitFromRequest(request));
     }
 
     public int clearRoleByMenuId(ConnectionBean connection, Long menuId) throws SQLException {

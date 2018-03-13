@@ -15,8 +15,6 @@ public class TbUploadFileService extends BaseService<TbUploadFile, TbUploadFileD
     }
 
     public PageBean<TbUploadFile> selectTableForCustomPage(ConnectionBean connection, TbUploadFile bean, HttpServletRequest request) throws Exception {
-        int page = getInt("page", request, 1);
-        int limit = getInt("limit", request, 1);
-        return getDao().selectTableForCustomPage(connection, bean, page, limit);
+        return getDao().selectTableForCustomPage(connection, bean, pageFromRequest(request), limitFromRequest(request));
     }
 }

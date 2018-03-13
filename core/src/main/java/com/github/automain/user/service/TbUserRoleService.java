@@ -17,9 +17,7 @@ public class TbUserRoleService extends BaseService<TbUserRole, TbUserRoleDao> {
     }
 
     public PageBean<TbUserRole> selectTableForCustomPage(ConnectionBean connection, TbUserRole bean, HttpServletRequest request) throws Exception {
-        int page = getInt("page", request, 1);
-        int limit = getInt("limit", request, 1);
-        return getDao().selectTableForCustomPage(connection, bean, page, limit);
+        return getDao().selectTableForCustomPage(connection, bean,  pageFromRequest(request), limitFromRequest(request));
     }
 
     public Set<Long> selectUserIdByRoleId(ConnectionBean connection, Long roleId) throws SQLException {

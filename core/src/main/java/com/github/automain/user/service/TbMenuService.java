@@ -17,9 +17,7 @@ public class TbMenuService extends BaseService<TbMenu, TbMenuDao> {
     }
 
     public PageBean<TbMenu> selectTableForCustomPage(ConnectionBean connection, TbMenu bean, HttpServletRequest request) throws Exception {
-        int page = getInt("page", request, 1);
-        int limit = getInt("limit", request, 1);
-        PageBean<TbMenu> pageBean = getDao().selectTableForCustomPage(connection, bean, page, limit);
+        PageBean<TbMenu> pageBean = getDao().selectTableForCustomPage(connection, bean, pageFromRequest(request), limitFromRequest(request));
         List<TbMenu> data = pageBean.getData();
         for (TbMenu menu : data) {
             Long parentId = menu.getParentId();

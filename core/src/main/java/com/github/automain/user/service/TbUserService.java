@@ -19,9 +19,7 @@ public class TbUserService extends BaseService<TbUser, TbUserDao> implements Ser
     }
 
     public PageBean<TbUser> selectTableForCustomPage(ConnectionBean connection, TbUser bean, HttpServletRequest request) throws Exception {
-        int page = getInt("page", request, 1);
-        int limit = getInt("limit", request, 1);
-        return getDao().selectTableForCustomPage(connection, bean, page, limit);
+        return getDao().selectTableForCustomPage(connection, bean,  pageFromRequest(request), limitFromRequest(request));
     }
 
     public PageBean<TbUser> selectTableForUserRole(ConnectionBean connection, TbUser bean, HttpServletRequest request, Long roleId) throws Exception {

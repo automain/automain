@@ -19,9 +19,7 @@ public class TbRequestMappingService extends BaseService<TbRequestMapping, TbReq
     }
 
     public PageBean<TbRequestMapping> selectTableForCustomPage(ConnectionBean connection, TbRequestMapping bean, HttpServletRequest request) throws Exception {
-        int page = getInt("page", request, 1);
-        int limit = getInt("limit", request, 1);
-        return getDao().selectTableForCustomPage(connection, bean, page, limit);
+        return getDao().selectTableForCustomPage(connection, bean,  pageFromRequest(request), limitFromRequest(request));
     }
 
     public PageBean<TbRequestMapping> selectTableForRole(ConnectionBean connection, TbRequestMapping bean, HttpServletRequest request, Long roleId) throws Exception {

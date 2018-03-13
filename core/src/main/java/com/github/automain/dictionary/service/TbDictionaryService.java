@@ -17,9 +17,7 @@ public class TbDictionaryService extends BaseService<TbDictionary, TbDictionaryD
     }
 
     public PageBean<TbDictionary> selectTableForCustomPage(ConnectionBean connection, TbDictionary bean, HttpServletRequest request) throws Exception {
-        int page = getInt("page", request, 1);
-        int limit = getInt("limit", request, 1);
-        PageBean<TbDictionary> pageBean = getDao().selectTableForCustomPage(connection, bean, page, limit);
+        PageBean<TbDictionary> pageBean = getDao().selectTableForCustomPage(connection, bean, pageFromRequest(request), limitFromRequest(request));
         List<TbDictionary> data = pageBean.getData();
         for (TbDictionary dictionary : data) {
             Long parentId = dictionary.getParentId();
