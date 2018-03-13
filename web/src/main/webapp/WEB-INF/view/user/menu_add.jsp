@@ -25,7 +25,7 @@
         <div class="layui-input-block">
             <input type="text" class="layui-input" autocomplete="off" name="menuIcon" id="menu-icon" onblur="showIcon()" lay-verify="menu_icon">
         </div>
-        <div class="layui-form-mid layui-word-aux">图标代码参考<a href="http://fontawesome.io/icons/" target="_blank">font awesome</a>
+        <div class="layui-form-mid layui-word-aux">图标代码参考<a href="http://www.fontawesome.com.cn/faicons/" target="_blank">font awesome</a>
             &nbsp;<i id="icon-show"></i></div>
     </div>
     <div class="layui-form-item">
