@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TbMenu extends RequestUtil implements BaseBean<TbMenu> {
+public class TbMenu extends RequestUtil implements BaseBean<TbMenu>, Comparable {
 
     // 菜单ID
     private Long menuId;
@@ -198,5 +198,16 @@ public class TbMenu extends RequestUtil implements BaseBean<TbMenu> {
         bean.setIsLeaf(getInt("isLeaf", request));
         bean.setIsDelete(getInt("isDelete", request, 0));
         return bean;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        if (o != null && o instanceof TbMenu){
+            TbMenu target = (TbMenu) o;
+            if (this.getParentId().equals(target.getParentId())) {
+                return this.getSequenceNumber().compareTo(target.getSequenceNumber()) >= 0 ? 1 : -1;
+            }
+        }
+        return 0;
     }
 }
