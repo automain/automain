@@ -300,6 +300,9 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
      */
     protected static TbUser getSessionUser(Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         String accessToken = CookieUtil.getCookieByName(request, "accessToken");
+        if (accessToken == null) {
+            accessToken = request.getHeader("Authorization");
+        }
         if (accessToken != null) {
             String decrypt = EncryptUtil.AESDecrypt(accessToken.getBytes(PropertiesUtil.DEFAULT_CHARSET), PropertiesUtil.SECURITY_KEY);
             String[] arr = decrypt.split("_");

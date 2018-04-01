@@ -15,7 +15,7 @@ public class DictionaryListExecutor extends BaseExecutor {
     protected String doAction(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         TbDictionary bean = new TbDictionary();
         bean = bean.beanFromRequest(request);
-        PageBean<TbDictionary> pageBean = TB_DICTIONARY_SERVICE.selectTableForPage(connection, bean, request);
+        PageBean<TbDictionary> pageBean = TB_DICTIONARY_SERVICE.selectTableForCustomPage(connection, bean, request);
         request.setAttribute(PAGE_BEAN_PARAM, pageBean);
         return "dictionary/dictionary_list";
     }

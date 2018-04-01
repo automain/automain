@@ -62,6 +62,7 @@ public class LoginActionExecutor extends BaseExecutor {
                         String value = user.getUserId() + "_" + expireTime;
                         String accessToken = EncryptUtil.AESEncrypt(value.getBytes(PropertiesUtil.DEFAULT_CHARSET), PropertiesUtil.SECURITY_KEY);
                         CookieUtil.addCookie(response, "accessToken", accessToken, -1);
+                        response.addHeader("Authorization", accessToken);
                         setJsonResult(request, CODE_SUCCESS, "登录成功");
                         return null;
                     }
