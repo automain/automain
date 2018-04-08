@@ -3,7 +3,7 @@
 <head>
     <%@include file="../common/common.jsp" %>
     <link rel="stylesheet" href="${ctx}/static/css/login/login.css" media="all"/>
-    <title>登录</title>
+    <title>CMS</title>
 </head>
 <body class="bg-body">
 <form class="layui-form" action="#">
@@ -19,12 +19,10 @@
             <input type="password" placeholder="密码" class="login_txtbx" name="password" lay-verify="password"/>
         </div>
         <div class="layui-val-icon layui-login">
-            <input type="hidden" id="captchaPosition" name="captchaPosition" lay-verify="captcha_position"/>
             <input type="hidden" id="captchaRandomKey" name="captchaRandomKey"/>
-            <div id="drag">
-                <div class="drag_bg"></div>
-                <div class="drag_text">滑动到指定位置</div>
-                <div class="handler handler_bg" onselectstart="return false;"><i class="fa fa-angle-double-right"></i></div>
+            <div class="layui-code-box">
+                <input type="text" name="captchaValue" placeholder="验证码" maxlength="4" class="login_txtbx" lay-verify="captcha">
+                <img src="" class="login_captcha_img" id="login_captcha_img" onclick="initCaptcha()">
             </div>
         </div>
         <div class="layui-submit layui-login">
@@ -40,58 +38,16 @@
 </html>
 <script src="${ctx}/static/js/plugin/md5.min.js"></script>
 <script>
-    var drag = $("#drag");
-    var handler = drag.find('.handler');
-    var drag_bg = drag.find('.drag_bg');
-    function dragHandler() {
-        $.post("${ctx}/user/captcha", {
-            width: drag.width(),
-            height: drag.height()
-        }, function (data) {
+    function initCaptcha() {
+        $.post("${ctx}/user/captcha", {}, function (data) {
             if (data.code == code_success) {
                 $("#captchaRandomKey").val(data.captchaRandomKey);
-                $("#drag").css("background", "url(data:image/png;base64," + data.image + ")");
+                $("#login_captcha_img").attr("src", "data:image/png;base64," + data.image);
             }
         }, "json");
-        var x, isMove = false;
-        var maxWidth = drag.width() - handler.width();  //能滑动的最大间距
-        //鼠标按下时候的x轴的位置
-        handler.mousedown(function (e) {
-            isMove = true;
-            x = e.pageX - parseInt(handler.css('left'), 10);
-        });
-
-        //鼠标指针在上下文移动时，移动距离大于0小于最大间距，滑块x轴位置等于鼠标移动距离
-        handler.mousemove(function (e) {
-            var _x = e.pageX - x;
-            if (isMove) {
-                if (_x > 0 && _x <= maxWidth) {
-                    handler.css({'left': _x});
-                    drag_bg.css({'width': _x});
-                }
-            }
-        }).mouseup(function (e) {
-            isMove = false;
-            var _x = e.pageX - x;
-            if (_x > maxWidth) { //鼠标松开时，如果大于最大距离位置，滑块就返回初始位置
-                handler.css({'left': 0});
-                drag_bg.css({'width': 0});
-            } else {
-                dragOk(_x);
-            }
-        });
-    }
-    //清空事件
-    function dragOk(position) {
-        handler.html('<i class="fa fa-check"></i>');
-        $("#captchaPosition").val(position);
-        drag.find(".drag_text").html("");
-        handler.unbind('mousedown');
-        handler.unbind('mousemove');
-        handler.unbind('mouseup');
     }
     layui.use('form', function () {
-        dragHandler();
+        initCaptcha();
         var form = layui.form;
         form.verify({
             username: function (value) {
@@ -104,9 +60,9 @@
                     return '密码不能为空';
                 }
             }
-            , captcha_position: function (value) {
+            , captcha: function (value) {
                 if (value.length == 0) {
-                    return '滑动到指定位置';
+                    return '验证码不能为空';
                 }
             }
         });
@@ -116,13 +72,13 @@
             });
             var param = data.field;
             var username = param.username;
-            var captchaPosition = param.captchaPosition;
+            var captchaValue = param.captchaValue;
             var password = param.password;
             var captchaRandomKey = param.captchaRandomKey;
-            var token = md5(md5(password) + captchaPosition);
+            var token = md5(md5(password) + captchaValue);
             $.post('${ctx}/user/login/action', {
                 username: username,
-                captchaPosition: captchaPosition,
+                captchaValue: captchaValue,
                 captchaRandomKey: captchaRandomKey,
                 token: token
             }, function (data) {
@@ -133,12 +89,8 @@
                     });
                 } else {
                     layer.close(loading);
-                    layer.msg(data.msg, {icon: 2, anim: 6, time: 300});
-                    dragHandler();
-                    handler.html('<i class="fa fa-angle-double-right"></i>');
-                    handler.css({'left': 0});
-                    drag_bg.css({'width': 0});
-                    drag.find(".drag_text").html("滑动到指定位置");
+                    layer.msg(data.msg, {icon: 2, anim: 6, time: 500});
+                    initCaptcha();
                 }
             });
             return false;

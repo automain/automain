@@ -21,17 +21,15 @@ public class CaptchaExecutor extends BaseExecutor {
 
     @Override
     protected String doAction(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        Integer width = getInt("width", request, 350);
-        Integer height = getInt("height", request, 42);
-        CaptchaUtil captcha = new CaptchaUtil(width, height);
-        String position = String.valueOf(captcha.getPercentPosition());
-        request.setAttribute("image", captcha.getBase64Image());
+        CaptchaUtil captchaUtil = new CaptchaUtil(157, 42);
+        String captcha = captchaUtil.getCaptcha();
+        request.setAttribute("image", captchaUtil.getBase64Image());
         String key = SystemUtil.randomUUID();
         if (jedis != null) {
-            jedis.set(key, position);
+            jedis.set(key, captcha);
             jedis.expire(key, 180);
         } else {
-            RedisUtil.LOCAL_CACHE.put(key, position);
+            RedisUtil.LOCAL_CACHE.put(key, captcha);
         }
         request.setAttribute(CAPTCHA_RANDOM_KEY, key);
         return null;

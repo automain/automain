@@ -56,6 +56,32 @@
 .layui-login  .login_txtbx:focus{
     background:#55b7a4;
 }
+.layui-code-box{
+    width:100%;
+    padding-bottom: 16px;
+    background:#5cbdaa;
+    font-size:14px;
+    height:26px;
+    line-height:26px;
+}
+.layui-code-box input.login_txtbx{
+    width:55%;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    float: left;
+    color:white;
+    outline:none;
+    border:none;
+}
+.layui-code-box .login_captcha_img{
+    display: block;
+    width: 45%;
+    height: 100%;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    cursor: pointer;
+}
 .layui-login:before{
     position:absolute;
     top:13px;
@@ -97,47 +123,6 @@
 }
 .layui-login-text a:hover{
     text-decoration: underline;
-}
-#drag{
-    position: relative;
-    background-color: #e8e8e8;
-    width: 100%;
-    height: 42px;
-    line-height: 42px;
-    text-align: center;
-}
-#drag .handler{
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    width: 42px;
-    height: 42px;
-    border: 1px solid #ccc;
-    cursor: move;
-}
-#drag .handler .fa{
-    font-size: 35px;
-    margin-top: 2px;
-    margin-left: 5px;
-}
-.handler_bg{
-    background: #fff;
-    color: #5cbdaa;
-}
-#drag .drag_bg{
-    background-color: #5cbdaa;
-    height: 42px;
-    width: 0px;
-}
-#drag .drag_text{
-    position: absolute;
-    top: 0px;
-    width: 100%;
-    -moz-user-select: none;
-    -webkit-user-select: none;
-    user-select: none;
-    -o-user-select:none;
-    -ms-user-select:none;
 }
 /** frame */
 .layui-menu {

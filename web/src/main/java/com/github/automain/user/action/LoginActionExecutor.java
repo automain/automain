@@ -25,7 +25,7 @@ public class LoginActionExecutor extends BaseExecutor {
 
     @Override
     protected String doAction(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        Integer captchaPosition = getInt("captchaPosition", request);
+        String captchaValue = getString("captchaValue", request);
         String key = getString(CAPTCHA_RANDOM_KEY, request);
         Object captcha = null;
         if (jedis != null) {
@@ -33,14 +33,14 @@ public class LoginActionExecutor extends BaseExecutor {
         } else {
             captcha = RedisUtil.LOCAL_CACHE.get(key);
         }
-        if (captcha != null){
-            Integer sessionCaptcha = Integer.valueOf(String.valueOf(captcha));
-            if (checkCaptcha(sessionCaptcha, captchaPosition)){
+        if (captcha != null) {
+            String sessionCaptcha = String.valueOf(captcha);
+            if (sessionCaptcha.equalsIgnoreCase(captchaValue)) {
                 String username = getString("username", request);
                 String token = getString("token", request);
                 TbUser user = TB_USER_SERVICE.selectTableByUserName(connection, username);
                 if (user != null) {
-                    String toMD5 = user.getPasswordMd5() + captchaPosition;
+                    String toMD5 = user.getPasswordMd5() + captchaValue;
                     String serverToken = EncryptUtil.MD5(toMD5.getBytes(PropertiesUtil.DEFAULT_CHARSET));
                     if (serverToken.equals(token)) {
                         long expireTime = System.currentTimeMillis() + PropertiesUtil.SESSION_EXPIRE_MILLISECOND;
@@ -65,20 +65,19 @@ public class LoginActionExecutor extends BaseExecutor {
                         response.addHeader("Authorization", accessToken);
                         setJsonResult(request, CODE_SUCCESS, "登录成功");
                         return null;
+                    } else {
+                        setJsonResult(request, CODE_FAIL, "用户名或密码错误");
                     }
+                } else {
+                    setJsonResult(request, CODE_FAIL, "用户名或密码错误");
                 }
+            } else {
+                setJsonResult(request, CODE_FAIL, "验证码错误");
             }
+        } else {
+            setJsonResult(request, CODE_FAIL, "验证码错误");
         }
-        setJsonResult(request, CODE_FAIL, "登录失败");
         return null;
     }
 
-    private boolean checkCaptcha(Integer sessionCaptcha, Integer captchaPosition){
-        if (sessionCaptcha != null && captchaPosition != null){
-            int minPosition = sessionCaptcha - 5;
-            int maxPosition = sessionCaptcha + 5;
-            return captchaPosition > minPosition && captchaPosition < maxPosition;
-        }
-        return false;
-    }
 }
