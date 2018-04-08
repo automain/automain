@@ -32,4 +32,13 @@ public class SystemUtil {
     public static long getNowSecond() {
         return System.currentTimeMillis() / 1000;
     }
+
+    /**
+     * 当前系统是否为windows
+     * @return
+     */
+    public static boolean checkIsWindows() {
+        String osName = System.getProperty("os.name");
+        return osName.toLowerCase().startsWith("winbows");
+    }
 }
