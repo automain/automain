@@ -84,7 +84,7 @@ layui.define('jquery', function(exports){
     //如果没有子节点，则不执行
     if(!ul[0]) return;
 
-    a.on('dblclick', open);
+    a.on('click', open);
   }
   
   //通用事件
