@@ -43,34 +43,33 @@
         </div>
     </div>
 </blockquote>
-<div class="layui-form">
-    <table class="layui-table">
-        <thead>
-        <tr>
-            <th style="width: 18px;"><input type="checkbox" name="allDeleteDictionary" lay-skin="primary" lay-filter="all_delete_dictionary"></th>
-            <th style="min-width: 140px; width: 140px;">操作</th>
-            <th style="min-width: 150px;">表名</th>
-            <th style="min-width: 150px;">字段名</th>
-            <th style="min-width: 150px;">字典名</th>
-            <th style="min-width: 150px;">字典值</th>
-            <th style="min-width: 150px;">排序标识</th>
-            <th style="min-width: 150px;">父级</th>
-            <th style="min-width: 150px;">是否是叶子节点</th>
-        </tr>
-        </thead>
-        <tbody id="dictionary_list_body">
-        </tbody>
-    </table>
-</div>
+<table class="layui-table" lay-skin="line" lay-filter="tb_dictionary" lay-data="{id: 'tb_dictionary'}">
+    <thead>
+    <tr>
+        <th lay-data="{field:'dictionary_id',checkbox:true, fixed:'left'}"></th>
+        <th lay-data="{field:'operation', width:180, fixed:'left'}">操作</th>
+        <th lay-data="{field:'dict_table_name', width:150}">表名</th>
+        <th lay-data="{field:'dict_column_name', width:150}">字段名</th>
+        <th lay-data="{field:'dictionary_name', width:150}">字典名</th>
+        <th lay-data="{field:'dictionary_value', width:150}">字典值</th>
+        <th lay-data="{field:'sequence_number', width:150}">排序标识</th>
+        <th lay-data="{field:'parent_id', width:150}">父级</th>
+        <th lay-data="{field:'is_leaf', width:150}">是否是叶子节点</th>
+    </tr>
+    </thead>
+    <tbody id="dictionary_list_body">
+    </tbody>
+</table>
 <div id="dictionary_page"></div>
 </body>
 </html>
 <script>
-    var form, laypage, layer;
-    layui.use(['form', 'layer', 'laypage', 'element'], function () {
+    var form, laypage, layer, table;
+    layui.use(['form', 'layer', 'laypage', 'element', 'table'], function () {
         form = layui.form;
         layer = layui.layer;
         laypage = layui.laypage;
+        table = layui.table;
         form.on('select(table-name-search)',function(data){
             if (data.value != ''){
                 $.post("${ctx}/dictionary/column/list",{
@@ -93,11 +92,15 @@
         });
         $("#dictionary_delete").click(function () {
             layer.confirm('确认删除?', {icon: 3, title:'提示'}, function(index) {
-                doDelete(layer, "deleteDictionary", "${ctx}/dictionary/delete", reloadDictionaryList(1));
+                var checkStatusData = table.checkStatus('tb_dictionary').data;
+                var deleteCheck = new Array();
+                checkStatusData.forEach(function(val, index){
+                    deleteCheck.push(val.dictionary_id);
+                });
+                doDelete(layer, deleteCheck, "${ctx}/dictionary/delete", reloadDictionaryList(1));
                 layer.close(index);
             });
         });
-        checkIsAllCheck(form, "all_delete_dictionary", "delete_dictionary", "allDeleteDictionary", "deleteDictionary");
         $("#dictionary_refresh").click(function () {
             reloadDictionaryList(1);
         });
@@ -115,8 +118,9 @@
                 if (data.code == code_success) {
                     $("#dictionary_list_body").html(data.data);
                     renderPage(laypage, "dictionary_page", data.count, data.curr, reloadDictionaryList);
-                    $('thead input[name="allDeleteDictionary"]')[0].checked = false;
-                    form.render();
+                    table.init('tb_dictionary', {
+                        height: 'full'
+                    });
                     $(".update-btn").click(function () {
                         var updateId = $(this).attr("update-id");
                         alertByFull(layer, "编辑", "${ctx}/dictionary/forward?forwardType=update&dictionaryId=" + updateId);

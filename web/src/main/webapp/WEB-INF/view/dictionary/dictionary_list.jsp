@@ -8,7 +8,7 @@
 <table>
     <c:forEach items="${pageBean.data}" var="item">
         <tr>
-            <td><input type="checkbox" name="deleteDictionary" lay-skin="primary" lay-filter="delete_dictionary" value="${item.dictionaryId}"></td>
+            <td>${item.dictionaryId}</td>
             <td><button class="layui-btn layui-btn-xs update-btn" update-id="${item.dictionaryId}"><i class="fa fa-edit"></i>编辑</button>
                 <button class="layui-btn layui-btn-xs child-btn" parent-id="${item.dictionaryId}"><i class="fa fa-level-down"></i>查看下级</button></td>
             <td><c:out value="${item.dictTableName}"/></td>

@@ -57,15 +57,11 @@ function checkIsAllCheck(form, all_delete_label, delete_label, allDeleteLabel, d
 
 /**
  * 删除
- * @param deleteLabel
+ * @param deleteCheck
  * @param url
  * @param fun
  */
-function doDelete(layer, deleteLabel, url, fun) {
-    var deleteCheck = new Array();
-    $("input[name=" + deleteLabel + "]:checked").each(function () {
-        deleteCheck.push($(this).val());
-    });
+function doDelete(layer, deleteCheck, url, fun) {
     if (deleteCheck.length == 0) {
         layer.msg("请选择删除项");
     } else {
