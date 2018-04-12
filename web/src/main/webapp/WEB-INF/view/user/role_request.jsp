@@ -20,9 +20,9 @@
 <table class="layui-table"  lay-skin="line" lay-filter="role_request" lay-data="{id: 'role_request'}">
     <thead>
     <tr>
-        <th lay-data="{field:'request_url', width:150}">请求相对路径</th>
-        <th lay-data="{field:'operation_class', width:150}">请求处理类的全路径</th>
-        <th lay-data="{field:'url_comment', width:150}">注释</th>
+        <th lay-data="{field:'request_url', width:200}">请求相对路径</th>
+        <th lay-data="{field:'operation_class', width:500}">请求处理类的全路径</th>
+        <th lay-data="{field:'url_comment', width:400}">注释</th>
         <th lay-data="{field:'operation', width:180, fixed:'right'}">操作</th>
     </tr>
     </thead>
