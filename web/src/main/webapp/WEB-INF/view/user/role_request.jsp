@@ -17,33 +17,28 @@
         </div>
     </div>
 </blockquote>
-<div class="layui-form">
-    <table class="layui-table">
-        <colgroup>
-            <col width="70">
-            <col>
-        </colgroup>
-        <thead>
-        <tr>
-            <th>操作</th>
-            <th>请求相对路径</th>
-            <th>请求处理类的全路径</th>
-            <th>注释</th>
-        </tr>
-        </thead>
-        <tbody id="request_list_body">
-        </tbody>
-    </table>
-</div>
+<table class="layui-table"  lay-skin="line" lay-filter="role_request" lay-data="{id: 'role_request'}">
+    <thead>
+    <tr>
+        <th lay-data="{field:'request_url', width:150}">请求相对路径</th>
+        <th lay-data="{field:'operation_class', width:150}">请求处理类的全路径</th>
+        <th lay-data="{field:'url_comment', width:150}">注释</th>
+        <th lay-data="{field:'operation', width:180, fixed:'right'}">操作</th>
+    </tr>
+    </thead>
+    <tbody id="request_list_body">
+    </tbody>
+</table>
 <div id="request_page"></div>
 </body>
 </html>
 <script>
-    var form, laypage, layer;
-    layui.use(['form', 'layer', 'laypage'], function () {
+    var form, laypage, layer, table;
+    layui.use(['form', 'layer', 'laypage', 'table'], function () {
         form = layui.form;
         layer = layui.layer;
         laypage = layui.laypage;
+        table = layui.table;
         $("#request_refresh").click(function () {
             reloadRequestList(1);
         });
@@ -60,6 +55,9 @@
                 if (data.code == code_success) {
                     $("#request_list_body").html(data.data);
                     renderPage(laypage, "request_page", data.count, data.curr, reloadRequestList);
+                    table.init('role_request', {
+                        height: 'full-190'
+                    });
                     $(".grant-request-btn").click(function () {
                         var requestId = $(this).attr("request-id");
                         $.post("${ctx}/role/grant/request",{

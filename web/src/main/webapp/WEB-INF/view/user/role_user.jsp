@@ -23,35 +23,29 @@
         </div>
     </div>
 </blockquote>
-<div class="layui-form">
-    <table class="layui-table">
-        <colgroup>
-            <col width="50">
-            <col width="270">
-            <col>
-        </colgroup>
-        <thead>
-        <tr>
-            <th>操作</th>
-            <th>用户名</th>
-            <th>手机号</th>
-            <th>创建时间</th>
-            <th>邮箱</th>
-        </tr>
-        </thead>
-        <tbody id="user_list_body">
-        </tbody>
-    </table>
-</div>
+<table class="layui-table" lay-skin="line" lay-filter="role_user" lay-data="{id: 'role_user'}">
+    <thead>
+    <tr>
+        <th lay-data="{field:'user_name', width:150}">用户名</th>
+        <th lay-data="{field:'cellphone', width:150}">手机号</th>
+        <th lay-data="{field:'create_time', width:150}">创建时间</th>
+        <th lay-data="{field:'email', width:150}">邮箱</th>
+        <th lay-data="{field:'operation', width:180, fixed:'right'}">操作</th>
+    </tr>
+    </thead>
+    <tbody id="user_list_body">
+    </tbody>
+</table>
 <div id="user_page"></div>
 </body>
 </html>
 <script>
-    var form, laypage, layer;
-    layui.use(['form', 'layer', 'laypage', 'laydate'], function () {
+    var form, laypage, layer, table;
+    layui.use(['form', 'layer', 'laypage', 'laydate', 'table'], function () {
         form = layui.form;
         layer = layui.layer;
         laypage = layui.laypage;
+        table = layui.table;
         var laydate = layui.laydate;
         laydate.render({
             elem: '#create-time-search'
@@ -76,6 +70,9 @@
                 if (data.code == code_success) {
                     $("#user_list_body").html(data.data);
                     renderPage(laypage, "user_page", data.count, data.curr, reloadUserList);
+                    table.init('role_user', {
+                        height: 'full-190'
+                    });
                     $(".grant-role-btn").click(function () {
                         var userId = $(this).attr("user-id");
                         $.post("${ctx}/role/grant/user",{

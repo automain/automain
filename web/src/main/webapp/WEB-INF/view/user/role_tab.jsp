@@ -27,39 +27,42 @@
         </div>
     </div>
 </blockquote>
-<div class="layui-form">
-    <table class="layui-table">
-        <thead>
-        <tr>
-            <th style="width: 18px;"><input type="checkbox" name="allDeleteRole" lay-skin="primary" lay-filter="all_delete_role"></th>
-            <th style="min-width: 320px;width: 320px;">操作</th>
-            <th style="min-width: 150px;">角色名称</th>
-            <th style="min-width: 150px;">角色标识</th>
-        </tr>
-        </thead>
-        <tbody id="role_list_body">
-        </tbody>
-    </table>
-</div>
+<table class="layui-table" lay-skin="line" lay-filter="tb_role" lay-data="{id: 'tb_role'}">
+    <thead>
+    <tr>
+        <th lay-data="{field:'role_id',checkbox:true, fixed:'left'}"></th>
+        <th lay-data="{field:'role_name', width:150}">角色名称</th>
+        <th lay-data="{field:'role_label', width:150}">角色标识</th>
+        <th lay-data="{field:'operation', width:350, fixed:'right'}">操作</th>
+    </tr>
+    </thead>
+    <tbody id="role_list_body">
+    </tbody>
+</table>
 <div id="role_page"></div>
 </body>
 </html>
 <script>
-    var form, laypage, layer;
-    layui.use(['form', 'layer', 'laypage'], function () {
+    var form, laypage, layer, table;
+    layui.use(['form', 'layer', 'laypage', 'table'], function () {
         form = layui.form;
         layer = layui.layer;
         laypage = layui.laypage;
+        table = layui.table;
         $("#role_add").click(function () {
             alertByFull(layer, "添加", "${ctx}/role/forward?forwardType=add");
         });
         $("#role_delete").click(function () {
             layer.confirm('确认删除?', {icon: 3, title:'提示'}, function(index) {
-                doDelete(layer, "deleteRole", "${ctx}/role/delete", reloadRoleList(1));
+                var checkStatusData = table.checkStatus('tb_role').data;
+                var deleteCheck = new Array();
+                checkStatusData.forEach(function(val, index){
+                    deleteCheck.push(val.role_id);
+                });
+                doDelete(layer, deleteCheck, "${ctx}/role/delete", reloadRoleList(1));
                 layer.close(index);
             });
         });
-        checkIsAllCheck(form, "all_delete_role", "delete_role", "allDeleteRole", "deleteRole");
         $("#role_refresh").click(function () {
             reloadRoleList(1);
         });
@@ -75,8 +78,9 @@
                 if (data.code == code_success) {
                     $("#role_list_body").html(data.data);
                     renderPage(laypage, "role_page", data.count, data.curr, reloadRoleList);
-                    $('thead input[name="allDeleteRole"]')[0].checked = false;
-                    form.render();
+                    table.init('tb_role', {
+                        height: 'full-190'
+                    });
                     $(".update-btn").click(function () {
                         var updateId = $(this).attr("update-id");
                         alertByFull(layer, "编辑", "${ctx}/role/forward?forwardType=update&roleId=" + updateId);

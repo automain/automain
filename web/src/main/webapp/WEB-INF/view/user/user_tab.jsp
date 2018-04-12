@@ -33,31 +33,30 @@
         </div>
     </div>
 </blockquote>
-<div class="layui-form">
-    <table class="layui-table">
-        <thead>
-        <tr>
-            <th style="width: 18px;"><input type="checkbox" name="allDeleteUser" lay-skin="primary" lay-filter="all_delete_user"></th>
-            <th style="min-width: 240px;width: 240px;">操作</th>
-            <th style="min-width: 150px;">用户名</th>
-            <th style="min-width: 150px;">手机号</th>
-            <th style="min-width: 150px;">创建时间</th>
-            <th style="min-width: 150px;">邮箱</th>
-        </tr>
-        </thead>
-        <tbody id="user_list_body">
-        </tbody>
-    </table>
-</div>
+<table class="layui-table" lay-skin="line" lay-filter="tb_user" lay-data="{id: 'tb_user'}">
+    <thead>
+    <tr>
+        <th lay-data="{field:'user_id',checkbox:true, fixed:'left'}"></th>
+        <th lay-data="{field:'user_name', width:150}">用户名</th>
+        <th lay-data="{field:'cellphone', width:150}">手机号</th>
+        <th lay-data="{field:'create_time', width:150}">创建时间</th>
+        <th lay-data="{field:'email', width:150}">邮箱</th>
+        <th lay-data="{field:'operation', width:270, fixed:'right'}">操作</th>
+    </tr>
+    </thead>
+    <tbody id="user_list_body">
+    </tbody>
+</table>
 <div id="user_page"></div>
 </body>
 </html>
 <script>
-    var form, laypage, layer;
-    layui.use(['form', 'layer', 'laypage', 'laydate'], function () {
+    var form, laypage, layer, table;
+    layui.use(['form', 'layer', 'laypage', 'laydate', 'table'], function () {
         form = layui.form;
         layer = layui.layer;
         laypage = layui.laypage;
+        table = layui.table;
         var laydate = layui.laydate;
         laydate.render({
             elem: '#create-time-search'
@@ -69,11 +68,15 @@
         });
         $("#user_delete").click(function () {
             layer.confirm('确认删除?', {icon: 3, title:'提示'}, function(index) {
-                doDelete(layer, "deleteUser", "${ctx}/user/delete", reloadUserList(1));
+                var checkStatusData = table.checkStatus('tb_user').data;
+                var deleteCheck = new Array();
+                checkStatusData.forEach(function(val, index){
+                    deleteCheck.push(val.user_id);
+                });
+                doDelete(layer, deleteCheck, "${ctx}/user/delete", reloadUserList(1));
                 layer.close(index);
             });
         });
-        checkIsAllCheck(form, "all_delete_user", "delete_user", "allDeleteUser", "deleteUser");
         $("#user_refresh").click(function () {
             reloadUserList(1);
         });
@@ -91,8 +94,9 @@
                 if (data.code == code_success) {
                     $("#user_list_body").html(data.data);
                     renderPage(laypage, "user_page", data.count, data.curr, reloadUserList);
-                    $('thead input[name="allDeleteUser"]')[0].checked = false;
-                    form.render();
+                    table.init('tb_user', {
+                        height: 'full-190'
+                    });
                     $(".update-btn").click(function () {
                         var updateId = $(this).attr("update-id");
                         alertByFull(layer, "编辑", "${ctx}/user/forward?forwardType=update&userId=" + updateId);

@@ -17,32 +17,27 @@
         </div>
     </div>
 </blockquote>
-<div class="layui-form">
-    <table class="layui-table">
-        <colgroup>
-            <col width="70">
-            <col>
-        </colgroup>
-        <thead>
-        <tr>
-            <th>操作</th>
-            <th>角色名称</th>
-            <th>角色标识</th>
-        </tr>
-        </thead>
-        <tbody id="role_list_body">
-        </tbody>
-    </table>
-</div>
+<table class="layui-table" lay-skin="line" lay-filter="user_role" lay-data="{id: 'user_role'}">
+    <thead>
+    <tr>
+        <th lay-data="{field:'role_name', width:150}">角色名称</th>
+        <th lay-data="{field:'role_label', width:150}">角色标识</th>
+        <th lay-data="{field:'operation', width:180, fixed:'right'}">操作</th>
+    </tr>
+    </thead>
+    <tbody id="role_list_body">
+    </tbody>
+</table>
 <div id="role_page"></div>
 </body>
 </html>
 <script>
-    var form, laypage, layer;
-    layui.use(['form', 'layer', 'laypage'], function () {
+    var form, laypage, layer, table;
+    layui.use(['form', 'layer', 'laypage', 'table'], function () {
         form = layui.form;
         layer = layui.layer;
         laypage = layui.laypage;
+        table = layui.table;
         $("#role_refresh").click(function () {
             reloadRoleList(1);
         });
@@ -59,6 +54,9 @@
                 if (data.code == code_success) {
                     $("#role_list_body").html(data.data);
                     renderPage(laypage, "role_page", data.count, data.curr, reloadRoleList);
+                    table.init('user_role', {
+                        height: 'full-190'
+                    });
                     $(".grant-role-btn").click(function () {
                         var roleId = $(this).attr("role-id");
                         $.post("${ctx}/role/grant/user",{

@@ -27,35 +27,6 @@ function checkIsNotNull(data) {
 }
 
 /**
- * 全选关联
- * @param form
- * @param all_delete_label
- * @param delete_label
- * @param allDeleteLabel
- * @param deleteLabel
- */
-function checkIsAllCheck(form, all_delete_label, delete_label, allDeleteLabel, deleteLabel) {
-    form.on('checkbox(' + all_delete_label + ')', function (data) {
-        var child = $(data.elem).parents('table').find('tbody input[name=' + deleteLabel + ']');
-        child.each(function (index, item) {
-            item.checked = data.elem.checked;
-        });
-        form.render('checkbox');
-    });
-    form.on('checkbox(' + delete_label + ')', function (data) {
-        var child = $(data.elem).parents('table').find('tbody input[name=' + deleteLabel + ']');
-        var allChecked = true;
-        child.each(function (index, item) {
-            if (!item.checked) {
-                allChecked = false;
-            }
-        });
-        $('thead input[name=' + allDeleteLabel + ']')[0].checked = allChecked;
-        form.render('checkbox');
-    });
-}
-
-/**
  * 删除
  * @param deleteCheck
  * @param url

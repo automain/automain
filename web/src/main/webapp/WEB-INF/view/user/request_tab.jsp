@@ -22,29 +22,28 @@
         </div>
     </div>
 </blockquote>
-<div class="layui-form">
-    <table class="layui-table">
-        <thead>
-        <tr>
-            <th style="min-width:150px; width: 150px;">操作</th>
-            <th style="min-width: 150px;">请求相对路径</th>
-            <th style="min-width: 150px;">请求处理类的全路径</th>
-            <th style="min-width: 150px;">注释</th>
-        </tr>
-        </thead>
-        <tbody id="request_list_body">
-        </tbody>
-    </table>
-</div>
+<table class="layui-table" lay-skin="line" lay-filter="tb_request_mapping" lay-data="{id: 'tb_request_mapping'}">
+    <thead>
+    <tr>
+        <th lay-data="{field:'request_url', width:150}">请求相对路径</th>
+        <th lay-data="{field:'operation_class', width:150}">请求处理类的全路径</th>
+        <th lay-data="{field:'url_comment', width:150}">注释</th>
+        <th lay-data="{field:'operation', width:180, fixed:'right'}">操作</th>
+    </tr>
+    </thead>
+    <tbody id="request_list_body">
+    </tbody>
+</table>
 <div id="request_page"></div>
 </body>
 </html>
 <script>
-    var form, laypage, layer;
-    layui.use(['form', 'layer', 'laypage'], function () {
+    var form, laypage, layer, table;
+    layui.use(['form', 'layer', 'laypage', 'table'], function () {
         form = layui.form;
         layer = layui.layer;
         laypage = layui.laypage;
+        table = layui.table;
         $("#request_add").click(function () {
             alertByFull(layer, "添加", "${ctx}/request/forward?forwardType=add");
         });
@@ -63,6 +62,9 @@
                 if (data.code == code_success) {
                     $("#request_list_body").html(data.data);
                     renderPage(laypage, "request_page", data.count, data.curr, reloadRequestList);
+                    table.init('tb_request_mapping', {
+                        height: 'full-190'
+                    });
                     $(".update-btn").click(function () {
                         var updateId = $(this).attr("update-id");
                         alertByFull(layer, "编辑", "${ctx}/request/forward?forwardType=update&requestMappingId=" + updateId);

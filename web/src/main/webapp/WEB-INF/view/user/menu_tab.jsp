@@ -33,43 +33,46 @@
         </div>
     </div>
 </blockquote>
-<div class="layui-form">
-    <table class="layui-table">
-        <thead>
-        <tr>
-            <th style="width: 18px;"><input type="checkbox" name="allDeleteMenu" lay-skin="primary" lay-filter="all_delete_menu"></th>
-            <th style="min-width: 230px; width: 230px;">操作</th>
-            <th style="min-width: 150px;">请求路径</th>
-            <th style="min-width: 150px;">菜单名称</th>
-            <th style="min-width: 150px;">菜单图标</th>
-            <th style="min-width: 150px;">菜单排序</th>
-            <th style="min-width: 150px;">父级菜单</th>
-            <th style="min-width: 150px;">是否是叶子节点</th>
-        </tr>
-        </thead>
-        <tbody id="menu_list_body">
-        </tbody>
-    </table>
-</div>
+<table class="layui-table" lay-skin="line" lay-filter="tb_menu" lay-data="{id: 'tb_menu'}">
+    <thead>
+    <tr>
+        <th lay-data="{field:'menu_id',checkbox:true, fixed:'left'}"></th>
+        <th lay-data="{field:'request_url', width:150}">请求路径</th>
+        <th lay-data="{field:'menu_name', width:150}">菜单名称</th>
+        <th lay-data="{field:'menu_icon', width:150}">菜单图标</th>
+        <th lay-data="{field:'sequence_number', width:150}">菜单排序</th>
+        <th lay-data="{field:'parent_id', width:150}">父级菜单</th>
+        <th lay-data="{field:'is_leaf', width:150}">是否是叶子节点</th>
+        <th lay-data="{field:'operation', width:260, fixed:'right'}">操作</th>
+    </tr>
+    </thead>
+    <tbody id="menu_list_body">
+    </tbody>
+</table>
 <div id="menu_page"></div>
 </body>
 </html>
 <script>
-    var form, laypage, layer;
-    layui.use(['form', 'layer', 'laypage', 'element'], function () {
+    var form, laypage, layer, table;
+    layui.use(['form', 'layer', 'laypage', 'element', 'table'], function () {
         form = layui.form;
         layer = layui.layer;
         laypage = layui.laypage;
+        table = layui.table;
         $("#menu_add").click(function () {
             alertByFull(layer, "添加", "${ctx}/menu/forward?forwardType=add&parentId=${parentId}&topId=${topId}");
         });
         $("#menu_delete").click(function () {
             layer.confirm('确认删除?', {icon: 3, title:'提示'}, function(index) {
-                doDelete(layer, "deleteMenu", "${ctx}/menu/delete", reloadMenuList(1));
+                var checkStatusData = table.checkStatus('tb_menu').data;
+                var deleteCheck = new Array();
+                checkStatusData.forEach(function(val, index){
+                    deleteCheck.push(val.menu_id);
+                });
+                doDelete(layer, deleteCheck, "${ctx}/menu/delete", reloadMenuList(1));
                 layer.close(index);
             });
         });
-        checkIsAllCheck(form, "all_delete_menu", "delete_menu", "allDeleteMenu", "deleteMenu");
         $("#menu_refresh").click(function () {
             reloadMenuList(1);
         });
@@ -86,8 +89,9 @@
                 if (data.code == code_success) {
                     $("#menu_list_body").html(data.data);
                     renderPage(laypage, "menu_page", data.count, data.curr, reloadMenuList);
-                    $('thead input[name="allDeleteMenu"]')[0].checked = false;
-                    form.render();
+                    table.init('tb_menu', {
+                        height: 'full-190'
+                    });
                     $(".update-btn").click(function () {
                         var updateId = $(this).attr("update-id");
                         alertByFull(layer, "编辑", "${ctx}/menu/forward?forwardType=update&menuId=" + updateId);
