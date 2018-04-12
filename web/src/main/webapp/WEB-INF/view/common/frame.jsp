@@ -120,7 +120,7 @@
         if (item.link) {
             if (!$(".layui-tab-title li[lay-id=" + item.id + "]")[0]) {
                 var title = '<i class="layui-menu-title fa fa-' + item.icon + '"></i>' + item.name;
-                var iframe = '<iframe id="frame-' + item.id + '" onload="changeFrameHeight(\'frame-' + item.id + '\')" src="${ctx}' + item.link + '" style="width: 100%; border: 0px;"></iframe>';
+                var iframe = '<iframe id="frame-' + item.id + '" src="${ctx}' + item.link + '" style="width: 100%; height: 80%; border: 0px;"></iframe>';
                 element.tabAdd('body-tab', {
                     title: title
                     , content: iframe
@@ -178,11 +178,6 @@
     function showChildMenu(parentId) {
         $(".layui-menu").hide();
         $("#menu-" + parentId).show();
-    }
-
-    function changeFrameHeight(id) {
-        var iframe = $("#" + id);
-        iframe.height(iframe[0].attributes.style.ownerDocument.documentElement.clientHeight - 175);
     }
 
     function logout() {

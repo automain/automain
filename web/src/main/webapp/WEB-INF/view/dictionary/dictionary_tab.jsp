@@ -119,7 +119,7 @@
                     $("#dictionary_list_body").html(data.data);
                     renderPage(laypage, "dictionary_page", data.count, data.curr, reloadDictionaryList);
                     table.init('tb_dictionary', {
-                        height: 'full'
+                        height: 'full-190'
                     });
                     $(".update-btn").click(function () {
                         var updateId = $(this).attr("update-id");
