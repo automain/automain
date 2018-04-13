@@ -2,8 +2,28 @@
 <html>
 <head>
     <%@include file="common.jsp" %>
-    <link rel="stylesheet" href="${ctx}/static/css/login/login.css" media="all"/>
     <title>CMS</title>
+    <style>
+        .layui-menu-hide-btn{
+            position: absolute;
+            left:170px;
+            top:15px;
+            background-color: #1aa094;
+            width: 30px;
+            height: 30px;
+            cursor:pointer;
+            border-radius:5px;
+        }
+        .layui-menu-hide-btn .fa-bars{
+            color: #fff;
+            font-size: 25px;
+            padding-left: 4px;
+            line-height: 30px;
+        }
+        .layui-side-scroll {
+            width: 200px;
+        }
+    </style>
 </head>
 <body class="layui-layout-body">
 <!-- 布局容器 -->
@@ -51,7 +71,7 @@
     <div class="layui-side layui-bg-black">
         <div class="layui-side-scroll">
             <c:forEach items="${childrenList}" var="child" varStatus="a">
-                <ul id="menu-${child.parentId}"
+                <ul class="layui-nav layui-nav-tree" id="menu-${child.parentId}"
                     <c:if test="${a.index > 0}">style="display: none;"</c:if> ></ul>
             </c:forEach>
         </div>
@@ -79,22 +99,48 @@
 </html>
 <script type="text/javascript">
     var element, layer;
-    layui.use(['element', 'menu', 'layer'], function () {
+    layui.use(['element', 'layer'], function () {
         element = layui.element
             , layer = layui.layer;
         <c:forEach items="${childrenList}" var="child">
-        layui.menu({
-            elem: '#menu-${child.parentId}' //指定元素
-            , nodes: ${child.nodeString}
-            , click: function (item) {
-                addTab(item);
-            }
-        });
+        var tree = $.parseJSON('${child.nodeString}');
+        var html = parseTree(tree, false);
+        $("#menu-${child.parentId}").html(html);
         </c:forEach>
         element.on('tab(body-tab)', function (data) {
             reloadFrame();
         });
+        element.render('nav');
     });
+
+    function parseTree(tree, isChild){
+        var html = '';
+        if (isChild) {
+            html += '<ul class="layui-nav-child">';
+        }
+        for (var i = 0; i < tree.length; i++){
+            var node = tree[i];
+            var icon = 'envira';
+            if (node.icon){
+                icon = node.icon;
+            }
+            var link = node.link;
+            var jumpFun = '';
+            if (link){
+                jumpFun = 'onclick="addTab(\''+node.id+'\',\''+node.name+'\',\''+icon+'\',\''+link+'\')"';
+            }
+            html += '<li class="layui-nav-item"><a href="javascript:;" ' + jumpFun + '>'
+                + '<i class="fa fa-' + icon + '"></i><cite>' + node.name + '</cite></a>';
+            if (node.children){
+                html += parseTree(node.children, true);
+            }
+            html += '</li>';
+        }
+        if (isChild) {
+            html += '</ul>';
+        }
+        return html;
+    }
 
     function updateUserInfo() {
         var item = {
@@ -116,18 +162,18 @@
         addTab(item);
     }
 
-    function addTab(item){
-        if (item.link) {
-            if (!$(".layui-tab-title li[lay-id=" + item.id + "]")[0]) {
-                var title = '<i class="layui-menu-title fa fa-' + item.icon + '"></i>' + item.name;
-                var iframe = '<iframe id="frame-' + item.id + '" src="${ctx}' + item.link + '" style="width: 100%; height: 80%; border: 0px;"></iframe>';
+    function addTab(id, name, icon, link){
+        if (link) {
+            if (!$(".layui-tab-title li[lay-id=" + id + "]")[0]) {
+                var title = '<i class="fa fa-' + icon + '"></i>' + name;
+                var iframe = '<iframe id="frame-' + id + '" src="${ctx}' + link + '" style="width: 100%; height: 80%; border: 0px;"></iframe>';
                 element.tabAdd('body-tab', {
                     title: title
                     , content: iframe
-                    , id: item.id
+                    , id: id
                 });
             }
-            element.tabChange('body-tab', item.id);
+            element.tabChange('body-tab', id);
         }
     }
 
@@ -145,7 +191,7 @@
             return false;
         });
         $(".layui-tab-title li").dblclick(function () {
-            var id = "frame-" + $(this).attr("lay-id")
+            var id = "frame-" + $(this).attr("lay-id");
             document.getElementById(id).contentWindow.location.reload(true);
         });
     }
@@ -176,7 +222,7 @@
     }
 
     function showChildMenu(parentId) {
-        $(".layui-menu").hide();
+        $(".layui-nav-tree").hide();
         $("#menu-" + parentId).show();
     }
 

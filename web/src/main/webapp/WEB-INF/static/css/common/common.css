@@ -9,7 +9,7 @@ html {
     scrollbar-base-color:#F5F5F5; /**//*滚动条的基本颜色*/
 }
 .fa{
-    margin-right: 3px;
+    margin-right: 5px;
 }
 .layui-form-pane .layui-form-label{
     width: 200px;

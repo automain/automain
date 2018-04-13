@@ -32,12 +32,6 @@
 <script src="${ctx}/static/js/common/common.js"></script>
 <script>
     /**
-     * 对layui进行全局配置
-     */
-    layui.config({
-        base: '${ctx}/static/js/common/'
-    });
-    /**
      * 延迟加载时间
      * @type {number}
      */
