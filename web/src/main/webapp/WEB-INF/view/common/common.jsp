@@ -27,7 +27,7 @@
 <link rel="stylesheet" href="${ctx}/static/layui/css/layui.css" media="all"/>
 <link rel="stylesheet" href="${ctx}/static/font/css/font-awesome.min.css" media="all"/>
 <link rel="stylesheet" href="${ctx}/static/css/common/common.css" media="all"/>
-<script src="${ctx}/static/js/plugin/jquery-3.2.1.min.js"></script>
+<script src="${ctx}/static/js/plugin/jquery-3.3.1.min.js"></script>
 <script src="${ctx}/static/layui/layui.js"></script>
 <script src="${ctx}/static/js/common/common.js"></script>
 <script>
