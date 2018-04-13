@@ -2,7 +2,7 @@
 <html>
 <head>
     <%@include file="../common/common.jsp" %>
-    <link rel="stylesheet" href="${ctx}/static/css/login/login.css" media="all"/>
+    <link rel="stylesheet" href="${ctx}/static/css/common/login.css" media="all"/>
     <title>CMS</title>
 </head>
 <body class="bg-body">

@@ -2,28 +2,8 @@
 <html>
 <head>
     <%@include file="common.jsp" %>
+    <link rel="stylesheet" href="${ctx}/static/css/common/frame.css" media="all"/>
     <title>CMS</title>
-    <style>
-        .layui-menu-hide-btn{
-            position: absolute;
-            left:170px;
-            top:15px;
-            background-color: #1aa094;
-            width: 30px;
-            height: 30px;
-            cursor:pointer;
-            border-radius:5px;
-        }
-        .layui-menu-hide-btn .fa-bars{
-            color: #fff;
-            font-size: 25px;
-            padding-left: 4px;
-            line-height: 30px;
-        }
-        .layui-side-scroll {
-            width: 200px;
-        }
-    </style>
 </head>
 <body class="layui-layout-body">
 <!-- 布局容器 -->
