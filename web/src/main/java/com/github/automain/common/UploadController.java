@@ -1,5 +1,7 @@
 package com.github.automain.common;
 
+import com.github.automain.common.action.UploadExecutor;
+
 import javax.servlet.AsyncContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -23,13 +25,10 @@ public class UploadController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Boolean filtered = (Boolean) req.getAttribute("resourceFiltered");
-        if (filtered == null || !filtered) {
-            BaseExecutor executor = new UploadExecutor();
-            final AsyncContext asyncContext = req.startAsync(req, resp);
-            asyncContext.setTimeout(10000L);
-            executor.setAsyncContext(asyncContext);
-            asyncContext.start(executor);
-        }
+        BaseExecutor executor = new UploadExecutor();
+        final AsyncContext asyncContext = req.startAsync(req, resp);
+        asyncContext.setTimeout(10000L);
+        executor.setAsyncContext(asyncContext);
+        asyncContext.start(executor);
     }
 }

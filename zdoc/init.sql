@@ -1,6 +1,6 @@
 /*
-SQLyog Trial v12.5.1 (64 bit)
-MySQL - 5.7.21-log : Database - automain
+SQLyog Trial
+MySQL - 5.7.20-log : Database - automain
 *********************************************************************
 */
 
@@ -15,6 +15,21 @@ MySQL - 5.7.21-log : Database - automain
 CREATE DATABASE /*!32312 IF NOT EXISTS*/`automain` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
 
 USE `automain`;
+
+/*Table structure for table `tb_config` */
+
+DROP TABLE IF EXISTS `tb_config`;
+
+CREATE TABLE `tb_config` (
+  `config_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '配置ID',
+  `config_key` varchar(64) NOT NULL COMMENT '配置key',
+  `config_value` varchar(512) DEFAULT NULL COMMENT '配置value',
+  `is_delete` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否删除(0:否,1:是)',
+  PRIMARY KEY (`config_id`),
+  KEY `idx_config_key` (`config_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+/*Data for the table `tb_config` */
 
 /*Table structure for table `tb_dictionary` */
 
@@ -54,7 +69,7 @@ CREATE TABLE `tb_menu` (
   PRIMARY KEY (`menu_id`),
   KEY `idx_parent_id` (`parent_id`),
   KEY `idx_menu_name` (`menu_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4;
 
 /*Data for the table `tb_menu` */
 
@@ -65,8 +80,9 @@ insert  into `tb_menu`(`menu_id`,`request_url`,`menu_name`,`menu_icon`,`parent_i
 (4,'/user/forward','用户管理','user',1,0,3,1,0),
 (5,'/role/forward','角色管理','user-secret',1,0,4,1,0),
 (6,'/menu/forward','菜单管理','navicon',1,0,5,1,0),
-(7,'/reload/cache/forward','刷新缓存','refresh',1,0,6,1,0),
-(8,'/notice/forward','上线公告','arrow-circle-o-up',1,0,7,1,0);
+(7,'/config/forward','全局配置','cog',1,1,6,1,0),
+(8,'/reload/cache/forward','刷新缓存','refresh',1,0,7,1,0),
+(9,'/notice/forward','上线公告','arrow-circle-o-up',1,0,8,1,0);
 
 /*Table structure for table `tb_request_mapping` */
 
@@ -79,62 +95,67 @@ CREATE TABLE `tb_request_mapping` (
   `url_comment` varchar(32) DEFAULT NULL COMMENT '注释',
   PRIMARY KEY (`request_mapping_id`),
   UNIQUE KEY `uniq_request_url` (`request_url`)
-) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8mb4;
 
 /*Data for the table `tb_request_mapping` */
 
 insert  into `tb_request_mapping`(`request_mapping_id`,`request_url`,`operation_class`,`url_comment`) values
-(1,'/dictionary/forward','com.github.automain.dictionary.view.DictionaryForwardExecutor','字典跳转'),
-(2,'/dictionary/list','com.github.automain.dictionary.view.DictionaryListExecutor','字典列表'),
-(3,'/dictionary/add','com.github.automain.dictionary.action.DictionaryAddExecutor','字典添加'),
-(4,'/dictionary/update','com.github.automain.dictionary.action.DictionaryUpdateExecutor','字典编辑'),
-(5,'/dictionary/delete','com.github.automain.dictionary.action.DictionaryDeleteExecutor','字典删除'),
-(6,'/dictionary/column/list','com.github.automain.dictionary.action.ColumnListExecutor','字典查询获取字段名'),
-(7,'/reload/cache/forward','com.github.automain.common.ForwardReloadCacheExecutor','清除缓存跳转'),
-(8,'/reload/cache','com.github.automain.common.ReloadCacheExecutor','重新加载缓存'),
-(9,'/upload/forward','com.github.automain.common.UploadForwardExecutor','上传文件跳转'),
-(10,'/notice/forward','com.github.automain.notice.view.NoticeForwardExecutor','公告跳转'),
-(11,'/notice/add','com.github.automain.notice.action.NoticeAddExecutor','公告添加'),
-(12,'/notice/delete','com.github.automain.notice.action.NoticeDeleteExecutor','公告清除'),
-(13,'/request/forward','com.github.automain.user.view.RequestForwardExecutor','请求路径映射跳转'),
-(14,'/request/list','com.github.automain.user.view.RequestListExecutor','请求路径列表'),
-(15,'/request/add','com.github.automain.user.action.RequestAddExecutor','请求路径添加'),
-(16,'/request/update','com.github.automain.user.action.RequestUpdateExecutor','请求路径编辑'),
-(17,'/request/role/list','com.github.automain.user.view.RequestRoleListExecutor','权限角色列表'),
-(18,'/user/captcha','com.github.automain.user.action.CaptchaExecutor','获取验证码图片'),
-(19,'/user/login/action','com.github.automain.user.action.LoginActionExecutor','用户登录'),
-(20,'/user/logout/action','com.github.automain.user.action.LogoutActionExecutor','用户退出登录'),
-(21,'/user/frame','com.github.automain.user.view.FrameExecutor','用户主框架'),
-(22,'/user/forward','com.github.automain.user.view.UserForwardExecutor','用户跳转'),
-(23,'/user/list','com.github.automain.user.view.UserListExecutor','用户列表'),
-(24,'/user/add','com.github.automain.user.action.UserAddExecutor','用户添加'),
-(25,'/user/update','com.github.automain.user.action.UserUpdateExecutor','用户编辑'),
-(26,'/user/delete','com.github.automain.user.action.UserDeleteExecutor','用户删除'),
-(27,'/user/check/exist','com.github.automain.user.action.CheckUserExistExecutor','检查用户名重复'),
-(28,'/user/update/pwd','com.github.automain.user.action.UserUpdatePwdExecutor','用户更新密码'),
-(29,'/user/reset/pwd','com.github.automain.user.action.ResetPwdExecutor','用户重置密码'),
-(30,'/user/role/list','com.github.automain.user.view.UserRoleListExecutor','用户角色列表'),
-(31,'/user/grant/role','com.github.automain.user.action.UserGrantRoleExecutor','用户授权'),
-(32,'/menu/forward','com.github.automain.user.view.MenuForwardExecutor','菜单跳转'),
-(33,'/menu/list','com.github.automain.user.view.MenuListExecutor','菜单列表'),
-(34,'/menu/add','com.github.automain.user.action.MenuAddExecutor','菜单添加'),
-(35,'/menu/update','com.github.automain.user.action.MenuUpdateExecutor','菜单编辑'),
-(36,'/menu/delete','com.github.automain.user.action.MenuDeleteExecutor','菜单删除'),
-(37,'/menu/role/list','com.github.automain.user.view.MenuRoleListExecutor','菜单角色列表'),
-(38,'/menu/grant/role','com.github.automain.user.action.MenuGrantRoleExecutor','菜单授权'),
-(39,'/menu/revoke/role','com.github.automain.user.action.MenuRevokeRoleExecutor','菜单取消分配角色'),
-(40,'/role/forward','com.github.automain.user.view.RoleForwardExecutor','角色跳转'),
-(41,'/role/list','com.github.automain.user.view.RoleListExecutor','角色列表'),
-(42,'/role/add','com.github.automain.user.action.RoleAddExecutor','角色添加'),
-(43,'/role/update','com.github.automain.user.action.RoleUpdateExecutor','角色编辑'),
-(44,'/role/delete','com.github.automain.user.action.RoleDeleteExecutor','角色删除'),
-(45,'/role/grant/menu','com.github.automain.user.action.RoleGrantMenuExecutor','角色分配菜单'),
-(46,'/role/grant/user','com.github.automain.user.action.RoleGrantUserExecutor','角色分配用户'),
-(47,'/role/grant/request','com.github.automain.user.action.RoleGrantRequestExecutor','角色分配权限'),
-(48,'/role/user/list','com.github.automain.user.view.RoleUserListExecutor','角色用户列表'),
-(49,'/role/request/list','com.github.automain.user.view.RoleRequestListExecutor','角色权限列表'),
-(50,'/role/revoke/user','com.github.automain.user.action.RoleRevokeUserExecutor','角色取消分配用户'),
-(51,'/role/revoke/request','com.github.automain.user.action.RoleRevokeRequestExecutor','角色取消分配权限');
+(1,'/dictionary/forward','com.github.automain.common.view.DictionaryForwardExecutor','字典跳转'),
+(2,'/dictionary/list','com.github.automain.common.view.DictionaryListExecutor','字典列表'),
+(3,'/dictionary/add','com.github.automain.common.action.DictionaryAddExecutor','字典添加'),
+(4,'/dictionary/update','com.github.automain.common.action.DictionaryUpdateExecutor','字典编辑'),
+(5,'/dictionary/delete','com.github.automain.common.action.DictionaryDeleteExecutor','字典删除'),
+(6,'/dictionary/column/list','com.github.automain.common.action.ColumnListExecutor','字典查询获取字段名'),
+(7,'/config/forward','com.github.automain.common.view.ConfigForwardExecutor','配置跳转'),
+(8,'/config/list','com.github.automain.common.view.ConfigListExecutor','配置列表'),
+(9,'/config/add','com.github.automain.common.action.ConfigAddExecutor','配置添加'),
+(10,'/config/update','com.github.automain.common.action.ConfigUpdateExecutor','配置编辑'),
+(11,'/config/delete','com.github.automain.common.action.ConfigDeleteExecutor','配置删除'),
+(12,'/reload/cache/forward','com.github.automain.common.view.ForwardReloadCacheExecutor','清除缓存跳转'),
+(13,'/reload/cache','com.github.automain.common.action.ReloadCacheExecutor','重新加载缓存'),
+(14,'/upload/forward','com.github.automain.common.view.UploadForwardExecutor','上传文件跳转'),
+(15,'/notice/forward','com.github.automain.common.view.NoticeForwardExecutor','公告跳转'),
+(16,'/notice/add','com.github.automain.common.action.NoticeAddExecutor','公告添加'),
+(17,'/notice/delete','com.github.automain.common.action.NoticeDeleteExecutor','公告清除'),
+(18,'/request/forward','com.github.automain.user.view.RequestForwardExecutor','请求路径映射跳转'),
+(19,'/request/list','com.github.automain.user.view.RequestListExecutor','请求路径列表'),
+(20,'/request/add','com.github.automain.user.action.RequestAddExecutor','请求路径添加'),
+(21,'/request/update','com.github.automain.user.action.RequestUpdateExecutor','请求路径编辑'),
+(22,'/request/role/list','com.github.automain.user.view.RequestRoleListExecutor','权限角色列表'),
+(23,'/user/captcha','com.github.automain.user.action.CaptchaExecutor','获取验证码图片'),
+(24,'/user/login/action','com.github.automain.user.action.LoginActionExecutor','用户登录'),
+(25,'/user/logout/action','com.github.automain.user.action.LogoutActionExecutor','用户退出登录'),
+(26,'/user/frame','com.github.automain.user.view.FrameExecutor','用户主框架'),
+(27,'/user/forward','com.github.automain.user.view.UserForwardExecutor','用户跳转'),
+(28,'/user/list','com.github.automain.user.view.UserListExecutor','用户列表'),
+(29,'/user/add','com.github.automain.user.action.UserAddExecutor','用户添加'),
+(30,'/user/update','com.github.automain.user.action.UserUpdateExecutor','用户编辑'),
+(31,'/user/delete','com.github.automain.user.action.UserDeleteExecutor','用户删除'),
+(32,'/user/check/exist','com.github.automain.user.action.CheckUserExistExecutor','检查用户名重复'),
+(33,'/user/update/pwd','com.github.automain.user.action.UserUpdatePwdExecutor','用户更新密码'),
+(34,'/user/reset/pwd','com.github.automain.user.action.ResetPwdExecutor','用户重置密码'),
+(35,'/user/role/list','com.github.automain.user.view.UserRoleListExecutor','用户角色列表'),
+(36,'/user/grant/role','com.github.automain.user.action.UserGrantRoleExecutor','用户授权'),
+(37,'/menu/forward','com.github.automain.user.view.MenuForwardExecutor','菜单跳转'),
+(38,'/menu/list','com.github.automain.user.view.MenuListExecutor','菜单列表'),
+(39,'/menu/add','com.github.automain.user.action.MenuAddExecutor','菜单添加'),
+(40,'/menu/update','com.github.automain.user.action.MenuUpdateExecutor','菜单编辑'),
+(41,'/menu/delete','com.github.automain.user.action.MenuDeleteExecutor','菜单删除'),
+(42,'/menu/role/list','com.github.automain.user.view.MenuRoleListExecutor','菜单角色列表'),
+(43,'/menu/grant/role','com.github.automain.user.action.MenuGrantRoleExecutor','菜单授权'),
+(44,'/menu/revoke/role','com.github.automain.user.action.MenuRevokeRoleExecutor','菜单取消分配角色'),
+(45,'/role/forward','com.github.automain.user.view.RoleForwardExecutor','角色跳转'),
+(46,'/role/list','com.github.automain.user.view.RoleListExecutor','角色列表'),
+(47,'/role/add','com.github.automain.user.action.RoleAddExecutor','角色添加'),
+(48,'/role/update','com.github.automain.user.action.RoleUpdateExecutor','角色编辑'),
+(49,'/role/delete','com.github.automain.user.action.RoleDeleteExecutor','角色删除'),
+(50,'/role/grant/menu','com.github.automain.user.action.RoleGrantMenuExecutor','角色分配菜单'),
+(51,'/role/grant/user','com.github.automain.user.action.RoleGrantUserExecutor','角色分配用户'),
+(52,'/role/grant/request','com.github.automain.user.action.RoleGrantRequestExecutor','角色分配权限'),
+(53,'/role/user/list','com.github.automain.user.view.RoleUserListExecutor','角色用户列表'),
+(54,'/role/request/list','com.github.automain.user.view.RoleRequestListExecutor','角色权限列表'),
+(55,'/role/revoke/user','com.github.automain.user.action.RoleRevokeUserExecutor','角色取消分配用户'),
+(56,'/role/revoke/request','com.github.automain.user.action.RoleRevokeRequestExecutor','角色取消分配权限');
 
 /*Table structure for table `tb_role` */
 

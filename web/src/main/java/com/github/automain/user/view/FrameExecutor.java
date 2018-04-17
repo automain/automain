@@ -2,10 +2,10 @@ package com.github.automain.user.view;
 
 import com.alibaba.fastjson.JSON;
 import com.github.automain.common.BaseExecutor;
+import com.github.automain.common.bean.TbUploadRelation;
 import com.github.automain.common.container.RolePrivilegeContainer;
 import com.github.automain.common.vo.ChildMenuVO;
 import com.github.automain.common.vo.MenuVO;
-import com.github.automain.upload.bean.TbUploadRelation;
 import com.github.automain.user.bean.TbUser;
 import com.github.automain.util.UploadUtil;
 import com.github.fastjdbc.bean.ConnectionBean;

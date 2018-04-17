@@ -1,7 +1,7 @@
 package com.github.automain.common.container;
 
+import com.github.automain.common.bean.TbDictionary;
 import com.github.automain.common.vo.DictionaryVO;
-import com.github.automain.dictionary.bean.TbDictionary;
 import com.github.fastjdbc.bean.ConnectionBean;
 import com.github.fastjdbc.bean.ConnectionPool;
 

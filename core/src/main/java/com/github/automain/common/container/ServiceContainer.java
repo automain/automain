@@ -1,14 +1,17 @@
 package com.github.automain.common.container;
 
-import com.github.automain.dictionary.bean.TbDictionary;
-import com.github.automain.dictionary.dao.TbDictionaryDao;
-import com.github.automain.dictionary.service.TbDictionaryService;
-import com.github.automain.upload.bean.TbUploadFile;
-import com.github.automain.upload.bean.TbUploadRelation;
-import com.github.automain.upload.dao.TbUploadFileDao;
-import com.github.automain.upload.dao.TbUploadRelationDao;
-import com.github.automain.upload.service.TbUploadFileService;
-import com.github.automain.upload.service.TbUploadRelationService;
+import com.github.automain.common.bean.TbConfig;
+import com.github.automain.common.bean.TbDictionary;
+import com.github.automain.common.bean.TbUploadFile;
+import com.github.automain.common.bean.TbUploadRelation;
+import com.github.automain.common.dao.TbConfigDao;
+import com.github.automain.common.dao.TbDictionaryDao;
+import com.github.automain.common.dao.TbUploadFileDao;
+import com.github.automain.common.dao.TbUploadRelationDao;
+import com.github.automain.common.service.TbConfigService;
+import com.github.automain.common.service.TbDictionaryService;
+import com.github.automain.common.service.TbUploadFileService;
+import com.github.automain.common.service.TbUploadRelationService;
 import com.github.automain.user.bean.TbMenu;
 import com.github.automain.user.bean.TbRequestMapping;
 import com.github.automain.user.bean.TbRole;
@@ -44,6 +47,7 @@ public interface ServiceContainer {
     TbMenuService TB_MENU_SERVICE = new TbMenuService(new TbMenu(), new TbMenuDao());
     TbRequestMappingService TB_REQUEST_MAPPING_SERVICE = new TbRequestMappingService(new TbRequestMapping(), new TbRequestMappingDao());
     TbUserRoleService TB_USER_ROLE_SERVICE = new TbUserRoleService(new TbUserRole(), new TbUserRoleDao());
+    TbConfigService TB_CONFIG_SERVICE = new TbConfigService(new TbConfig(), new TbConfigDao());
     // ==================== frame end ====================
 
     // ==================== business start ==================

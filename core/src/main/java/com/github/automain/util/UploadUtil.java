@@ -1,8 +1,8 @@
 package com.github.automain.util;
 
+import com.github.automain.common.bean.TbUploadFile;
+import com.github.automain.common.bean.TbUploadRelation;
 import com.github.automain.common.container.ServiceContainer;
-import com.github.automain.upload.bean.TbUploadFile;
-import com.github.automain.upload.bean.TbUploadRelation;
 import com.github.fastjdbc.bean.ConnectionBean;
 import org.apache.commons.lang3.StringUtils;
 

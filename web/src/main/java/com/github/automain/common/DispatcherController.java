@@ -1,5 +1,6 @@
 package com.github.automain.common;
 
+import com.github.automain.common.view.ResourceNotFoundExecutor;
 import com.github.automain.user.view.LoginExecutor;
 import com.github.automain.util.HTTPUtil;
 import com.github.automain.util.PropertiesUtil;
@@ -57,32 +58,29 @@ public class DispatcherController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Boolean filtered = (Boolean) req.getAttribute("resourceFiltered");
-        if (filtered == null || !filtered) {
-            BaseExecutor executor = null;
-            String uri = HTTPUtil.getRequestUri(req);
-            try {
-                if ("/".equals(uri)) {
-                    executor = new LoginExecutor();
+        BaseExecutor executor = null;
+        String uri = HTTPUtil.getRequestUri(req);
+        try {
+            if ("/".equals(uri)) {
+                executor = new LoginExecutor();
+            } else {
+                Class<?> c = RequestMappingContainer.getRequestMapping(uri);
+                if (c != null) {
+                    executor = (BaseExecutor) c.getDeclaredConstructor().newInstance();
                 } else {
-                    Class<?> c = RequestMappingContainer.getRequestMapping(uri);
-                    if (c != null) {
-                        executor = (BaseExecutor) c.getDeclaredConstructor().newInstance();
-                    } else {
-                        executor = new ResourceNotFoundExecutor();
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                if (executor == null) {
                     executor = new ResourceNotFoundExecutor();
                 }
-                final AsyncContext asyncContext = req.startAsync(req, resp);
-                asyncContext.setTimeout(100000L);
-                executor.setAsyncContext(asyncContext);
-                asyncContext.start(executor);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (executor == null) {
+                executor = new ResourceNotFoundExecutor();
+            }
+            final AsyncContext asyncContext = req.startAsync(req, resp);
+            asyncContext.setTimeout(100000L);
+            executor.setAsyncContext(asyncContext);
+            asyncContext.start(executor);
         }
     }
 
