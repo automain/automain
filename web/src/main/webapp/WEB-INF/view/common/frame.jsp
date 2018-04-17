@@ -38,8 +38,8 @@
                     <c:out value="${userName}"/>&nbsp;
                 </a>
                 <dl class="layui-nav-child">
-                    <dd><a href="javascript:;" onclick="updateUserInfo()">基本资料</a></dd>
-                    <dd><a href="javascript:;" onclick="updateUserPwd()">修改密码</a></dd>
+                    <dd><a href="javascript:;" onclick="addTab('-1', '基本资料', 'user-circle', '/user/forward?forwardType=info')">基本资料</a></dd>
+                    <dd><a href="javascript:;" onclick="addTab('-2', '修改密码', 'key', '/user/forward?forwardType=pwd')">修改密码</a></dd>
                 </dl>
             </li>
             <li class="layui-nav-item"><a href="javascript:;" onclick="logout()"><i class="fa fa-power-off"></i>退出</a>
@@ -120,26 +120,6 @@
             html += '</ul>';
         }
         return html;
-    }
-
-    function updateUserInfo() {
-        var item = {
-            link: '/user/forward?forwardType=info'
-            , icon: 'user-circle'
-            , name: '基本资料'
-            , id: '-1'
-        };
-        addTab(item);
-    }
-
-    function updateUserPwd() {
-        var item = {
-            link: '/user/forward?forwardType=pwd'
-            , icon: 'key'
-            , name: '修改密码'
-            , id: '-2'
-        };
-        addTab(item);
     }
 
     function addTab(id, name, icon, link){

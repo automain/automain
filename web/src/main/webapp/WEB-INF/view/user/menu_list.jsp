@@ -11,7 +11,7 @@
             <td>${item.menuId}</td>
             <td><c:out value="${item.requestUrl}"/></td>
             <td><c:out value="${item.menuName}"/></td>
-            <td><i class="fa fa-<c:out value="${item.menuIcon}"/>"></i></td>
+            <td><i style="padding-top: 7px;" class="fa fa-<c:out value="${item.menuIcon}"/>"></i></td>
             <td><c:out value="${item.sequenceNumber}"/></td>
             <td><c:out value="${item.parentName}"/></td>
             <td><c:if test="${item.isLeaf == 0}">否</c:if><c:if test="${item.isLeaf == 1}">是</c:if></td>

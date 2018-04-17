@@ -40,7 +40,7 @@
         <th lay-data="{field:'user_name', width:150}">用户名</th>
         <th lay-data="{field:'cellphone', width:150}">手机号</th>
         <th lay-data="{field:'create_time', width:150}">创建时间</th>
-        <th lay-data="{field:'email', width:150}">邮箱</th>
+        <th lay-data="{field:'email', width:250}">邮箱</th>
         <th lay-data="{field:'operation', width:270, fixed:'right'}">操作</th>
     </tr>
     </thead>
