@@ -20,6 +20,9 @@ public class TbConfig extends RequestUtil implements BaseBean<TbConfig> {
     // 配置value
     private String configValue;
 
+    // 配置说明
+    private String configComment;
+
     // 是否删除(0:否,1:是)
     private Integer isDelete;
 
@@ -50,6 +53,14 @@ public class TbConfig extends RequestUtil implements BaseBean<TbConfig> {
 
     public void setConfigValue(String configValue) {
         this.configValue = configValue;
+    }
+
+    public String getConfigComment() {
+        return configComment;
+    }
+
+    public void setConfigComment(String configComment) {
+        this.configComment = configComment;
     }
 
     public Integer getIsDelete() {
@@ -84,6 +95,9 @@ public class TbConfig extends RequestUtil implements BaseBean<TbConfig> {
         if (this.getConfigValue() != null) {
             map.put("config_value", this.getConfigValue());
         }
+        if (this.getConfigComment() != null) {
+            map.put("config_comment", this.getConfigComment());
+        }
         if (this.getIsDelete() != null) {
             map.put("is_delete", this.getIsDelete());
         }
@@ -96,6 +110,7 @@ public class TbConfig extends RequestUtil implements BaseBean<TbConfig> {
         bean.setConfigId(rs.getLong("config_id"));
         bean.setConfigKey(rs.getString("config_key"));
         bean.setConfigValue(rs.getString("config_value"));
+        bean.setConfigComment(rs.getString("config_comment"));
         bean.setIsDelete(rs.getInt("is_delete"));
         return bean;
     }
@@ -106,6 +121,7 @@ public class TbConfig extends RequestUtil implements BaseBean<TbConfig> {
         bean.setConfigId(getLong("configId", request));
         bean.setConfigKey(getString("configKey", request));
         bean.setConfigValue(getString("configValue", request));
+        bean.setConfigComment(getString("configComment", request));
         bean.setIsDelete(getInt("isDelete", request, 0));
         return bean;
     }

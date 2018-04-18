@@ -19,17 +19,17 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <%--在苹果web app应用下状态条(屏幕顶部条)的颜色--%>
 <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
-<meta http-equiv="Cache-Control" content="no-siteapp"/>
+<meta http-equiv="Cache-Control" content="private"/>
 <%--网页宽度及初始、最大缩放比例--%>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 <%--网站icon--%>
 <link rel="shortcut icon" href="${ctx}/static/images/common/favicon.ico" type="image/x-icon"/>
-<link rel="stylesheet" href="${ctx}/static/layui/css/layui.css" media="all"/>
-<link rel="stylesheet" href="${ctx}/static/font/css/font-awesome.min.css" media="all"/>
-<link rel="stylesheet" href="${ctx}/static/css/common/common.css" media="all"/>
+<link rel="stylesheet" href="${ctx}/static/layui/css/layui.css?v=${staticVersion}" media="all"/>
+<link rel="stylesheet" href="${ctx}/static/font/css/font-awesome.min.css?v=${staticVersion}" media="all"/>
+<link rel="stylesheet" href="${ctx}/static/css/common/common.css?v=${staticVersion}" media="all"/>
 <script src="${ctx}/static/js/plugin/jquery-3.3.1.min.js"></script>
-<script src="${ctx}/static/layui/layui.js"></script>
-<script src="${ctx}/static/js/common/common.js"></script>
+<script src="${ctx}/static/layui/layui.js?v=${staticVersion}"></script>
+<script src="${ctx}/static/js/common/common.js?v=${staticVersion}"></script>
 <script>
     /**
      * 延迟加载时间

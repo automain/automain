@@ -2,7 +2,7 @@
 <html>
 <head>
     <%@include file="../common/common.jsp" %>
-    <link rel="stylesheet" href="${ctx}/static/ztree/css/zTreeStyle.css" media="all">
+    <link rel="stylesheet" href="${ctx}/static/ztree/css/zTreeStyle.css?v=${staticVersion}" media="all">
     <title></title>
 </head>
 <body>
@@ -17,8 +17,8 @@
 </form>
 </body>
 </html>
-<script src="${ctx}/static/ztree/js/jquery.ztree.core.min.js"></script>
-<script src="${ctx}/static/ztree/js/jquery.ztree.excheck.min.js"></script>
+<script src="${ctx}/static/ztree/js/jquery.ztree.core.min.js?v=${staticVersion}"></script>
+<script src="${ctx}/static/ztree/js/jquery.ztree.excheck.min.js?v=${staticVersion}"></script>
 <script>
     var setting = {
         check: {

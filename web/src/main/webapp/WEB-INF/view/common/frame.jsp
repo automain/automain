@@ -2,7 +2,7 @@
 <html>
 <head>
     <%@include file="common.jsp" %>
-    <link rel="stylesheet" href="${ctx}/static/css/common/frame.css" media="all"/>
+    <link rel="stylesheet" href="${ctx}/static/css/common/frame.css?v=${staticVersion}" media="all"/>
     <title>CMS</title>
 </head>
 <body class="layui-layout-body">

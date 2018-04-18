@@ -1,9 +1,12 @@
 package com.github.automain.common;
 
+import com.github.automain.common.bean.TbConfig;
+import com.github.automain.common.container.ServiceContainer;
 import com.github.automain.common.view.ResourceNotFoundExecutor;
 import com.github.automain.user.view.LoginExecutor;
 import com.github.automain.util.HTTPUtil;
 import com.github.automain.util.PropertiesUtil;
+import com.github.fastjdbc.bean.ConnectionBean;
 import com.github.fastjdbc.bean.ConnectionPool;
 import com.zaxxer.hikari.HikariConfig;
 
@@ -14,6 +17,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -23,6 +27,42 @@ public class DispatcherController extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
+        initConnectionPool();
+        initStaticVersion();
+    }
+
+    private void initStaticVersion() {
+        ConnectionBean connection = null;
+        try {
+            connection = ConnectionPool.getConnectionBean(null);
+            TbConfig bean = new TbConfig();
+            bean.setConfigKey("staticVersion");
+            bean.setIsDelete(0);
+            TbConfig config = ServiceContainer.TB_CONFIG_SERVICE.selectOneTableByBean(connection, bean);
+            if (config != null) {
+                String staticVersion = config.getConfigValue();
+                getServletContext().setAttribute("staticVersion", staticVersion);
+                long sv = Long.parseLong(staticVersion);
+                config.setConfigValue(String.valueOf(sv + 1));
+                ServiceContainer.TB_CONFIG_SERVICE.updateTable(connection, config);
+            } else {
+                getServletContext().setAttribute("staticVersion", "0");
+                bean.setConfigValue("1");
+                bean.setConfigComment("静态资源版本");
+                ServiceContainer.TB_CONFIG_SERVICE.insertIntoTable(connection, bean);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                ConnectionPool.closeConnectionBean(connection);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void initConnectionPool() {
         Properties properties = PropertiesUtil.getProperties("db.properties");
         String poolNamesStr = properties.getProperty("pool_names");
         String[] poolNames = poolNamesStr.split(",");
