@@ -24,7 +24,9 @@ import java.net.URLEncoder;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.Base64;
+import java.util.List;
 import java.util.Map;
 
 public class HTTPUtil {
@@ -33,6 +35,7 @@ public class HTTPUtil {
     private static final String POST_METHOD = "POST";
     private static final String GET_METHOD = "GET";
     private static final int COMPRESSION_MIN_SIZE = 2048;
+    private static final List<String> CACHE_FILE_TYPE = Arrays.asList(".js", ".css", ".otf", ".eot", ".svg", ".ttf", ".woff", ".woff2", ".ico", ".jpg", ".png", ".gif");
 
     /**
      * URL编码
@@ -301,10 +304,14 @@ public class HTTPUtil {
                         }
                     }
                 }
-                if (relativePath.endsWith(".js")) {
+                String fileType = relativePath.substring(relativePath.lastIndexOf("."));
+                if (".js".equals(fileType)) {
                     response.setContentType("application/x-javascript");
-                } else if (relativePath.endsWith(".css")) {
+                } else if (".css".equals(fileType)) {
                     response.setContentType("text/css");
+                }
+                if (CACHE_FILE_TYPE.contains(fileType)) {
+                    response.addDateHeader("Expires", System.currentTimeMillis() + 2592000000L);//30 * 24 * 60 * 60 * 1000
                 }
                 int len = -1;
                 if (content != null) {
