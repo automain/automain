@@ -24,6 +24,7 @@ CREATE TABLE `tb_config` (
   `config_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '配置ID',
   `config_key` varchar(64) NOT NULL COMMENT '配置key',
   `config_value` varchar(512) DEFAULT NULL COMMENT '配置value',
+  `config_comment` varchar(512) DEFAULT NULL COMMENT '配置描述',
   `is_delete` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否删除(0:否,1:是)',
   PRIMARY KEY (`config_id`),
   KEY `idx_config_key` (`config_key`)
