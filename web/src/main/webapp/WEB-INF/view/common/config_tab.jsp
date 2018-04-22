@@ -33,7 +33,7 @@
         <th lay-data="{field:'config_comment', width:160}">配置描述</th>
         <th lay-data="{field:'create_time', width:160}">创建时间</th>
         <th lay-data="{field:'update_time', width:160}">更新时间</th>
-        <th lay-data="{field:'operation', width:180, fixed:'right'}">操作</th>
+        <th lay-data="{field:'operation', width:90, fixed:'right'}">操作</th>
     </tr>
     </thead>
     <tbody id="config_list_body">

@@ -43,7 +43,7 @@
         <th lay-data="{field:'sequence_number', width:160}">菜单排序</th>
         <th lay-data="{field:'parent_id', width:160}">父级菜单</th>
         <th lay-data="{field:'is_leaf', width:160}">是否是叶子节点</th>
-        <th lay-data="{field:'operation', width:280, fixed:'right'}">操作</th>
+        <th lay-data="{field:'operation', width:270, fixed:'right'}">操作</th>
     </tr>
     </thead>
     <tbody id="menu_list_body">

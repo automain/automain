@@ -14,7 +14,8 @@
             <td><c:out value="${item.configComment}"/></td>
             <td><fmt:formatDate value="${item.createTime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
             <td><fmt:formatDate value="${item.updateTime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
-            <td><button class="layui-btn layui-btn-xs update-btn" update-id="${item.configId}"><i class="fa fa-edit"></i>编辑</button>
+            <td>
+                <button class="layui-btn layui-btn-xs update-btn" update-id="${item.configId}"><i class="fa fa-edit"></i>编辑</button>
             </td>
         </tr>
     </c:forEach>
