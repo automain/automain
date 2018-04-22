@@ -18,7 +18,7 @@ public class TbRoleDao extends BaseDao<TbRole> {
     }
 
     private String setSearchCondition(TbRole bean, List<Object> parameterList) {
-        StringBuilder sql = new StringBuilder("SELECT * FROM tb_role WHERE is_delete = '0' ");
+        StringBuilder sql = new StringBuilder("SELECT * FROM tb_role WHERE is_delete = 0 ");
         if (bean.getRoleLabel() != null) {
             sql.append(" AND role_label = ?");
             parameterList.add(bean.getRoleLabel());

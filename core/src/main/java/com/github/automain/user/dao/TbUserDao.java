@@ -18,7 +18,7 @@ public class TbUserDao extends BaseDao<TbUser> {
     }
 
     private String setSearchCondition(TbUser bean, List<Object> parameterList) throws Exception {
-        StringBuilder sql = new StringBuilder("SELECT * FROM tb_user WHERE is_delete = '0' ");
+        StringBuilder sql = new StringBuilder("SELECT * FROM tb_user WHERE is_delete = 0 ");
         if (bean.getCellphone() != null) {
             sql.append(" AND cellphone = ?");
             parameterList.add(bean.getCellphone());

@@ -24,7 +24,7 @@ public class TbDictionaryDao extends BaseDao<TbDictionary> {
     }
 
     private String setSearchCondition(TbDictionary bean, List<Object> parameterList) {
-        StringBuilder sql = new StringBuilder("SELECT * FROM tb_dictionary WHERE is_delete = '0' ");
+        StringBuilder sql = new StringBuilder("SELECT * FROM tb_dictionary WHERE is_delete = 0 ");
         if (bean.getDictTableName() != null) {
             sql.append(" AND dict_table_name = ?");
             parameterList.add(bean.getDictTableName());

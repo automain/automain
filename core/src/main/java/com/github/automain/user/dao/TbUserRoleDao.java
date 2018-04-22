@@ -24,7 +24,7 @@ public class TbUserRoleDao extends BaseDao<TbUserRole> {
     }
 
     private String setSearchCondition(TbUserRole bean, List<Object> parameterList) {
-        StringBuilder sql = new StringBuilder("SELECT * FROM tb_user_role WHERE 1 = 1 ");
+        StringBuilder sql = new StringBuilder("SELECT * FROM tb_user_role WHERE is_delete = 0 ");
         if (bean.getRoleId() != null) {
             sql.append(" AND role_id = ?");
             parameterList.add(bean.getRoleId());
@@ -32,10 +32,6 @@ public class TbUserRoleDao extends BaseDao<TbUserRole> {
         if (bean.getUserId() != null) {
             sql.append(" AND user_id = ?");
             parameterList.add(bean.getUserId());
-        }
-        if (bean.getIsDelete() != null) {
-            sql.append(" AND is_delete = ?");
-            parameterList.add(bean.getIsDelete());
         }
         return sql.toString();
     }
@@ -56,7 +52,7 @@ public class TbUserRoleDao extends BaseDao<TbUserRole> {
     }
 
     public int clearUserRoleByUserId(ConnectionBean connection, Long userId) throws SQLException {
-        String sql = "UPDATE tb_user_role SET is_delete = '1' WHERE user_id = ?";
+        String sql = "UPDATE tb_user_role SET is_delete = 1 WHERE user_id = ?";
         return executeUpdate(connection, sql, Collections.singletonList(userId));
     }
 

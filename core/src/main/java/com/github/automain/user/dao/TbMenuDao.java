@@ -22,7 +22,7 @@ public class TbMenuDao extends BaseDao<TbMenu> {
     }
 
     private String setSearchCondition(TbMenu bean, List<Object> parameterList) {
-        StringBuilder sql = new StringBuilder("SELECT * FROM tb_menu WHERE 1 = 1 ");
+        StringBuilder sql = new StringBuilder("SELECT * FROM tb_menu WHERE is_delete = 0 ");
         if (bean.getMenuName() != null) {
             sql.append(" AND menu_name = ?");
             parameterList.add(bean.getMenuName());
@@ -51,15 +51,11 @@ public class TbMenuDao extends BaseDao<TbMenu> {
             sql.append(" AND is_leaf = ?");
             parameterList.add(bean.getIsLeaf());
         }
-        if (bean.getIsDelete() != null) {
-            sql.append(" AND is_delete = ?");
-            parameterList.add(bean.getIsDelete());
-        }
         return sql.toString();
     }
 
     public List<TbMenu> selectTableByRoleId(ConnectionBean connection, TbMenu bean, Long roleId) throws SQLException {
-        String sql = "SELECT tm.* FROM tb_menu tm LEFT JOIN tb_role_menu trm ON trm.menu_id = tm.menu_id AND trm.is_delete = '0' AND tm.is_delete = '0'";
+        String sql = "SELECT tm.* FROM tb_menu tm LEFT JOIN tb_role_menu trm ON trm.menu_id = tm.menu_id AND trm.is_delete = 0 AND tm.is_delete = 0";
         List<Object> paramList = new ArrayList<Object>(1);
         if (!roleId.equals(1L)) {
             sql += " WHERE trm.role_id = ?";
@@ -69,7 +65,7 @@ public class TbMenuDao extends BaseDao<TbMenu> {
     }
 
     public List<Long> selectMenuIdByParentId(ConnectionBean connection, Long parentId) throws SQLException {
-        String sql = "SELECT menu_id FROM tb_menu WHERE parent_id = ? AND is_delete = '0'";
+        String sql = "SELECT menu_id FROM tb_menu WHERE parent_id = ? AND is_delete = 0";
         ResultSet rs = null;
         List<Long> menuIdList = new ArrayList<Long>();
         try {

@@ -23,7 +23,7 @@ public class TbRoleRequestMappingDao extends BaseDao<TbRoleRequestMapping> {
     }
 
     private String setSearchCondition(TbRoleRequestMapping bean, List<Object> parameterList) {
-        StringBuilder sql = new StringBuilder("SELECT * FROM tb_role_request_mapping WHERE 1 = 1 ");
+        StringBuilder sql = new StringBuilder("SELECT * FROM tb_role_request_mapping WHERE is_delete = 0 ");
         if (bean.getRoleId() != null) {
             sql.append(" AND role_id = ?");
             parameterList.add(bean.getRoleId());
@@ -32,15 +32,11 @@ public class TbRoleRequestMappingDao extends BaseDao<TbRoleRequestMapping> {
             sql.append(" AND request_mapping_id = ?");
             parameterList.add(bean.getRequestMappingId());
         }
-        if (bean.getIsDelete() != null) {
-            sql.append(" AND is_delete = ?");
-            parameterList.add(bean.getIsDelete());
-        }
         return sql.toString();
     }
 
     public Set<String> selectRequestUrlByRoleId(ConnectionBean connection, Long roleId) throws SQLException {
-        String sql = "SELECT trm.request_url FROM tb_request_mapping trm LEFT JOIN tb_role_request_mapping trrm ON trrm.request_mapping_id = trm.request_mapping_id AND trrm.is_delete = '0'";
+        String sql = "SELECT trm.request_url FROM tb_request_mapping trm LEFT JOIN tb_role_request_mapping trrm ON trrm.request_mapping_id = trm.request_mapping_id AND trrm.is_delete = 0";
         List<Object> paramList = new ArrayList<Object>(1);
         if (!roleId.equals(1L)) {
             sql += " WHERE trrm.role_id = ?";

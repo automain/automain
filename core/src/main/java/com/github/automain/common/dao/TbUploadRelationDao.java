@@ -19,7 +19,7 @@ public class TbUploadRelationDao extends BaseDao<TbUploadRelation> {
     }
 
     private String setSearchCondition(TbUploadRelation bean, List<Object> parameterList) {
-        StringBuilder sql = new StringBuilder("SELECT * FROM tb_upload_relation WHERE 1 = 1 ");
+        StringBuilder sql = new StringBuilder("SELECT * FROM tb_upload_relation WHERE is_delete = 0 ");
         if (bean.getRecordId() != null) {
             sql.append(" AND record_id = ?");
             parameterList.add(bean.getRecordId());
@@ -39,10 +39,6 @@ public class TbUploadRelationDao extends BaseDao<TbUploadRelation> {
         if (bean.getUploadFileId() != null) {
             sql.append(" AND upload_file_id = ?");
             parameterList.add(bean.getUploadFileId());
-        }
-        if (bean.getIsDelete() != null) {
-            sql.append(" AND is_delete = ?");
-            parameterList.add(bean.getIsDelete());
         }
         return sql.toString();
     }
