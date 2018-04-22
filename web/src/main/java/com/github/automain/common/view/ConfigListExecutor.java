@@ -15,7 +15,7 @@ public class ConfigListExecutor extends BaseExecutor {
     protected String doAction(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         TbConfig bean = new TbConfig();
         bean = bean.beanFromRequest(request);
-        PageBean<TbConfig> pageBean = TB_CONFIG_SERVICE.selectTableForPage(connection, bean, request);
+        PageBean<TbConfig> pageBean = TB_CONFIG_SERVICE.selectTableForCustomPage(connection, bean, request);
         request.setAttribute(PAGE_BEAN_PARAM, pageBean);
         return "common/config_list";
     }

@@ -25,6 +25,8 @@ CREATE TABLE `tb_config` (
   `config_key` varchar(64) NOT NULL COMMENT '配置key',
   `config_value` varchar(512) DEFAULT NULL COMMENT '配置value',
   `config_comment` varchar(512) DEFAULT NULL COMMENT '配置描述',
+  `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+  `update_time` timestamp NULL DEFAULT NULL COMMENT '更新时间',
   `is_delete` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否删除(0:否,1:是)',
   PRIMARY KEY (`config_id`),
   KEY `idx_config_key` (`config_key`)

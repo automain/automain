@@ -19,6 +19,12 @@
             <textarea class="layui-textarea" name="configValue" lay-verify="config_value"><c:out value="${bean.configValue}"/></textarea>
         </div>
     </div>
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">配置描述</label>
+        <div class="layui-input-block">
+            <textarea class="layui-textarea" name="configComment" lay-verify="config_comment"><c:out value="${bean.configComment}"/></textarea>
+        </div>
+    </div>
     <div class="layui-form-item">
         <div class="layui-input-block">
             <button class="layui-btn" lay-submit lay-filter="config_submit">立即提交</button>
@@ -41,6 +47,11 @@
             , config_value: function (value) {
                 if (value.length == 0) {
                     return '请输入配置value';
+                }
+            }
+            , config_comment: function (value) {
+                if (value.length == 0) {
+                    return '请输入配置描述';
                 }
             }
         });

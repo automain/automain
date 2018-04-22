@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -49,6 +50,9 @@ public class DispatcherController extends HttpServlet {
                 SERVLET_CONTEXT.setAttribute("staticVersion", "0");
                 bean.setConfigValue("0");
                 bean.setConfigComment("静态资源版本");
+                Timestamp now = new Timestamp(System.currentTimeMillis());
+                bean.setCreateTime(now);
+                bean.setUpdateTime(now);
                 ServiceContainer.TB_CONFIG_SERVICE.insertIntoTable(connection, bean);
             }
         } catch (SQLException e) {
@@ -67,16 +71,20 @@ public class DispatcherController extends HttpServlet {
         bean.setConfigKey("staticVersion");
         bean.setIsDelete(0);
         TbConfig config = ServiceContainer.TB_CONFIG_SERVICE.selectOneTableByBean(connection, bean);
+        Timestamp now = new Timestamp(System.currentTimeMillis());
         if (config != null) {
             String staticVersion = config.getConfigValue();
             long sv = Long.parseLong(staticVersion);
             config.setConfigValue(String.valueOf(sv + 1));
+            config.setUpdateTime(now);
             SERVLET_CONTEXT.setAttribute("staticVersion", config.getConfigValue());
             ServiceContainer.TB_CONFIG_SERVICE.updateTable(connection, config);
         } else {
             SERVLET_CONTEXT.setAttribute("staticVersion", "0");
             bean.setConfigValue("0");
             bean.setConfigComment("静态资源版本");
+            bean.setCreateTime(now);
+            bean.setUpdateTime(now);
             ServiceContainer.TB_CONFIG_SERVICE.insertIntoTable(connection, bean);
         }
     }

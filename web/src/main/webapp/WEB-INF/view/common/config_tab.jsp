@@ -30,6 +30,9 @@
         <th lay-data="{field:'config_id',checkbox:true, fixed:'left'}"></th>
         <th lay-data="{field:'config_key', width:160}">配置key</th>
         <th lay-data="{field:'config_value', width:160}">配置value</th>
+        <th lay-data="{field:'config_comment', width:160}">配置描述</th>
+        <th lay-data="{field:'create_time', width:160}">创建时间</th>
+        <th lay-data="{field:'update_time', width:160}">更新时间</th>
         <th lay-data="{field:'operation', width:180, fixed:'right'}">操作</th>
     </tr>
     </thead>

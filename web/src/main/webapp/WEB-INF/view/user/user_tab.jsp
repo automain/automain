@@ -18,13 +18,13 @@
             </button>
         </div>
         <div class="layui-inline">
-            <input type="text" class="layui-input" autocomplete="off" id="user-name-search" placeholder="请输入用户名">
+            <input type="text" class="layui-input" autocomplete="off" id="user_name_search" placeholder="请输入用户名">
         </div>
         <div class="layui-inline">
-            <input type="text" class="layui-input" autocomplete="off" id="cellphone-search" placeholder="请输入手机号">
+            <input type="text" class="layui-input" autocomplete="off" id="cellphone_search" placeholder="请输入手机号">
         </div>
         <div class="layui-inline">
-            <input type="text" class="layui-input" id="create-time-search" placeholder="请选择创建时间范围">
+            <input type="text" class="layui-input" id="create_time_search" placeholder="请选择创建时间范围">
         </div>
         <div class="layui-inline">
             <button class="layui-btn layui-btn-sm layui-btn-warm" id="user_refresh">
@@ -87,9 +87,9 @@
         setTimeout(function () {
             $.post("${ctx}/user/list", {
                 page: page,
-                userName: $("#user-name-search").val(),
-                cellphone: $("#cellphone-search").val(),
-                createTimeRange: $("#create-time-search").val()
+                userName: $("#user_name_search").val(),
+                cellphone: $("#cellphone_search").val(),
+                createTimeRange: $("#create_time_search").val()
             }, function (data) {
                 if (data.code == code_success) {
                     $("#user_list_body").html(data.data);
