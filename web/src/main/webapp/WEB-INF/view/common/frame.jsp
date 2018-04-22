@@ -126,7 +126,7 @@
         if (link) {
             if (!$(".layui-tab-title li[lay-id=" + id + "]")[0]) {
                 var title = '<i class="fa fa-' + icon + '"></i>' + name;
-                var iframe = '<iframe id="frame-' + id + '" src="${ctx}' + link + '" style="width: 100%; height: 80%; border: 0px;"></iframe>';
+                var iframe = '<iframe id="frame-' + id + '" onload="changeFrameHeight(\'frame-' + id + '\')" src="${ctx}' + link + '" style="width: 100%; border: 0px;"></iframe>';
                 element.tabAdd('body-tab', {
                     title: title
                     , content: iframe
@@ -197,5 +197,10 @@
             });
             layer.close(index);
         });
+    }
+
+    function changeFrameHeight(id) {
+        var iframe = $("#" + id);
+        iframe.height(iframe[0].attributes.style.ownerDocument.documentElement.clientHeight - 175);
     }
 </script>

@@ -31,8 +31,8 @@
     <thead>
     <tr>
         <th lay-data="{field:'role_id',checkbox:true, fixed:'left'}"></th>
-        <th lay-data="{field:'role_name', width:150}">角色名称</th>
-        <th lay-data="{field:'role_label', width:150}">角色标识</th>
+        <th lay-data="{field:'role_name', width:160}">角色名称</th>
+        <th lay-data="{field:'role_label', width:160}">角色标识</th>
         <th lay-data="{field:'operation', width:370, fixed:'right'}">操作</th>
     </tr>
     </thead>

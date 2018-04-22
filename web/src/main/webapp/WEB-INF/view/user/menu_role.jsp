@@ -20,8 +20,8 @@
 <table class="layui-table" lay-skin="line" lay-filter="menu_role" lay-data="{id: 'menu_role'}">
     <thead>
     <tr>
-        <th lay-data="{field:'role_name', width:150}">角色名称</th>
-        <th lay-data="{field:'role_label', width:150}">角色标识</th>
+        <th lay-data="{field:'role_name', width:160}">角色名称</th>
+        <th lay-data="{field:'role_label', width:160}">角色标识</th>
         <th lay-data="{field:'operation', width:180, fixed:'right'}">操作</th>
     </tr>
     </thead>

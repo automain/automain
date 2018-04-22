@@ -28,8 +28,8 @@
     <thead>
     <tr>
         <th lay-data="{field:'config_id',checkbox:true, fixed:'left'}"></th>
-        <th lay-data="{field:'config_key', width:150}">配置key</th>
-        <th lay-data="{field:'config_value', width:150}">配置value</th>
+        <th lay-data="{field:'config_key', width:160}">配置key</th>
+        <th lay-data="{field:'config_value', width:160}">配置value</th>
         <th lay-data="{field:'operation', width:180, fixed:'right'}">操作</th>
     </tr>
     </thead>

@@ -280,6 +280,7 @@ public class HTTPUtil {
      * @param response
      */
     public static void writeResourceFileToResponse(String basePath, String relativePath, String acceptEncoding, HttpServletResponse response) throws Exception {
+        relativePath = relativePath.toLowerCase();
         File file = new File(basePath + relativePath);
         FileOutputStream fos = null;
         if (SystemUtil.checkFileAvailable(file)) {

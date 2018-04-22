@@ -26,9 +26,9 @@
 <table class="layui-table" lay-skin="line" lay-filter="role_user" lay-data="{id: 'role_user'}">
     <thead>
     <tr>
-        <th lay-data="{field:'user_name', width:150}">用户名</th>
-        <th lay-data="{field:'cellphone', width:150}">手机号</th>
-        <th lay-data="{field:'create_time', width:150}">创建时间</th>
+        <th lay-data="{field:'user_name', width:160}">用户名</th>
+        <th lay-data="{field:'cellphone', width:160}">手机号</th>
+        <th lay-data="{field:'create_time', width:160}">创建时间</th>
         <th lay-data="{field:'email', width:250}">邮箱</th>
         <th lay-data="{field:'operation', width:180, fixed:'right'}">操作</th>
     </tr>

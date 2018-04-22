@@ -47,13 +47,13 @@
     <thead>
     <tr>
         <th lay-data="{field:'dictionary_id',checkbox:true, fixed:'left'}"></th>
-        <th lay-data="{field:'dict_table_name', width:150}">表名</th>
-        <th lay-data="{field:'dict_column_name', width:150}">字段名</th>
-        <th lay-data="{field:'dictionary_name', width:150}">字典名</th>
-        <th lay-data="{field:'dictionary_value', width:150}">字典值</th>
-        <th lay-data="{field:'sequence_number', width:150}">排序标识</th>
-        <th lay-data="{field:'parent_id', width:150}">父级</th>
-        <th lay-data="{field:'is_leaf', width:150}">是否是叶子节点</th>
+        <th lay-data="{field:'dict_table_name', width:160}">表名</th>
+        <th lay-data="{field:'dict_column_name', width:160}">字段名</th>
+        <th lay-data="{field:'dictionary_name', width:160}">字典名</th>
+        <th lay-data="{field:'dictionary_value', width:160}">字典值</th>
+        <th lay-data="{field:'sequence_number', width:160}">排序标识</th>
+        <th lay-data="{field:'parent_id', width:160}">父级</th>
+        <th lay-data="{field:'is_leaf', width:160}">是否是叶子节点</th>
         <th lay-data="{field:'operation', width:180, fixed:'right'}">操作</th>
     </tr>
     </thead>
