@@ -1,6 +1,7 @@
 package com.github.automain.common.action;
 
 import com.github.automain.common.BaseExecutor;
+import com.github.automain.common.DispatcherController;
 import com.github.automain.common.RequestMappingContainer;
 import com.github.automain.common.container.DictionaryContainer;
 import com.github.automain.common.container.RolePrivilegeContainer;
@@ -58,6 +59,10 @@ public class ReloadCacheExecutor extends BaseExecutor {
                 case "role":
                     RolePrivilegeContainer.reloadRolePrivilege();
                     logReloadLabel = "角色权限";
+                    break;
+                case "staticVersion":
+                    DispatcherController.reloadStaticVersion(connection);
+                    logReloadLabel = "静态资源";
                     break;
                 default:
                     RequestMappingContainer.reloadRequestMapping();

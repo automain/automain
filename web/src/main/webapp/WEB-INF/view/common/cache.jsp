@@ -3,14 +3,22 @@
 <head>
     <%@include file="common.jsp" %>
     <title>刷新缓存</title>
+    <style>
+        .layui-container .layui-row .layui-col-md4 {
+            padding-top: 30px;
+        }
+    </style>
 </head>
 <body>
-<div class="layui-container" style="margin-top: 30px;">
+<div class="layui-container">
     <div class="layui-row">
-        <div class="layui-col-md3"><button class="layui-btn layui-btn-lg" onclick="reloadCache('requestMapping')">访问路径</button></div>
-        <div class="layui-col-md3"><button class="layui-btn layui-btn-lg" onclick="reloadCache('properties')">配置文件</button></div>
-        <div class="layui-col-md3"><button class="layui-btn layui-btn-lg" onclick="reloadCache('dictionary')">数据字典</button></div>
-        <div class="layui-col-md3"><button class="layui-btn layui-btn-lg" onclick="reloadCache('role')">角色权限</button></div>
+        <div class="layui-col-md4"><button class="layui-btn layui-btn-lg" onclick="reloadCache('requestMapping')">访问路径</button></div>
+        <div class="layui-col-md4"><button class="layui-btn layui-btn-lg" onclick="reloadCache('properties')">配置文件</button></div>
+        <div class="layui-col-md4"><button class="layui-btn layui-btn-lg" onclick="reloadCache('dictionary')">数据字典</button></div>
+    </div>
+    <div class="layui-row">
+        <div class="layui-col-md4"><button class="layui-btn layui-btn-lg" onclick="reloadCache('role')">角色权限</button></div>
+        <div class="layui-col-md4"><button class="layui-btn layui-btn-lg" onclick="reloadCache('staticVersion')">静态资源</button></div>
     </div>
 </div>
 </body>

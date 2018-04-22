@@ -11,6 +11,7 @@ import com.github.fastjdbc.bean.ConnectionPool;
 import com.zaxxer.hikari.HikariConfig;
 
 import javax.servlet.AsyncContext;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -25,6 +26,8 @@ import java.util.Properties;
 @WebServlet(urlPatterns = "/", asyncSupported = true, loadOnStartup = 2)
 public class DispatcherController extends HttpServlet {
 
+    private static ServletContext SERVLET_CONTEXT;
+
     @Override
     public void init() throws ServletException {
         initConnectionPool();
@@ -32,6 +35,7 @@ public class DispatcherController extends HttpServlet {
     }
 
     private void initStaticVersion() {
+        SERVLET_CONTEXT = getServletContext();
         ConnectionBean connection = null;
         try {
             connection = ConnectionPool.getConnectionBean(null);
@@ -40,14 +44,10 @@ public class DispatcherController extends HttpServlet {
             bean.setIsDelete(0);
             TbConfig config = ServiceContainer.TB_CONFIG_SERVICE.selectOneTableByBean(connection, bean);
             if (config != null) {
-                String staticVersion = config.getConfigValue();
-                getServletContext().setAttribute("staticVersion", staticVersion);
-                long sv = Long.parseLong(staticVersion);
-                config.setConfigValue(String.valueOf(sv + 1));
-                ServiceContainer.TB_CONFIG_SERVICE.updateTable(connection, config);
+                SERVLET_CONTEXT.setAttribute("staticVersion", config.getConfigValue());
             } else {
-                getServletContext().setAttribute("staticVersion", "0");
-                bean.setConfigValue("1");
+                SERVLET_CONTEXT.setAttribute("staticVersion", "0");
+                bean.setConfigValue("0");
                 bean.setConfigComment("静态资源版本");
                 ServiceContainer.TB_CONFIG_SERVICE.insertIntoTable(connection, bean);
             }
@@ -59,6 +59,25 @@ public class DispatcherController extends HttpServlet {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public static void reloadStaticVersion(ConnectionBean connection) throws SQLException {
+        TbConfig bean = new TbConfig();
+        bean.setConfigKey("staticVersion");
+        bean.setIsDelete(0);
+        TbConfig config = ServiceContainer.TB_CONFIG_SERVICE.selectOneTableByBean(connection, bean);
+        if (config != null) {
+            String staticVersion = config.getConfigValue();
+            long sv = Long.parseLong(staticVersion);
+            config.setConfigValue(String.valueOf(sv + 1));
+            SERVLET_CONTEXT.setAttribute("staticVersion", config.getConfigValue());
+            ServiceContainer.TB_CONFIG_SERVICE.updateTable(connection, config);
+        } else {
+            SERVLET_CONTEXT.setAttribute("staticVersion", "0");
+            bean.setConfigValue("0");
+            bean.setConfigComment("静态资源版本");
+            ServiceContainer.TB_CONFIG_SERVICE.insertIntoTable(connection, bean);
         }
     }
 

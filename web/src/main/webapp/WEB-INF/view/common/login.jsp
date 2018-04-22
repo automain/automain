@@ -21,12 +21,12 @@
         <div class="layui-val-icon layui-login">
             <input type="hidden" id="captchaRandomKey" name="captchaRandomKey"/>
             <div class="layui-code-box">
-                <input type="text" name="captchaValue" placeholder="验证码" maxlength="4" class="login_txtbx" lay-verify="captcha">
+                <input type="text" id="captcha-value" name="captchaValue" placeholder="验证码" maxlength="4" class="login_txtbx" lay-verify="captcha">
                 <img src="" class="login_captcha_img" id="login_captcha_img" onclick="initCaptcha()">
             </div>
         </div>
         <div class="layui-submit layui-login">
-            <input type="button" value="立即登陆" class="submit-btn" lay-submit lay-filter="login"/>
+            <input type="button" id="submit-btn" value="立即登陆" class="submit-btn" lay-submit lay-filter="login"/>
         </div>
         <div class="layui-login-text">
             <p>&copy; 2016-2017 Automain 版权所有</p>
@@ -48,6 +48,13 @@
     }
     layui.use('form', function () {
         initCaptcha();
+        $("#captcha-value").bind("keydown",function(e){
+            var theEvent = e || window.event;
+            var code = theEvent.keyCode || theEvent.which || theEvent.charCode;
+            if (code == 13) {
+                $("#submit-btn").click();
+            }
+        });
         var form = layui.form;
         form.verify({
             username: function (value) {

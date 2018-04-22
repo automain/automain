@@ -71,7 +71,7 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
                 setJsonResult(request, CODE_SUCCESS, "");
                 jspPath = doAction(connection, jedis, request, response);
             } else {
-                setJsonResult(request, "403", "无权限访问！");
+                setJsonResult(request, "403", "无权限访问或登录已过期");
                 jspPath = ERROR_URL;
             }
             byte[] gzip = null;
