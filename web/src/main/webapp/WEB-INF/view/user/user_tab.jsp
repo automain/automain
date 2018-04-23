@@ -59,7 +59,7 @@
         table = layui.table;
         var laydate = layui.laydate;
         laydate.render({
-            elem: '#create-time-search'
+            elem: '#create_time_search'
             ,type: 'datetime'
             ,range: true
         });
