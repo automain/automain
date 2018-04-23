@@ -18,8 +18,11 @@
             </button>
         </div>
         <div class="layui-inline">
-            <button class="layui-btn layui-btn-sm layui-btn-warm" id="config_refresh">
-                <i class="fa fa-refresh"></i> 刷新
+            <input type="text" class="layui-input" autocomplete="off" id="config_key_search" placeholder="请输入配置key">
+        </div>
+        <div class="layui-inline">
+            <button class="layui-btn layui-btn-sm layui-btn-warm" id="config_search">
+                <i class="fa fa-search"></i> 搜索
             </button>
         </div>
     </div>
@@ -63,7 +66,7 @@
                 layer.close(index);
             });
         });
-        $("#config_refresh").click(function () {
+        $("#config_search").click(function () {
             reloadConfigList(1);
         });
         reloadConfigList(1);
@@ -73,6 +76,7 @@
         setTimeout(function () {
             $.post("${ctx}/config/list", {
                 page: page
+                ,configKey: $("#config_key_search").val()
             }, function (data) {
                 if (data.code == code_success) {
                     $("#config_list_body").html(data.data);
