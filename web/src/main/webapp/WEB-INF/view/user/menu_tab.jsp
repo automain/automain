@@ -42,6 +42,7 @@
         <th lay-data="{field:'menu_icon', width:160}">菜单图标</th>
         <th lay-data="{field:'sequence_number', width:160}">菜单排序</th>
         <th lay-data="{field:'parent_id', width:160}">父级菜单</th>
+        <th lay-data="{field:'is_spread', width:160}">是否默认展开</th>
         <th lay-data="{field:'is_leaf', width:160}">是否是叶子节点</th>
         <th lay-data="{field:'operation', width:270, fixed:'right'}">操作</th>
     </tr>

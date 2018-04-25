@@ -40,6 +40,7 @@ public class FrameExecutor extends BaseExecutor {
                     title.setLink(vo.getLink());
                     title.setIcon(vo.getIcon());
                     title.setName(vo.getName());
+                    title.setIsSpread(vo.getIsSpread());
                     titleList.add(title);
                     childMenuVO = new ChildMenuVO();
                     childMenuVO.setParentId(vo.getId());

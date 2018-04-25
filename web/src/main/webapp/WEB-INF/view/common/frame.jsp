@@ -28,7 +28,7 @@
         </ul>
         <!-- 水平导航右 -->
         <ul class="layui-nav layui-layout-right">
-            <li class="layui-nav-item"><a href="javascript:;" onclick="closeOthers()"><i
+            <li class="layui-nav-item" lay-unselect><a href="javascript:;" onclick="closeOthers()"><i
                     class="fa fa-close"></i>关闭其他</a></li>
             <li class="layui-nav-item">
                 <a href="javascript:;">
@@ -93,25 +93,29 @@
         element.render('nav');
     });
 
-    function parseTree(tree, isChild){
+    function parseTree(tree, isChild) {
         var html = '';
         if (isChild) {
             html += '<ul class="layui-nav-child">';
         }
-        for (var i = 0; i < tree.length; i++){
+        for (var i = 0; i < tree.length; i++) {
             var node = tree[i];
             var icon = 'envira';
-            if (node.icon){
+            if (node.icon) {
                 icon = node.icon;
             }
             var link = node.link;
             var jumpFun = '';
-            if (link){
-                jumpFun = 'onclick="addTab(\''+node.id+'\',\''+node.name+'\',\''+icon+'\',\''+link+'\')"';
+            if (link) {
+                jumpFun = 'onclick="addTab(\'' + node.id + '\',\'' + node.name + '\',\'' + icon + '\',\'' + link + '\')"';
             }
-            html += '<li class="layui-nav-item"><a href="javascript:;" ' + jumpFun + '>'
+            var spread = '';
+            if (node.isSpread === 1) {
+                spread = ' layui-nav-itemed';
+            }
+            html += '<li class="layui-nav-item' + spread + '"><a href="javascript:;" ' + jumpFun + '>'
                 + '<i class="fa fa-' + icon + '"></i><cite>' + node.name + '</cite></a>';
-            if (node.children){
+            if (node.children) {
                 html += parseTree(node.children, true);
             }
             html += '</li>';

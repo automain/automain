@@ -35,6 +35,15 @@
         </div>
     </div>
     <div class="layui-form-item">
+        <label class="layui-form-label">是否默认展开</label>
+        <div class="layui-input-block">
+            <select class="layui-select" id="is_spread" name="isSpread">
+                <option value="0">否</option>
+                <option value="1">是</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
         <div class="layui-input-block">
             <button class="layui-btn" lay-submit lay-filter="menu_submit">立即提交</button>
         </div>

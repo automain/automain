@@ -147,6 +147,7 @@ public class RolePrivilegeContainer implements ServiceContainer {
         vo.setName(menu.getMenuName());
         vo.setIcon(menu.getMenuIcon());
         vo.setLink(menu.getRequestUrl());
+        vo.setIsSpread(menu.getIsSpread());
         return vo;
     }
 

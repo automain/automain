@@ -32,6 +32,9 @@ public class TbMenu extends RequestUtil implements BaseBean<TbMenu>, Comparable 
     // 菜单排序
     private Integer sequenceNumber;
 
+    // 是否默认展开(0:否,1:是)
+    private Integer isSpread;
+
     // 是否是叶子节点(0:否,1:是)
     private Integer isLeaf;
 
@@ -109,6 +112,14 @@ public class TbMenu extends RequestUtil implements BaseBean<TbMenu>, Comparable 
         this.sequenceNumber = sequenceNumber;
     }
 
+    public Integer getIsSpread() {
+        return isSpread;
+    }
+
+    public void setIsSpread(Integer isSpread) {
+        this.isSpread = isSpread;
+    }
+
     public Integer getIsLeaf() {
         return isLeaf;
     }
@@ -161,6 +172,9 @@ public class TbMenu extends RequestUtil implements BaseBean<TbMenu>, Comparable 
         if (this.getSequenceNumber() != null) {
             map.put("sequence_number", this.getSequenceNumber());
         }
+        if (this.getIsSpread() != null) {
+            map.put("is_spread", this.getIsSpread());
+        }
         if (this.getIsLeaf() != null) {
             map.put("is_leaf", this.getIsLeaf());
         }
@@ -180,6 +194,7 @@ public class TbMenu extends RequestUtil implements BaseBean<TbMenu>, Comparable 
         bean.setParentId(rs.getLong("parent_id"));
         bean.setTopId(rs.getLong("top_id"));
         bean.setSequenceNumber(rs.getInt("sequence_number"));
+        bean.setIsSpread(rs.getInt("is_spread"));
         bean.setIsLeaf(rs.getInt("is_leaf"));
         bean.setIsDelete(rs.getInt("is_delete"));
         return bean;
@@ -195,6 +210,7 @@ public class TbMenu extends RequestUtil implements BaseBean<TbMenu>, Comparable 
         bean.setParentId(getLong("parentId", request));
         bean.setTopId(getLong("topId", request));
         bean.setSequenceNumber(getInt("sequenceNumber", request));
+        bean.setIsSpread(getInt("isSpread", request));
         bean.setIsLeaf(getInt("isLeaf", request));
         bean.setIsDelete(getInt("isDelete", request, 0));
         return bean;

@@ -14,6 +14,8 @@ public class MenuVO {
     private String icon;
     // 是否选中
     private Boolean checked;
+    // 是否展开
+    private Integer isSpread;
     // 菜单子集
     private List<MenuVO> children;
 
@@ -55,6 +57,14 @@ public class MenuVO {
 
     public void setChecked(Boolean checked) {
         this.checked = checked;
+    }
+
+    public Integer getIsSpread() {
+        return isSpread;
+    }
+
+    public void setIsSpread(Integer isSpread) {
+        this.isSpread = isSpread;
     }
 
     public List<MenuVO> getChildren() {
