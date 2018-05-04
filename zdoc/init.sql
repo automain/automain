@@ -1,6 +1,6 @@
 /*
-SQLyog Trial
-MySQL - 5.7.20-log : Database - automain
+SQLyog Trial v13.0.0 (64 bit)
+MySQL - 8.0.11 : Database - automain
 *********************************************************************
 */
 
@@ -12,9 +12,53 @@ MySQL - 5.7.20-log : Database - automain
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-CREATE DATABASE /*!32312 IF NOT EXISTS*/`automain` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
+CREATE DATABASE /*!32312 IF NOT EXISTS*/`automain` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */;
 
 USE `automain`;
+
+/*Table structure for table `db_slow_log` */
+
+DROP TABLE IF EXISTS `db_slow_log`;
+
+CREATE TABLE `db_slow_log` (
+  `slow_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+  `pool_name` varchar(64) DEFAULT NULL COMMENT '连接池名称',
+  `slow_db` varchar(64) DEFAULT NULL COMMENT '慢查询库',
+  `slow_time` int(10) unsigned DEFAULT NULL COMMENT '慢查询用时',
+  `slow_state` varchar(64) DEFAULT NULL COMMENT '慢查询状态',
+  `slow_sql` text COMMENT '慢查询sql',
+  PRIMARY KEY (`slow_id`),
+  KEY `idx_create_time` (`create_time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `db_slow_log` */
+
+/*Table structure for table `db_status` */
+
+DROP TABLE IF EXISTS `db_status`;
+
+CREATE TABLE `db_status` (
+  `status_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+  `pool_name` varchar(64) DEFAULT NULL COMMENT '连接池名称',
+  `com_select` bigint(20) unsigned DEFAULT NULL COMMENT '查询数',
+  `com_insert` bigint(20) unsigned DEFAULT NULL COMMENT '添加数',
+  `com_delete` bigint(20) unsigned DEFAULT NULL COMMENT '删除数',
+  `com_update` bigint(20) unsigned DEFAULT NULL COMMENT '编辑数',
+  `com_commit` bigint(20) unsigned DEFAULT NULL COMMENT '提交数',
+  `com_rollback` bigint(20) unsigned DEFAULT NULL COMMENT '回滚数',
+  `threads_connected` bigint(20) unsigned DEFAULT NULL COMMENT '总线程数',
+  `threads_running` bigint(20) unsigned DEFAULT NULL COMMENT '运行中线程数',
+  `pages_total_size` bigint(20) unsigned DEFAULT NULL COMMENT '总内存大小',
+  `pages_data_size` bigint(20) unsigned DEFAULT NULL COMMENT '已用内存大小',
+  `pages_free_size` bigint(20) unsigned DEFAULT NULL COMMENT '空闲内存大小',
+  `pages_misc_size` bigint(20) unsigned DEFAULT NULL COMMENT '忙碌内存大小',
+  PRIMARY KEY (`status_id`),
+  KEY `idx_create_time` (`create_time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `db_status` */
 
 /*Table structure for table `tb_config` */
 
@@ -30,7 +74,7 @@ CREATE TABLE `tb_config` (
   `is_delete` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否删除(0:否,1:是)',
   PRIMARY KEY (`config_id`),
   KEY `idx_config_key` (`config_key`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `tb_config` */
 
@@ -54,7 +98,7 @@ CREATE TABLE `tb_dictionary` (
   PRIMARY KEY (`dictionary_id`),
   KEY `idx_order_label` (`sequence_number`),
   KEY `idx_table_column_parent` (`dict_table_name`,`dict_column_name`,`parent_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `tb_dictionary` */
 
@@ -76,7 +120,7 @@ CREATE TABLE `tb_menu` (
   PRIMARY KEY (`menu_id`),
   KEY `idx_parent_id` (`parent_id`),
   KEY `idx_menu_name` (`menu_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `tb_menu` */
 
@@ -102,7 +146,7 @@ CREATE TABLE `tb_request_mapping` (
   `url_comment` varchar(32) DEFAULT NULL COMMENT '注释',
   PRIMARY KEY (`request_mapping_id`),
   UNIQUE KEY `uniq_request_url` (`request_url`)
-) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `tb_request_mapping` */
 
@@ -175,7 +219,7 @@ CREATE TABLE `tb_role` (
   `is_delete` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否删除(0:否,1:是)',
   PRIMARY KEY (`role_id`),
   UNIQUE KEY `uniq_role_label` (`role_label`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `tb_role` */
 
@@ -194,7 +238,7 @@ CREATE TABLE `tb_role_menu` (
   PRIMARY KEY (`role_menu_id`),
   KEY `idx_role_id` (`role_id`),
   KEY `idx_menu_id` (`menu_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `tb_role_menu` */
 
@@ -209,7 +253,7 @@ CREATE TABLE `tb_role_request_mapping` (
   `is_delete` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否删除(0:否,1;是)',
   PRIMARY KEY (`role_request_mapping_id`),
   KEY `idx_role_id` (`role_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `tb_role_request_mapping` */
 
@@ -227,7 +271,7 @@ CREATE TABLE `tb_upload_file` (
   `image_width` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '图片文件宽度',
   `image_height` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '图片文件高度',
   PRIMARY KEY (`upload_file_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `tb_upload_file` */
 
@@ -246,7 +290,7 @@ CREATE TABLE `tb_upload_relation` (
   PRIMARY KEY (`upload_relation_id`),
   KEY `idx_id_name_label` (`record_id`,`record_table_name`,`record_label`),
   KEY `idx_sequence_number` (`sequence_number`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `tb_upload_relation` */
 
@@ -265,7 +309,7 @@ CREATE TABLE `tb_user` (
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `uniq_user_name` (`user_name`),
   KEY `idx_cellphone` (`cellphone`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `tb_user` */
 
@@ -284,7 +328,7 @@ CREATE TABLE `tb_user_role` (
   PRIMARY KEY (`user_role_id`),
   KEY `idx_user_id` (`user_id`),
   KEY `idx_role_id` (`role_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `tb_user_role` */
 
