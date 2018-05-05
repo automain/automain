@@ -1,5 +1,5 @@
 /*
-SQLyog Trial v13.0.0 (64 bit)
+SQLyog Trial
 MySQL - 8.0.11 : Database - automain
 *********************************************************************
 */
@@ -22,14 +22,14 @@ DROP TABLE IF EXISTS `db_slow_log`;
 
 CREATE TABLE `db_slow_log` (
   `slow_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
-  `pool_name` varchar(64) DEFAULT NULL COMMENT '连接池名称',
-  `slow_db` varchar(64) DEFAULT NULL COMMENT '慢查询库',
-  `slow_time` int(10) unsigned DEFAULT NULL COMMENT '慢查询用时',
-  `slow_state` varchar(64) DEFAULT NULL COMMENT '慢查询状态',
-  `slow_sql` text COMMENT '慢查询sql',
+  `create_time` timestamp NOT NULL COMMENT '创建时间',
+  `pool_name` varchar(64) NOT NULL COMMENT '连接池名称',
+  `slow_db` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '慢查询库',
+  `slow_time` int(10) unsigned NOT NULL COMMENT '慢查询用时',
+  `slow_state` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '慢查询状态',
+  `slow_sql` varchar(2048) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '慢查询sql',
   PRIMARY KEY (`slow_id`),
-  KEY `idx_create_time` (`create_time`)
+  KEY `idx_create_time_time` (`create_time`,`slow_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `db_slow_log` */
@@ -40,20 +40,20 @@ DROP TABLE IF EXISTS `db_status`;
 
 CREATE TABLE `db_status` (
   `status_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
-  `pool_name` varchar(64) DEFAULT NULL COMMENT '连接池名称',
-  `com_select` bigint(20) unsigned DEFAULT NULL COMMENT '查询数',
-  `com_insert` bigint(20) unsigned DEFAULT NULL COMMENT '添加数',
-  `com_delete` bigint(20) unsigned DEFAULT NULL COMMENT '删除数',
-  `com_update` bigint(20) unsigned DEFAULT NULL COMMENT '编辑数',
-  `com_commit` bigint(20) unsigned DEFAULT NULL COMMENT '提交数',
-  `com_rollback` bigint(20) unsigned DEFAULT NULL COMMENT '回滚数',
-  `threads_connected` bigint(20) unsigned DEFAULT NULL COMMENT '总线程数',
-  `threads_running` bigint(20) unsigned DEFAULT NULL COMMENT '运行中线程数',
-  `pages_total_size` bigint(20) unsigned DEFAULT NULL COMMENT '总内存大小',
-  `pages_data_size` bigint(20) unsigned DEFAULT NULL COMMENT '已用内存大小',
-  `pages_free_size` bigint(20) unsigned DEFAULT NULL COMMENT '空闲内存大小',
-  `pages_misc_size` bigint(20) unsigned DEFAULT NULL COMMENT '忙碌内存大小',
+  `create_time` timestamp NOT NULL COMMENT '创建时间',
+  `pool_name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '连接池名称',
+  `com_select` bigint(20) unsigned NOT NULL COMMENT '查询数',
+  `com_insert` bigint(20) unsigned NOT NULL COMMENT '添加数',
+  `com_delete` bigint(20) unsigned NOT NULL COMMENT '删除数',
+  `com_update` bigint(20) unsigned NOT NULL COMMENT '编辑数',
+  `com_commit` bigint(20) unsigned NOT NULL COMMENT '提交数',
+  `com_rollback` bigint(20) unsigned NOT NULL COMMENT '回滚数',
+  `threads_connected` bigint(20) unsigned NOT NULL COMMENT '总线程数',
+  `threads_running` bigint(20) unsigned NOT NULL COMMENT '运行中线程数',
+  `pages_total_size` bigint(20) unsigned NOT NULL COMMENT '总内存大小',
+  `pages_data_size` bigint(20) unsigned NOT NULL COMMENT '已用内存大小',
+  `pages_free_size` bigint(20) unsigned NOT NULL COMMENT '空闲内存大小',
+  `pages_misc_size` bigint(20) unsigned NOT NULL COMMENT '忙碌内存大小',
   PRIMARY KEY (`status_id`),
   KEY `idx_create_time` (`create_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -67,9 +67,9 @@ DROP TABLE IF EXISTS `tb_config`;
 CREATE TABLE `tb_config` (
   `config_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '配置ID',
   `config_key` varchar(64) NOT NULL COMMENT '配置key',
-  `config_value` varchar(512) DEFAULT NULL COMMENT '配置value',
-  `config_comment` varchar(512) DEFAULT NULL COMMENT '配置描述',
-  `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+  `config_value` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '配置value',
+  `config_comment` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '配置描述',
+  `create_time` timestamp NOT NULL COMMENT '创建时间',
   `update_time` timestamp NULL DEFAULT NULL COMMENT '更新时间',
   `is_delete` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否删除(0:否,1:是)',
   PRIMARY KEY (`config_id`),
@@ -89,8 +89,8 @@ CREATE TABLE `tb_dictionary` (
   `dictionary_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '字典表ID',
   `dict_table_name` varchar(64) NOT NULL COMMENT '表名',
   `dict_column_name` varchar(64) NOT NULL COMMENT '字段名',
-  `dictionary_name` varchar(64) DEFAULT NULL COMMENT '字典名',
-  `dictionary_value` varchar(64) DEFAULT NULL COMMENT '字典值',
+  `dictionary_name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '字典名',
+  `dictionary_value` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '字典值',
   `sequence_number` smallint(5) unsigned NOT NULL DEFAULT '1' COMMENT '排序标识',
   `parent_id` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '父级ID',
   `is_leaf` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '是否是叶子节点(0:否,1:是)',
@@ -120,7 +120,7 @@ CREATE TABLE `tb_menu` (
   PRIMARY KEY (`menu_id`),
   KEY `idx_parent_id` (`parent_id`),
   KEY `idx_menu_name` (`menu_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `tb_menu` */
 
@@ -133,7 +133,8 @@ insert  into `tb_menu`(`menu_id`,`request_url`,`menu_name`,`menu_icon`,`parent_i
 (6,'/menu/forward','菜单管理','navicon',1,0,5,0,1,0),
 (7,'/config/forward','全局配置','cog',1,1,6,0,1,0),
 (8,'/reload/cache/forward','刷新缓存','refresh',1,0,7,0,1,0),
-(9,'/notice/forward','上线公告','arrow-circle-o-up',1,0,8,0,1,0);
+(9,'/notice/forward','上线公告','arrow-circle-o-up',1,0,8,0,1,0),
+(10,'/monitor/slowlog/forward','数据库慢查询','database',1,1,9,0,1,0);
 
 /*Table structure for table `tb_request_mapping` */
 
@@ -143,10 +144,10 @@ CREATE TABLE `tb_request_mapping` (
   `request_mapping_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '请求映射ID',
   `request_url` varchar(256) NOT NULL COMMENT '请求相对路径',
   `operation_class` varchar(256) NOT NULL COMMENT '请求处理类的全路径',
-  `url_comment` varchar(32) DEFAULT NULL COMMENT '注释',
+  `url_comment` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '注释',
   PRIMARY KEY (`request_mapping_id`),
   UNIQUE KEY `uniq_request_url` (`request_url`)
-) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `tb_request_mapping` */
 
@@ -206,7 +207,11 @@ insert  into `tb_request_mapping`(`request_mapping_id`,`request_url`,`operation_
 (53,'/role/user/list','com.github.automain.user.view.RoleUserListExecutor','角色用户列表'),
 (54,'/role/request/list','com.github.automain.user.view.RoleRequestListExecutor','角色权限列表'),
 (55,'/role/revoke/user','com.github.automain.user.action.RoleRevokeUserExecutor','角色取消分配用户'),
-(56,'/role/revoke/request','com.github.automain.user.action.RoleRevokeRequestExecutor','角色取消分配权限');
+(56,'/role/revoke/request','com.github.automain.user.action.RoleRevokeRequestExecutor','角色取消分配权限'),
+(57,'/schedule/dbstatus','com.github.automain.schedule.DBStatusSchedule','数据库状态任务'),
+(58,'/schedule/slowlog','com.github.automain.schedule.SlowLogSchedule','数据库慢查询任务'),
+(59,'/monitor/slowlog/forward','com.github.automain.monitor.view.SlowLogForwardExecutor','数据库慢查询跳转'),
+(60,'/monitor/slowlog/list','com.github.automain.monitor.view.SlowLogListExecutor','数据库慢查询列表');
 
 /*Table structure for table `tb_role` */
 
@@ -214,8 +219,8 @@ DROP TABLE IF EXISTS `tb_role`;
 
 CREATE TABLE `tb_role` (
   `role_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '角色ID',
-  `role_name` varchar(32) DEFAULT NULL COMMENT '角色名称',
-  `role_label` varchar(32) DEFAULT NULL COMMENT '角色标识',
+  `role_name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '角色名称',
+  `role_label` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '角色标识',
   `is_delete` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否删除(0:否,1:是)',
   PRIMARY KEY (`role_id`),
   UNIQUE KEY `uniq_role_label` (`role_label`)
@@ -263,11 +268,11 @@ DROP TABLE IF EXISTS `tb_upload_file`;
 
 CREATE TABLE `tb_upload_file` (
   `upload_file_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '文件ID',
-  `file_extension` varchar(8) DEFAULT NULL COMMENT '文件扩展名',
-  `file_path` varchar(64) DEFAULT NULL COMMENT '文件相对路径',
+  `file_extension` varchar(8) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '文件扩展名',
+  `file_path` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '文件相对路径',
   `file_size` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '文件大小(字节)',
-  `upload_time` timestamp NULL DEFAULT NULL COMMENT '上传日期',
-  `file_md5` char(32) DEFAULT NULL COMMENT '文件MD5值',
+  `upload_time` timestamp NOT NULL COMMENT '上传日期',
+  `file_md5` char(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '文件MD5值',
   `image_width` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '图片文件宽度',
   `image_height` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '图片文件高度',
   PRIMARY KEY (`upload_file_id`)
@@ -300,10 +305,10 @@ DROP TABLE IF EXISTS `tb_user`;
 
 CREATE TABLE `tb_user` (
   `user_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '用户ID',
-  `user_name` varchar(16) DEFAULT NULL COMMENT '用户名',
-  `password_md5` char(32) DEFAULT NULL COMMENT '密码MD5值',
-  `cellphone` char(11) DEFAULT NULL COMMENT '手机号',
-  `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+  `user_name` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '用户名',
+  `password_md5` char(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '密码MD5值',
+  `cellphone` char(11) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '手机号',
+  `create_time` timestamp NOT NULL COMMENT '创建时间',
   `email` varchar(128) DEFAULT NULL COMMENT '邮箱',
   `is_delete` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否删除(0:否,1:是)',
   PRIMARY KEY (`user_id`),

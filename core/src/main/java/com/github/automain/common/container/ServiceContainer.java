@@ -12,6 +12,12 @@ import com.github.automain.common.service.TbConfigService;
 import com.github.automain.common.service.TbDictionaryService;
 import com.github.automain.common.service.TbUploadFileService;
 import com.github.automain.common.service.TbUploadRelationService;
+import com.github.automain.monitor.bean.DbSlowLog;
+import com.github.automain.monitor.bean.DbStatus;
+import com.github.automain.monitor.dao.DbSlowLogDao;
+import com.github.automain.monitor.dao.DbStatusDao;
+import com.github.automain.monitor.service.DbSlowLogService;
+import com.github.automain.monitor.service.DbStatusService;
 import com.github.automain.user.bean.TbMenu;
 import com.github.automain.user.bean.TbRequestMapping;
 import com.github.automain.user.bean.TbRole;
@@ -48,6 +54,8 @@ public interface ServiceContainer {
     TbRequestMappingService TB_REQUEST_MAPPING_SERVICE = new TbRequestMappingService(new TbRequestMapping(), new TbRequestMappingDao());
     TbUserRoleService TB_USER_ROLE_SERVICE = new TbUserRoleService(new TbUserRole(), new TbUserRoleDao());
     TbConfigService TB_CONFIG_SERVICE = new TbConfigService(new TbConfig(), new TbConfigDao());
+    DbSlowLogService DB_SLOW_LOG_SERVICE = new DbSlowLogService(new DbSlowLog(), new DbSlowLogDao());
+    DbStatusService DB_STATUS_SERVICE = new DbStatusService(new DbStatus(), new DbStatusDao());
     // ==================== frame end ====================
 
     // ==================== business start ==================
