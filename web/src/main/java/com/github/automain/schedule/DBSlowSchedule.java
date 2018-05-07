@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.sql.SQLException;
 import java.util.List;
 
-public class SlowLogSchedule extends BaseExecutor {
+public class DBSlowSchedule extends BaseExecutor {
 
     @Override
     protected boolean checkAuthority(Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {

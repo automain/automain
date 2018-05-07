@@ -28,10 +28,10 @@
         <th lay-data="{field:'slow_sql', width:460}">慢查询sql</th>
     </tr>
     </thead>
-    <tbody id="slow_log_list_body">
+    <tbody id="db_slow_list_body">
     </tbody>
 </table>
-<div id="slow_log_page"></div>
+<div id="db_slow_page"></div>
 </body>
 </html>
 <script>
@@ -55,13 +55,13 @@
     function reloadSlowLogList(page) {
         var index = layer.load();
         setTimeout(function () {
-            $.post("${ctx}/monitor/slowlog/list", {
+            $.post("${ctx}/monitor/dbslow/list", {
                 page: page
                 ,createTimeRange: $("#create_time_search").val()
             }, function (data) {
                 if (data.code == code_success) {
-                    $("#slow_log_list_body").html(data.data);
-                    renderPage(laypage, "slow_log_page", data.count, data.curr, reloadSlowLogList);
+                    $("#db_slow_list_body").html(data.data);
+                    renderPage(laypage, "db_slow_page", data.count, data.curr, reloadSlowLogList);
                     table.init('db_slow_log', {
                         height: 'full-190'
                     });

@@ -37,7 +37,7 @@
     <thead>
     <tr>
         <th lay-data="{field:'menu_id',checkbox:true, fixed:'left'}"></th>
-        <th lay-data="{field:'request_url', width:160}">请求路径</th>
+        <th lay-data="{field:'request_url', width:260}">请求路径</th>
         <th lay-data="{field:'menu_name', width:160}">菜单名称</th>
         <th lay-data="{field:'menu_icon', width:160}">菜单图标</th>
         <th lay-data="{field:'sequence_number', width:160}">菜单排序</th>

@@ -55,7 +55,7 @@ CREATE TABLE `db_status` (
   `pages_misc` bigint(20) unsigned NOT NULL COMMENT '忙碌页大小',
   PRIMARY KEY (`status_id`),
   KEY `idx_create_time` (`create_time`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `db_status` */
 
@@ -119,7 +119,7 @@ CREATE TABLE `tb_menu` (
   PRIMARY KEY (`menu_id`),
   KEY `idx_parent_id` (`parent_id`),
   KEY `idx_menu_name` (`menu_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `tb_menu` */
 
@@ -133,7 +133,9 @@ insert  into `tb_menu`(`menu_id`,`request_url`,`menu_name`,`menu_icon`,`parent_i
 (7,'/config/forward','全局配置','cog',1,1,6,0,1,0),
 (8,'/reload/cache/forward','刷新缓存','refresh',1,0,7,0,1,0),
 (9,'/notice/forward','上线公告','arrow-circle-o-up',1,0,8,0,1,0),
-(10,'/monitor/slowlog/forward','数据库慢查询','database',1,1,9,0,1,0);
+(10,NULL,'数据库监控','database',1,1,9,0,0,0),
+(11,'/monitor/dbslow/forward','慢查询','exclamation-circle',10,1,1,0,1,0),
+(12,'/monitor/dbstatus/forward?forwardType=sql','sql统计','bar-chart',10,1,2,0,1,0);
 
 /*Table structure for table `tb_request_mapping` */
 
@@ -146,7 +148,7 @@ CREATE TABLE `tb_request_mapping` (
   `url_comment` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '注释',
   PRIMARY KEY (`request_mapping_id`),
   UNIQUE KEY `uniq_request_url` (`request_url`)
-) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `tb_request_mapping` */
 
@@ -208,9 +210,10 @@ insert  into `tb_request_mapping`(`request_mapping_id`,`request_url`,`operation_
 (55,'/role/revoke/user','com.github.automain.user.action.RoleRevokeUserExecutor','角色取消分配用户'),
 (56,'/role/revoke/request','com.github.automain.user.action.RoleRevokeRequestExecutor','角色取消分配权限'),
 (57,'/schedule/dbstatus','com.github.automain.schedule.DBStatusSchedule','数据库状态任务'),
-(58,'/schedule/slowlog','com.github.automain.schedule.SlowLogSchedule','数据库慢查询任务'),
-(59,'/monitor/slowlog/forward','com.github.automain.monitor.view.SlowLogForwardExecutor','数据库慢查询跳转'),
-(60,'/monitor/slowlog/list','com.github.automain.monitor.view.SlowLogListExecutor','数据库慢查询列表');
+(58,'/schedule/dbslow','com.github.automain.schedule.DBSlowSchedule','数据库慢查询任务'),
+(59,'/monitor/dbslow/forward','com.github.automain.monitor.view.DBSlowForwardExecutor','数据库慢查询跳转'),
+(60,'/monitor/dbslow/list','com.github.automain.monitor.view.DBSlowListExecutor','数据库慢查询列表'),
+(61,'/monitor/dbstatus/forward','com.github.automain.monitor.view.DbStatusForwardExecutor','数据库监控跳转');
 
 /*Table structure for table `tb_role` */
 

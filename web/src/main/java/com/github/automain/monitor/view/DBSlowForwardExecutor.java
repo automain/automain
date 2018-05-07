@@ -7,10 +7,10 @@ import redis.clients.jedis.Jedis;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class SlowLogForwardExecutor extends BaseExecutor {
+public class DBSlowForwardExecutor extends BaseExecutor {
 
     @Override
     protected String doAction(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        return "monitor/slow_log_tab";
+        return "monitor/db_slow_tab";
     }
 }

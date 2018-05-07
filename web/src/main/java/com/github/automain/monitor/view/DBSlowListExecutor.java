@@ -9,7 +9,7 @@ import redis.clients.jedis.Jedis;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class SlowLogListExecutor extends BaseExecutor {
+public class DBSlowListExecutor extends BaseExecutor {
 
     @Override
     protected String doAction(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -17,6 +17,6 @@ public class SlowLogListExecutor extends BaseExecutor {
         bean = bean.beanFromRequest(request);
         PageBean<DbSlowLog> pageBean = DB_SLOW_LOG_SERVICE.selectTableForCustomPage(connection, bean, request);
         request.setAttribute(PAGE_BEAN_PARAM, pageBean);
-        return "monitor/slow_log_list";
+        return "monitor/db_slow_list";
     }
 }
