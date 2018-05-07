@@ -47,29 +47,25 @@ public class DbStatusDao extends BaseDao<DbStatus> {
             sql.append(" AND com_update = ?");
             parameterList.add(bean.getComUpdate());
         }
-        if (bean.getPagesDataSize() != null) {
-            sql.append(" AND pages_data_size = ?");
-            parameterList.add(bean.getPagesDataSize());
+        if (bean.getPagesData() != null) {
+            sql.append(" AND pages_data = ?");
+            parameterList.add(bean.getPagesData());
         }
-        if (bean.getPagesFreeSize() != null) {
-            sql.append(" AND pages_free_size = ?");
-            parameterList.add(bean.getPagesFreeSize());
+        if (bean.getPagesFree() != null) {
+            sql.append(" AND pages_free = ?");
+            parameterList.add(bean.getPagesFree());
         }
-        if (bean.getPagesMiscSize() != null) {
-            sql.append(" AND pages_misc_size = ?");
-            parameterList.add(bean.getPagesMiscSize());
-        }
-        if (bean.getPagesTotalSize() != null) {
-            sql.append(" AND pages_total_size = ?");
-            parameterList.add(bean.getPagesTotalSize());
+        if (bean.getPagesMisc() != null) {
+            sql.append(" AND pages_misc = ?");
+            parameterList.add(bean.getPagesMisc());
         }
         if (bean.getPoolName() != null) {
             sql.append(" AND pool_name = ?");
             parameterList.add(bean.getPoolName());
         }
-        if (bean.getThreadsConnected() != null) {
-            sql.append(" AND threads_connected = ?");
-            parameterList.add(bean.getThreadsConnected());
+        if (bean.getThreadsFree() != null) {
+            sql.append(" AND threads_free = ?");
+            parameterList.add(bean.getThreadsFree());
         }
         if (bean.getThreadsRunning() != null) {
             sql.append(" AND threads_running = ?");

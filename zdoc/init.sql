@@ -48,15 +48,14 @@ CREATE TABLE `db_status` (
   `com_update` bigint(20) unsigned NOT NULL COMMENT '编辑数',
   `com_commit` bigint(20) unsigned NOT NULL COMMENT '提交数',
   `com_rollback` bigint(20) unsigned NOT NULL COMMENT '回滚数',
-  `threads_connected` bigint(20) unsigned NOT NULL COMMENT '总线程数',
+  `threads_free` bigint(20) unsigned NOT NULL COMMENT '空闲线程数',
   `threads_running` bigint(20) unsigned NOT NULL COMMENT '运行中线程数',
-  `pages_total_size` bigint(20) unsigned NOT NULL COMMENT '总内存大小',
-  `pages_data_size` bigint(20) unsigned NOT NULL COMMENT '已用内存大小',
-  `pages_free_size` bigint(20) unsigned NOT NULL COMMENT '空闲内存大小',
-  `pages_misc_size` bigint(20) unsigned NOT NULL COMMENT '忙碌内存大小',
+  `pages_data` bigint(20) unsigned NOT NULL COMMENT '已用页大小',
+  `pages_free` bigint(20) unsigned NOT NULL COMMENT '空闲页大小',
+  `pages_misc` bigint(20) unsigned NOT NULL COMMENT '忙碌页大小',
   PRIMARY KEY (`status_id`),
   KEY `idx_create_time` (`create_time`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 
 /*Data for the table `db_status` */
 

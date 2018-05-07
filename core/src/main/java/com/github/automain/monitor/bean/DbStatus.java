@@ -33,17 +33,14 @@ public class DbStatus extends RequestUtil implements BaseBean<DbStatus> {
     // 创建时间
     private Timestamp createTime;
 
-    // 已用内存大小
-    private Long pagesDataSize;
+    // 已用页大小
+    private Long pagesData;
 
-    // 空闲内存大小
-    private Long pagesFreeSize;
+    // 空闲页大小
+    private Long pagesFree;
 
-    // 忙碌内存大小
-    private Long pagesMiscSize;
-
-    // 总内存大小
-    private Long pagesTotalSize;
+    // 忙碌页大小
+    private Long pagesMisc;
 
     // 连接池名称
     private String poolName;
@@ -51,8 +48,8 @@ public class DbStatus extends RequestUtil implements BaseBean<DbStatus> {
     // 主键
     private Long statusId;
 
-    // 总线程数
-    private Long threadsConnected;
+    // 空闲线程数
+    private Long threadsFree;
 
     // 运行中线程数
     private Long threadsRunning;
@@ -128,36 +125,28 @@ public class DbStatus extends RequestUtil implements BaseBean<DbStatus> {
         this.createTime = createTime;
     }
 
-    public Long getPagesDataSize() {
-        return pagesDataSize;
+    public Long getPagesData() {
+        return pagesData;
     }
 
-    public void setPagesDataSize(Long pagesDataSize) {
-        this.pagesDataSize = pagesDataSize;
+    public void setPagesData(Long pagesData) {
+        this.pagesData = pagesData;
     }
 
-    public Long getPagesFreeSize() {
-        return pagesFreeSize;
+    public Long getPagesFree() {
+        return pagesFree;
     }
 
-    public void setPagesFreeSize(Long pagesFreeSize) {
-        this.pagesFreeSize = pagesFreeSize;
+    public void setPagesFree(Long pagesFree) {
+        this.pagesFree = pagesFree;
     }
 
-    public Long getPagesMiscSize() {
-        return pagesMiscSize;
+    public Long getPagesMisc() {
+        return pagesMisc;
     }
 
-    public void setPagesMiscSize(Long pagesMiscSize) {
-        this.pagesMiscSize = pagesMiscSize;
-    }
-
-    public Long getPagesTotalSize() {
-        return pagesTotalSize;
-    }
-
-    public void setPagesTotalSize(Long pagesTotalSize) {
-        this.pagesTotalSize = pagesTotalSize;
+    public void setPagesMisc(Long pagesMisc) {
+        this.pagesMisc = pagesMisc;
     }
 
     public String getPoolName() {
@@ -176,12 +165,12 @@ public class DbStatus extends RequestUtil implements BaseBean<DbStatus> {
         this.statusId = statusId;
     }
 
-    public Long getThreadsConnected() {
-        return threadsConnected;
+    public Long getThreadsFree() {
+        return threadsFree;
     }
 
-    public void setThreadsConnected(Long threadsConnected) {
-        this.threadsConnected = threadsConnected;
+    public void setThreadsFree(Long threadsFree) {
+        this.threadsFree = threadsFree;
     }
 
     public Long getThreadsRunning() {
@@ -231,23 +220,20 @@ public class DbStatus extends RequestUtil implements BaseBean<DbStatus> {
         if (this.getCreateTime() != null) {
             map.put("create_time", this.getCreateTime());
         }
-        if (this.getPagesDataSize() != null) {
-            map.put("pages_data_size", this.getPagesDataSize());
+        if (this.getPagesData() != null) {
+            map.put("pages_data", this.getPagesData());
         }
-        if (this.getPagesFreeSize() != null) {
-            map.put("pages_free_size", this.getPagesFreeSize());
+        if (this.getPagesFree() != null) {
+            map.put("pages_free", this.getPagesFree());
         }
-        if (this.getPagesMiscSize() != null) {
-            map.put("pages_misc_size", this.getPagesMiscSize());
-        }
-        if (this.getPagesTotalSize() != null) {
-            map.put("pages_total_size", this.getPagesTotalSize());
+        if (this.getPagesMisc() != null) {
+            map.put("pages_misc", this.getPagesMisc());
         }
         if (this.getPoolName() != null) {
             map.put("pool_name", this.getPoolName());
         }
-        if (this.getThreadsConnected() != null) {
-            map.put("threads_connected", this.getThreadsConnected());
+        if (this.getThreadsFree() != null) {
+            map.put("threads_free", this.getThreadsFree());
         }
         if (this.getThreadsRunning() != null) {
             map.put("threads_running", this.getThreadsRunning());
@@ -265,13 +251,12 @@ public class DbStatus extends RequestUtil implements BaseBean<DbStatus> {
         bean.setComSelect(rs.getLong("com_select"));
         bean.setComUpdate(rs.getLong("com_update"));
         bean.setCreateTime(rs.getTimestamp("create_time"));
-        bean.setPagesDataSize(rs.getLong("pages_data_size"));
-        bean.setPagesFreeSize(rs.getLong("pages_free_size"));
-        bean.setPagesMiscSize(rs.getLong("pages_misc_size"));
-        bean.setPagesTotalSize(rs.getLong("pages_total_size"));
+        bean.setPagesData(rs.getLong("pages_data"));
+        bean.setPagesFree(rs.getLong("pages_free"));
+        bean.setPagesMisc(rs.getLong("pages_misc"));
         bean.setPoolName(rs.getString("pool_name"));
         bean.setStatusId(rs.getLong("status_id"));
-        bean.setThreadsConnected(rs.getLong("threads_connected"));
+        bean.setThreadsFree(rs.getLong("threads_free"));
         bean.setThreadsRunning(rs.getLong("threads_running"));
         return bean;
     }
@@ -286,13 +271,12 @@ public class DbStatus extends RequestUtil implements BaseBean<DbStatus> {
         bean.setComSelect(getLong("comSelect", request));
         bean.setComUpdate(getLong("comUpdate", request));
         bean.setCreateTime(getTimestamp("createTime", request));
-        bean.setPagesDataSize(getLong("pagesDataSize", request));
-        bean.setPagesFreeSize(getLong("pagesFreeSize", request));
-        bean.setPagesMiscSize(getLong("pagesMiscSize", request));
-        bean.setPagesTotalSize(getLong("pagesTotalSize", request));
+        bean.setPagesData(getLong("pagesData", request));
+        bean.setPagesFree(getLong("pagesFree", request));
+        bean.setPagesMisc(getLong("pagesMisc", request));
         bean.setPoolName(getString("poolName", request));
         bean.setStatusId(getLong("statusId", request));
-        bean.setThreadsConnected(getLong("threadsConnected", request));
+        bean.setThreadsFree(getLong("threadsFree", request));
         bean.setThreadsRunning(getLong("threadsRunning", request));
         bean.setCreateTimeRange(getString("createTimeRange", request));
         return bean;
