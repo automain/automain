@@ -1,11 +1,17 @@
 package com.github.automain.monitor.dao;
 
 import com.github.automain.monitor.bean.DbStatus;
+import com.github.automain.util.PropertiesUtil;
 import com.github.fastjdbc.bean.ConnectionBean;
+import com.github.fastjdbc.bean.ConnectionPool;
 import com.github.fastjdbc.bean.PageBean;
 import com.github.fastjdbc.common.BaseDao;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class DbStatusDao extends BaseDao<DbStatus> {
@@ -72,5 +78,58 @@ public class DbStatusDao extends BaseDao<DbStatus> {
             parameterList.add(bean.getThreadsRunning());
         }
         return sql.toString();
+    }
+
+    public DbStatus selectNowStatus(ConnectionBean connection, String poolName) throws SQLException {
+        ResultSet rs = null;
+        DbStatus result = new DbStatus();
+        result.setCreateTime(new Timestamp(System.currentTimeMillis()));
+        result.setPoolName(poolName);
+        Long threadsConnected = 0L;
+        try {
+            String sql = "SHOW GLOBAL STATUS";
+            rs = executeSelectReturnResultSet(connection, sql, null);
+            while (rs.next()) {
+                switch (rs.getString("Variable_name")) {
+                    case "Com_select":
+                        result.setComSelect(rs.getLong("Value"));
+                        break;
+                    case "Com_insert":
+                        result.setComInsert(rs.getLong("Value"));
+                        break;
+                    case "Com_delete":
+                        result.setComDelete(rs.getLong("Value"));
+                        break;
+                    case "Com_update":
+                        result.setComUpdate(rs.getLong("Value"));
+                        break;
+                    case "Com_commit":
+                        result.setComCommit(rs.getLong("Value"));
+                        break;
+                    case "Com_rollback":
+                        result.setComRollback(rs.getLong("Value"));
+                        break;
+                    case "Threads_connected":
+                        threadsConnected = rs.getLong("Value");
+                        break;
+                    case "Threads_running":
+                        result.setThreadsRunning(rs.getLong("Value"));
+                        break;
+                    case "Innodb_buffer_pool_pages_data":
+                        result.setPagesData(rs.getLong("Value"));
+                        break;
+                    case "Innodb_buffer_pool_pages_free":
+                        result.setPagesFree(rs.getLong("Value"));
+                        break;
+                    case "Innodb_buffer_pool_pages_misc":
+                        result.setPagesMisc(rs.getLong("Value"));
+                        break;
+                }
+            }
+            result.setThreadsFree(threadsConnected - result.getThreadsRunning());
+        } finally {
+            ConnectionPool.close(rs);
+        }
+        return result;
     }
 }

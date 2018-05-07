@@ -7,6 +7,7 @@ import com.github.fastjdbc.bean.PageBean;
 import com.github.fastjdbc.common.BaseService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.sql.SQLException;
 
 public class DbStatusService extends BaseService<DbStatus, DbStatusDao> {
 
@@ -16,5 +17,9 @@ public class DbStatusService extends BaseService<DbStatus, DbStatusDao> {
 
     public PageBean<DbStatus> selectTableForCustomPage(ConnectionBean connection, DbStatus bean, HttpServletRequest request) throws Exception {
         return getDao().selectTableForCustomPage(connection, bean, pageFromRequest(request), limitFromRequest(request));
+    }
+
+    public DbStatus selectNowStatus(ConnectionBean connection, String poolName) throws SQLException {
+        return getDao().selectNowStatus(connection, poolName);
     }
 }

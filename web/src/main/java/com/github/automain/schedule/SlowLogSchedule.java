@@ -27,7 +27,7 @@ public class SlowLogSchedule extends BaseExecutor {
             try {
                 connectionBean = ConnectionPool.getConnectionBean(poolName);
                 List<DbSlowLog> slowLogList = DB_SLOW_LOG_SERVICE.selectNowSlowSql(connectionBean, poolName);
-                inserSlowLog(connectionBean, slowLogList);
+                insertSlowLog(connectionBean, slowLogList);
             } finally {
                 ConnectionPool.closeConnectionBean(connectionBean);
             }
@@ -35,7 +35,7 @@ public class SlowLogSchedule extends BaseExecutor {
         return null;
     }
 
-    private void inserSlowLog(ConnectionBean connection, List<DbSlowLog> slowLogList) throws SQLException {
+    private void insertSlowLog(ConnectionBean connection, List<DbSlowLog> slowLogList) throws SQLException {
         for (DbSlowLog log : slowLogList) {
             DB_SLOW_LOG_SERVICE.insertIntoTable(connection, log);
         }
