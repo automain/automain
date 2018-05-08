@@ -1,8 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+    <%@include file="common.jsp" %>
     <title>错误页面</title>
     <style type="text/css">
         * {
@@ -49,6 +48,27 @@
 <div class="page-error">
     <h1>${code}</h1>
     <h3 class="font-bold">${msg}</h3>
+    <div id="jumpDiv" style="display: none;">
+        <h3 class="font-bold"><span id="intervalTime">3</span>秒后跳转到登录页面</h3>
+    </div>
 </div>
 </body>
 </html>
+<script>
+    var i;
+    if (${code == 403}) {
+        $("#jumpDiv").show();
+        i = setInterval(function(){shrink()}, 1000);
+    }
+    function shrink(){
+        var val = $("#intervalTime").html();
+        console.log(val);
+        var sub = val - 1;
+        if (sub > 0) {
+            $("#intervalTime").html(sub);
+        } else {
+            window.clearInterval(i);
+            window.location.href = '${ctx}/';
+        }
+    }
+</script>

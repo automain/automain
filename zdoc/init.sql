@@ -148,7 +148,7 @@ CREATE TABLE `tb_request_mapping` (
   `url_comment` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '注释',
   PRIMARY KEY (`request_mapping_id`),
   UNIQUE KEY `uniq_request_url` (`request_url`)
-) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `tb_request_mapping` */
 
@@ -213,7 +213,8 @@ insert  into `tb_request_mapping`(`request_mapping_id`,`request_url`,`operation_
 (58,'/schedule/dbslow','com.github.automain.schedule.DbSlowSchedule','数据库慢查询任务'),
 (59,'/monitor/dbslow/forward','com.github.automain.monitor.view.DbSlowForwardExecutor','数据库慢查询跳转'),
 (60,'/monitor/dbslow/list','com.github.automain.monitor.view.DbSlowListExecutor','数据库慢查询列表'),
-(61,'/monitor/dbstatus/forward','com.github.automain.monitor.view.DbStatusForwardExecutor','数据库监控跳转');
+(61,'/monitor/dbstatus/forward','com.github.automain.monitor.view.DbStatusForwardExecutor','数据库监控跳转'),
+(62,'/monitor/dbsql','com.github.automain.monitor.action.DbSqlExecutor','数据库sql统计');
 
 /*Table structure for table `tb_role` */
 

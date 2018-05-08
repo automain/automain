@@ -5,10 +5,9 @@ import com.github.automain.common.container.ServiceContainer;
 import com.github.automain.common.view.ResourceNotFoundExecutor;
 import com.github.automain.user.view.LoginExecutor;
 import com.github.automain.util.HTTPUtil;
-import com.github.automain.util.PropertiesUtil;
+import com.github.automain.util.SystemUtil;
 import com.github.fastjdbc.bean.ConnectionBean;
 import com.github.fastjdbc.bean.ConnectionPool;
-import com.zaxxer.hikari.HikariConfig;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.ServletContext;
@@ -20,9 +19,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
 
 @WebServlet(urlPatterns = "/", asyncSupported = true, loadOnStartup = 2)
 public class DispatcherController extends HttpServlet {
@@ -31,7 +27,7 @@ public class DispatcherController extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        initConnectionPool();
+        SystemUtil.initConnectionPool();
         initStaticVersion();
     }
 
@@ -87,35 +83,6 @@ public class DispatcherController extends HttpServlet {
             bean.setUpdateTime(now);
             ServiceContainer.TB_CONFIG_SERVICE.insertIntoTable(connection, bean);
         }
-    }
-
-    private void initConnectionPool() {
-        Properties properties = PropertiesUtil.getProperties("db.properties");
-        String poolNamesStr = properties.getProperty("pool_names");
-        String[] poolNames = poolNamesStr.split(",");
-        int length = poolNames.length;
-        HikariConfig masterConfig = initConfig(properties, poolNames[0]);
-        List<HikariConfig> slaveConfigList = null;
-        if (length > 1) {
-            slaveConfigList = new ArrayList<HikariConfig>(length - 1);
-            for (int i = 1; i < length; i++) {
-                String poolName = poolNames[i];
-                slaveConfigList.add(initConfig(properties, poolName));
-            }
-        }
-        ConnectionPool.init(masterConfig, slaveConfigList);
-    }
-
-    private HikariConfig initConfig(Properties properties, String poolName) {
-        HikariConfig config = new HikariConfig();
-        config.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        config.setMinimumIdle(Integer.parseInt(properties.getProperty("minimumIdle")));
-        config.setMaximumPoolSize(Integer.parseInt(properties.getProperty("maximumPoolSize")));
-        config.setPoolName(poolName);
-        config.setJdbcUrl(properties.getProperty(poolName + "_jdbcUrl"));
-        config.setUsername(properties.getProperty(poolName + "_username"));
-        config.setPassword(properties.getProperty(poolName + "_password"));
-        return config;
     }
 
     @Override

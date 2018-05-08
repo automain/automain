@@ -9,12 +9,10 @@
 <div class="layui-container">
     <div class="layui-form-item">
         <label class="layui-form-label">时间:</label>
-        <div class="layui-inline">
+        <div class="layui-input-inline">
             <input type="text" class="layui-input" id="qps_time">
         </div>
-    </div>
-    <div class="layui-form-item">
-        <div class="layui-input-block">
+        <div class="layui-input-inline">
             <button class="layui-btn" id="qps_search">查询</button>
         </div>
     </div>
@@ -36,140 +34,159 @@
         var dom = document.getElementById("qps_panel");
         var myChart = echarts.init(dom);
 
-        var sqldata;
         $.post("${ctx}/monitor/dbsql", {
             startTime: $("#qps_time").val()
         }, function(data){
             if (data.code == code_success) {
                 var dbSqlVOList = data.dbSqlVOList;
-                var length = dbSqlVOList.length;
-                var timex = {};
+                var masterName = data.masterName;
+                var slaveNames = data.slaveNames;
+                var titles = [masterName + 'Insert', masterName + 'Update', masterName + 'Delete', masterName + 'Select'];
+                slaveNames.forEach(function(v) {
+                    titles.push(v + "Select");
+                });
+                var valueObject = {};
                 var categoryData = [];
-                var valueData = [];
-                for (var i = 0; i < length; i++) {
+                for (var i = 0, length = dbSqlVOList.length; i < length; i++) {
                     var vo = dbSqlVOList[i];
                     var poolName = vo.poolName;
                     var createTime = vo.createTime;
-                    if (typeof timex[createTime] === 'undefined'){
+                    var inner = {};
+                    if (typeof valueObject[createTime] === 'undefined'){
                         categoryData.push(echarts.format.formatTime('yyyy-MM-dd\nhh:mm:ss', createTime));
-                        timex[createTime] = true;
+                    } else {
+                        inner = valueObject[createTime];
                     }
+                    if (masterName === poolName) {
+                        if (typeof inner[poolName + 'Insert'] === 'undefined'){
+                            inner[poolName + 'Insert'] = [];
+                        }
+                        if (typeof inner[poolName + 'Update'] === 'undefined'){
+                            inner[poolName + 'Update'] = [];
+                        }
+                        if (typeof inner[poolName + 'Delete'] === 'undefined'){
+                            inner[poolName + 'Delete'] = [];
+                        }
+                        inner[poolName + 'Insert'].push(vo.comInsert);
+                        inner[poolName + 'Update'].push(vo.comUpdate);
+                        inner[poolName + 'Delete'].push(vo.comDelete);
+                    }
+                    if (typeof inner[poolName + 'Select'] === 'undefined'){
+                        inner[poolName + 'Select'] = [];
+                    }
+                    inner[poolName + 'Select'].push(vo.comSelect);
+                    valueObject[createTime] = inner;
+                }
+                categoryData.splice(categoryData.length - 1,1);
+                var masterInsert = [];
+                var masterUpdate = [];
+                var masterDelete = [];
+                var masterSelect = [];
+                var slaveSelect = [];
+                for (var index in valueObject) {
+                    var thisObj = valueObject[index];
+                    var nextObj = valueObject[index * 1 + 5000];
+                    if (typeof nextObj === 'undefined'){
+                        break;
+                    }
+                    masterInsert.push(nextObj[masterName + 'Insert'] - thisObj[masterName + 'Insert']);
+                    masterUpdate.push(nextObj[masterName + 'Update'] - thisObj[masterName + 'Update']);
+                    masterDelete.push(nextObj[masterName + 'Delete'] - thisObj[masterName + 'Delete']);
+                    masterSelect.push(nextObj[masterName + 'Select'] - thisObj[masterName + 'Select']);
+                    slaveNames.forEach(function(v) {
+                        if (typeof slaveSelect[v] === 'undefined'){
+                            slaveSelect[v] = [];
+                        }
+                        slaveSelect[v].push(nextObj[v + "Select"] - thisObj[v + 'Select']);
+                    });
+                }
+                var series = [{
+                    name: masterName + 'Insert',
+                    stack: 'master',
+                    type: 'bar',
+                    data: masterInsert,
+                    large: true
+                },{
+                    name: masterName + 'Update',
+                    stack: 'master',
+                    type: 'bar',
+                    data: masterUpdate,
+                    large: true
+                },{
+                    name: masterName + 'Delete',
+                    stack: 'master',
+                    type: 'bar',
+                    data: masterDelete,
+                    large: true
+                },{
+                    name: masterName + 'Select',
+                    stack: 'master',
+                    type: 'bar',
+                    data: masterSelect,
+                    large: true
+                }];
+                for (var index in slaveSelect){
+                    var o = {
+                        name: index + 'Select',
+                        type: 'bar',
+                        data: slaveSelect[index],
+                        large: true
+                    };
+                    series.push(o);
+                }
+                var option = {
+                    title: {
+                        text: 'sql 统计',
+                        left: 10
+                    },
+                    toolbox: {
+                        feature: {
+                            dataZoom: {
+                                yAxisIndex: false
+                            },
+                            saveAsImage: {
+                                pixelRatio: 2
+                            }
+                        }
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'shadow'
+                        }
+                    },
+                    grid: {
+                        bottom: 90
+                    },
+                    dataZoom: [{
+                        type: 'inside'
+                    }, {
+                        type: 'slider'
+                    }],
+                    xAxis: {
+                        data: categoryData,
+                        silent: false,
+                        splitLine: {
+                            show: false
+                        },
+                        splitArea: {
+                            show: false
+                        }
+                    },
+                    yAxis: {
+                        splitArea: {
+                            show: false
+                        }
+                    },
+                    legend: {
+                        data: titles
+                    },
+                    series: series
+                };
+                if (option && typeof option === "object") {
+                    myChart.setOption(option, true);
                 }
             }
         },"json");
-        var dataCount = 1440;
-        var data = generateData(dataCount);
-
-        var option = {
-            title: {
-                text: echarts.format.addCommas(dataCount) + ' Data',
-                left: 10
-            },
-            toolbox: {
-                feature: {
-                    dataZoom: {
-                        yAxisIndex: false
-                    },
-                    saveAsImage: {
-                        pixelRatio: 2
-                    }
-                }
-            },
-            tooltip: {
-                trigger: 'axis',
-                axisPointer: {
-                    type: 'shadow'
-                }
-            },
-            grid: {
-                bottom: 90
-            },
-            dataZoom: [{
-                type: 'inside'
-            }, {
-                type: 'slider'
-            }],
-            xAxis: {
-                data: data.categoryData,
-                silent: false,
-                splitLine: {
-                    show: false
-                },
-                splitArea: {
-                    show: false
-                }
-            },
-            yAxis: {
-                splitArea: {
-                    show: false
-                }
-            },
-            legend: {
-                data:['masterInsert', 'masterUpdate', 'masterDelete', 'masterSelect', 'slave1Select']
-            },
-            series: [{
-                name: 'masterInsert',
-                stack: 'master',
-                type: 'bar',
-                data: data.valueData,
-                large: true
-            },{
-                name: 'masterUpdate',
-                stack: 'master',
-                type: 'bar',
-                data: data.valueData,
-                large: true
-            },{
-                name: 'masterDelete',
-                stack: 'master',
-                type: 'bar',
-                data: data.valueData,
-                large: true
-            },{
-                name: 'masterSelect',
-                stack: 'master',
-                type: 'bar',
-                data: data.valueData,
-                large: true
-            },{
-                name: 'slave1Select',
-                type: 'bar',
-                data: data.valueData,
-                large: true
-            }]
-        };
-        if (option && typeof option === "object") {
-            myChart.setOption(option, true);
-        }
-    }
-    function generateData(count) {
-        var baseValue = Math.random() * 1000;
-        var time = +new Date(2011, 0, 1);
-        var smallBaseValue;
-
-        function next(idx) {
-            smallBaseValue = idx % 30 === 0
-                ? Math.random() * 700
-                : (smallBaseValue + Math.random() * 500 - 250);
-            baseValue += Math.random() * 20 - 10;
-            return Math.max(
-                0,
-                Math.round(baseValue + smallBaseValue) + 3000
-            );
-        }
-
-        var categoryData = [];
-        var valueData = [];
-
-        for (var i = 0; i < count; i++) {
-            categoryData.push(echarts.format.formatTime('yyyy-MM-dd\nhh:mm:ss', time));
-            valueData.push(next(i).toFixed(2));
-            time += 10000;
-        }
-
-        return {
-            categoryData: categoryData,
-            valueData: valueData
-        };
     }
 </script>
