@@ -209,10 +209,10 @@ insert  into `tb_request_mapping`(`request_mapping_id`,`request_url`,`operation_
 (54,'/role/request/list','com.github.automain.user.view.RoleRequestListExecutor','角色权限列表'),
 (55,'/role/revoke/user','com.github.automain.user.action.RoleRevokeUserExecutor','角色取消分配用户'),
 (56,'/role/revoke/request','com.github.automain.user.action.RoleRevokeRequestExecutor','角色取消分配权限'),
-(57,'/schedule/dbstatus','com.github.automain.schedule.DBStatusSchedule','数据库状态任务'),
-(58,'/schedule/dbslow','com.github.automain.schedule.DBSlowSchedule','数据库慢查询任务'),
-(59,'/monitor/dbslow/forward','com.github.automain.monitor.view.DBSlowForwardExecutor','数据库慢查询跳转'),
-(60,'/monitor/dbslow/list','com.github.automain.monitor.view.DBSlowListExecutor','数据库慢查询列表'),
+(57,'/schedule/dbstatus','com.github.automain.schedule.DbStatusSchedule','数据库状态任务'),
+(58,'/schedule/dbslow','com.github.automain.schedule.DbSlowSchedule','数据库慢查询任务'),
+(59,'/monitor/dbslow/forward','com.github.automain.monitor.view.DbSlowForwardExecutor','数据库慢查询跳转'),
+(60,'/monitor/dbslow/list','com.github.automain.monitor.view.DbSlowListExecutor','数据库慢查询列表'),
 (61,'/monitor/dbstatus/forward','com.github.automain.monitor.view.DbStatusForwardExecutor','数据库监控跳转');
 
 /*Table structure for table `tb_role` */

@@ -1,7 +1,7 @@
 package com.github.automain.monitor.dao;
 
 import com.github.automain.monitor.bean.DbStatus;
-import com.github.automain.util.PropertiesUtil;
+import com.github.automain.monitor.vo.DbSqlVO;
 import com.github.fastjdbc.bean.ConnectionBean;
 import com.github.fastjdbc.bean.ConnectionPool;
 import com.github.fastjdbc.bean.PageBean;
@@ -11,10 +11,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 public class DbStatusDao extends BaseDao<DbStatus> {
+
+    private static DbSqlVO DB_SQL_VO = new DbSqlVO();
 
     @SuppressWarnings("unchecked")
     public PageBean<DbStatus> selectTableForCustomPage(ConnectionBean connection, DbStatus bean, int page, int limit) throws Exception {
@@ -132,4 +134,10 @@ public class DbStatusDao extends BaseDao<DbStatus> {
         }
         return result;
     }
+
+    public List<DbSqlVO> selectDbSql(ConnectionBean connection, Timestamp startTime, Timestamp endTime) throws SQLException {
+        String sql = "SELECT ds.create_time, ds.pool_name, ds.com_select, ds.com_insert, ds.com_delete, ds.com_update FROM db_status ds WHERE ds.create_time >= ? AND ds.create_time < ?";
+        return executeSelectReturnList(connection, sql, Arrays.asList(startTime, endTime), DB_SQL_VO);
+    }
+
 }

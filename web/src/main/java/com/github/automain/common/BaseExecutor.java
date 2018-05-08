@@ -277,7 +277,7 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
         while (attributeNames.hasMoreElements()) {
             String key = attributeNames.nextElement();
             Object o = request.getAttribute(key);
-            if (o != null && o instanceof PageBean) {
+            if (o instanceof PageBean) {
                 PageBean pageBean = (PageBean) o;
                 json.put("count", pageBean.getCount());
                 json.put("curr", pageBean.getCurr());

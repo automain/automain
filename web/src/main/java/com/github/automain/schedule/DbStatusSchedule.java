@@ -1,7 +1,7 @@
 package com.github.automain.schedule;
 
 import com.github.automain.common.BaseExecutor;
-import com.github.automain.monitor.bean.DbSlowLog;
+import com.github.automain.monitor.bean.DbStatus;
 import com.github.automain.util.HTTPUtil;
 import com.github.automain.util.PropertiesUtil;
 import com.github.fastjdbc.bean.ConnectionBean;
@@ -10,10 +10,8 @@ import redis.clients.jedis.Jedis;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.sql.SQLException;
-import java.util.List;
 
-public class DBSlowSchedule extends BaseExecutor {
+public class DbStatusSchedule extends BaseExecutor {
 
     @Override
     protected boolean checkAuthority(Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -26,18 +24,12 @@ public class DBSlowSchedule extends BaseExecutor {
         for (String poolName : PropertiesUtil.POOL_NAMES) {
             try {
                 connectionBean = ConnectionPool.getConnectionBean(poolName);
-                List<DbSlowLog> slowLogList = DB_SLOW_LOG_SERVICE.selectNowSlowSql(connectionBean, poolName);
-                insertSlowLog(connectionBean, slowLogList);
+                DbStatus status = DB_STATUS_SERVICE.selectNowStatus(connectionBean, poolName);
+                DB_STATUS_SERVICE.insertIntoTable(connectionBean, status);
             } finally {
                 ConnectionPool.closeConnectionBean(connectionBean);
             }
         }
         return null;
-    }
-
-    private void insertSlowLog(ConnectionBean connection, List<DbSlowLog> slowLogList) throws SQLException {
-        for (DbSlowLog log : slowLogList) {
-            DB_SLOW_LOG_SERVICE.insertIntoTable(connection, log);
-        }
     }
 }
