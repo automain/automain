@@ -13,6 +13,11 @@
             <input type="text" class="layui-input" id="qps_time">
         </div>
     </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" id="qps_search">查询</button>
+        </div>
+    </div>
     <div id="qps_panel" style="height: 480px"></div>
 </div>
 </body>
@@ -31,6 +36,27 @@
         var dom = document.getElementById("qps_panel");
         var myChart = echarts.init(dom);
 
+        var sqldata;
+        $.post("${ctx}/monitor/dbsql", {
+            startTime: $("#qps_time").val()
+        }, function(data){
+            if (data.code == code_success) {
+                var dbSqlVOList = data.dbSqlVOList;
+                var length = dbSqlVOList.length;
+                var timex = {};
+                var categoryData = [];
+                var valueData = [];
+                for (var i = 0; i < length; i++) {
+                    var vo = dbSqlVOList[i];
+                    var poolName = vo.poolName;
+                    var createTime = vo.createTime;
+                    if (typeof timex[createTime] === 'undefined'){
+                        categoryData.push(echarts.format.formatTime('yyyy-MM-dd\nhh:mm:ss', createTime));
+                        timex[createTime] = true;
+                    }
+                }
+            }
+        },"json");
         var dataCount = 1440;
         var data = generateData(dataCount);
 
