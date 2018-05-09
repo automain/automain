@@ -7,22 +7,18 @@ import javax.servlet.http.HttpServletRequest;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.HashMap;
 import java.util.Map;
 
-public class DbSqlVO extends RequestUtil implements BaseBean<DbSqlVO> {
+public class DbPagesVO extends RequestUtil implements BaseBean<DbPagesVO> {
 
-    // 删除数
-    private Long comDelete;
+    // 已用页大小
+    private Long pagesData;
 
-    // 添加数
-    private Long comInsert;
+    // 空闲页大小
+    private Long pagesFree;
 
-    // 查询数
-    private Long comSelect;
-
-    // 编辑数
-    private Long comUpdate;
+    // 忙碌页大小
+    private Long pagesMisc;
 
     // 创建时间
     private Timestamp createTime;
@@ -30,36 +26,28 @@ public class DbSqlVO extends RequestUtil implements BaseBean<DbSqlVO> {
     // 连接池名称
     private String poolName;
 
-    public Long getComDelete() {
-        return comDelete;
+    public Long getPagesData() {
+        return pagesData;
     }
 
-    public void setComDelete(Long comDelete) {
-        this.comDelete = comDelete;
+    public void setPagesData(Long pagesData) {
+        this.pagesData = pagesData;
     }
 
-    public Long getComInsert() {
-        return comInsert;
+    public Long getPagesFree() {
+        return pagesFree;
     }
 
-    public void setComInsert(Long comInsert) {
-        this.comInsert = comInsert;
+    public void setPagesFree(Long pagesFree) {
+        this.pagesFree = pagesFree;
     }
 
-    public Long getComSelect() {
-        return comSelect;
+    public Long getPagesMisc() {
+        return pagesMisc;
     }
 
-    public void setComSelect(Long comSelect) {
-        this.comSelect = comSelect;
-    }
-
-    public Long getComUpdate() {
-        return comUpdate;
-    }
-
-    public void setComUpdate(Long comUpdate) {
-        this.comUpdate = comUpdate;
+    public void setPagesMisc(Long pagesMisc) {
+        this.pagesMisc = pagesMisc;
     }
 
     public Timestamp getCreateTime() {
@@ -99,17 +87,16 @@ public class DbSqlVO extends RequestUtil implements BaseBean<DbSqlVO> {
     }
 
     @Override
-    public DbSqlVO beanFromRequest(HttpServletRequest httpServletRequest) {
+    public DbPagesVO beanFromRequest(HttpServletRequest httpServletRequest) {
         return null;
     }
 
     @Override
-    public DbSqlVO beanFromResultSet(ResultSet rs) throws SQLException {
-        DbSqlVO bean = new DbSqlVO();
-        bean.setComDelete(rs.getLong("com_delete"));
-        bean.setComInsert(rs.getLong("com_insert"));
-        bean.setComSelect(rs.getLong("com_select"));
-        bean.setComUpdate(rs.getLong("com_update"));
+    public DbPagesVO beanFromResultSet(ResultSet rs) throws SQLException {
+        DbPagesVO bean = new DbPagesVO();
+        bean.setPagesData(rs.getLong("pages_data"));
+        bean.setPagesFree(rs.getLong("pages_free"));
+        bean.setPagesMisc(rs.getLong("pages_misc"));
         bean.setCreateTime(rs.getTimestamp("create_time"));
         bean.setPoolName(rs.getString("pool_name"));
         return bean;
