@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.HashMap;
 import java.util.Map;
 
 public class DbTransactionVO extends RequestUtil implements BaseBean<DbTransactionVO> {
@@ -17,9 +16,6 @@ public class DbTransactionVO extends RequestUtil implements BaseBean<DbTransacti
 
     // 创建时间
     private Timestamp createTime;
-
-    // 连接池名称
-    private String poolName;
 
     public Long getTransaction() {
         return transaction;
@@ -35,14 +31,6 @@ public class DbTransactionVO extends RequestUtil implements BaseBean<DbTransacti
 
     public void setCreateTime(Timestamp createTime) {
         this.createTime = createTime;
-    }
-
-    public String getPoolName() {
-        return poolName;
-    }
-
-    public void setPoolName(String poolName) {
-        this.poolName = poolName;
     }
 
     @Override
@@ -75,7 +63,6 @@ public class DbTransactionVO extends RequestUtil implements BaseBean<DbTransacti
         DbTransactionVO bean = new DbTransactionVO();
         bean.setTransaction(rs.getLong("com_commit") - rs.getLong("com_rollback"));
         bean.setCreateTime(rs.getTimestamp("create_time"));
-        bean.setPoolName(rs.getString("pool_name"));
         return bean;
     }
 

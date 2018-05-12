@@ -2,7 +2,10 @@ package com.github.automain.monitor.service;
 
 import com.github.automain.monitor.bean.DbStatus;
 import com.github.automain.monitor.dao.DbStatusDao;
+import com.github.automain.monitor.vo.DbPagesVO;
 import com.github.automain.monitor.vo.DbSqlVO;
+import com.github.automain.monitor.vo.DbThreadVO;
+import com.github.automain.monitor.vo.DbTransactionVO;
 import com.github.fastjdbc.bean.ConnectionBean;
 import com.github.fastjdbc.bean.PageBean;
 import com.github.fastjdbc.common.BaseService;
@@ -28,5 +31,17 @@ public class DbStatusService extends BaseService<DbStatus, DbStatusDao> {
 
     public List<DbSqlVO> selectDbSql(ConnectionBean connection, Timestamp startTime, Timestamp endTime) throws SQLException {
         return getDao().selectDbSql(connection, startTime, endTime);
+    }
+
+    public List<DbTransactionVO> selectDbTransaction(ConnectionBean connection, Timestamp startTime, Timestamp endTime, String masterName) throws SQLException {
+        return getDao().selectDbTransaction(connection, startTime, endTime, masterName);
+    }
+
+    public List<DbThreadVO> selectDbThread(ConnectionBean connection, Timestamp startTime, Timestamp endTime) throws SQLException {
+        return getDao().selectDbThread(connection, startTime, endTime);
+    }
+
+    public List<DbPagesVO> selectDbPages(ConnectionBean connection, Timestamp startTime, Timestamp endTime) throws SQLException {
+        return getDao().selectDbPages(connection, startTime, endTime);
     }
 }

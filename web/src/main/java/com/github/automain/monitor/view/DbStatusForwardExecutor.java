@@ -23,8 +23,8 @@ public class DbStatusForwardExecutor extends BaseExecutor {
             case "thread":
                 jspPath = "monitor/db_thread";
                 break;
-            case "memory":
-                jspPath = "monitor/db_memory";
+            case "pages":
+                jspPath = "monitor/db_pages";
                 break;
             default:
                 jspPath = "monitor/db_sql";

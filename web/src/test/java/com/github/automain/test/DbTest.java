@@ -23,16 +23,29 @@ public class DbTest {
             Long end = start + 86400000;
             DbStatus status = new DbStatus();
             Random random = new Random();
+            long comSelect = (long) random.nextInt(1000);
+            long comInsert = (long) random.nextInt(1000);
+            long comUpdate = (long) random.nextInt(1000);
+            long comDelete = (long) random.nextInt(1000);
+            long comCommit = (long) random.nextInt(1000);
+            long comRollback = (long) random.nextInt(500);
+
             for (;start < end; start += 5000){
                for (String poolName : PropertiesUtil.POOL_NAMES) {
                    status.setPoolName(poolName);
                    status.setCreateTime(new Timestamp(start));
-                   status.setComSelect((long) random.nextInt(1000));
-                   status.setComInsert((long) random.nextInt(1000));
-                   status.setComUpdate((long) random.nextInt(1000));
-                   status.setComDelete((long) random.nextInt(1000));
-                   status.setComCommit((long) random.nextInt(1000));
-                   status.setComRollback((long) random.nextInt(1000));
+                   comSelect += (long) random.nextInt(1000);
+                   comInsert += (long) random.nextInt(1000);
+                   comUpdate += (long) random.nextInt(1000);
+                   comDelete += (long) random.nextInt(1000);
+                   comCommit += (long) random.nextInt(1000);
+                   comRollback += (long) random.nextInt(500);
+                   status.setComSelect(comSelect);
+                   status.setComInsert(comInsert);
+                   status.setComUpdate(comUpdate);
+                   status.setComDelete(comDelete);
+                   status.setComCommit(comCommit);
+                   status.setComRollback(comRollback);
                    status.setThreadsFree((long) random.nextInt(1000));
                    status.setThreadsRunning((long) random.nextInt(1000));
                    status.setPagesData((long) random.nextInt(1000));

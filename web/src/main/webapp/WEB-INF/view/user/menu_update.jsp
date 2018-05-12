@@ -60,6 +60,11 @@
                     return '请输入菜单名称';
                 }
             }
+            , menu_icon: function (value) {
+                if (value.length > 32) {
+                    return '图标名称过长';
+                }
+            }
         });
         form.on('submit(menu_submit)', function (data) {
             var submitBtn = $(this);

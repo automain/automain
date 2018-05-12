@@ -10,13 +10,13 @@
     <div class="layui-form-item">
         <label class="layui-form-label">时间:</label>
         <div class="layui-input-inline">
-            <input type="text" class="layui-input" id="qps_time">
+            <input type="text" class="layui-input" id="thread_time">
         </div>
         <div class="layui-input-inline">
-            <button class="layui-btn" onclick="initQPS()">查询</button>
+            <button class="layui-btn" onclick="initThread()">查询</button>
         </div>
     </div>
-    <div id="qps_panel" style="height: 480px"></div>
+    <div id="thread_panel" style="height: 480px"></div>
 </div>
 </body>
 </html>
@@ -24,32 +24,33 @@
     layui.use('laydate', function(){
         var laydate = layui.laydate;
         laydate.render({
-            elem: '#qps_time'
+            elem: '#thread_time'
             ,value: new Date()
             , btns: ['now', 'confirm']
         });
-        initQPS();
+        initThread();
     });
-    function initQPS() {
-        var dom = document.getElementById("qps_panel");
+    function initThread() {
+        var dom = document.getElementById("thread_panel");
         var myChart = echarts.init(dom);
 
         $.post("${ctx}/monitor/dbstatus", {
-            dataType: 'sql',
-            startTime: $("#qps_time").val()
+            dataType: 'thread',
+            startTime: $("#thread_time").val()
         }, function(data){
             if (data.code == code_success) {
-                var dbSqlVOList = data.dbSqlVOList;
+                var dbThreadVOList = data.dbThreadVOList;
                 var masterName = data.masterName;
                 var slaveNames = data.slaveNames;
-                var titles = [masterName + 'Insert', masterName + 'Update', masterName + 'Delete', masterName + 'Select'];
+                var titles = [masterName + '空闲', masterName + '运行中'];
                 slaveNames.forEach(function(v) {
-                    titles.push(v + "Select");
+                    titles.push(v + "空闲");
+                    titles.push(v + "运行中");
                 });
                 var valueObject = {};
                 var categoryData = [];
-                for (var i = 0, length = dbSqlVOList.length; i < length; i++) {
-                    var vo = dbSqlVOList[i];
+                for (var i = 0, length = dbThreadVOList.length; i < length; i++) {
+                    var vo = dbThreadVOList[i];
                     var poolName = vo.poolName;
                     var createTime = vo.createTime;
                     var inner = {};
@@ -58,74 +59,63 @@
                     } else {
                         inner = valueObject[createTime];
                     }
-                    if (masterName === poolName) {
-                        inner[poolName + 'Insert'] = vo.comInsert;
-                        inner[poolName + 'Update'] = vo.comUpdate;
-                        inner[poolName + 'Delete'] = vo.comDelete;
-                    }
-                    inner[poolName + 'Select'] = vo.comSelect;
+                    inner[poolName + 'ThreadsFree'] = vo.threadsFree;
+                    inner[poolName + 'ThreadsRunning'] = vo.threadsRunning;
                     valueObject[createTime] = inner;
                 }
-                categoryData.splice(categoryData.length - 1,1);
-                var masterInsert = [];
-                var masterUpdate = [];
-                var masterDelete = [];
-                var masterSelect = [];
-                var slaveSelect = [];
+                var masterThreadsFree = [];
+                var masterThreadsRunning = [];
+                var slaveThreadsFree = [];
+                var slaveThreadsRunning = [];
                 for (var index in valueObject) {
                     var thisObj = valueObject[index];
-                    var nextObj = valueObject[index * 1 + 5000];
-                    if (typeof nextObj === 'undefined'){
-                        break;
-                    }
-                    masterInsert.push(nextObj[masterName + 'Insert'] - thisObj[masterName + 'Insert']);
-                    masterUpdate.push(nextObj[masterName + 'Update'] - thisObj[masterName + 'Update']);
-                    masterDelete.push(nextObj[masterName + 'Delete'] - thisObj[masterName + 'Delete']);
-                    masterSelect.push(nextObj[masterName + 'Select'] - thisObj[masterName + 'Select']);
+                    masterThreadsFree.push(thisObj[masterName + 'ThreadsFree']);
+                    masterThreadsRunning.push(thisObj[masterName + 'ThreadsRunning']);
                     slaveNames.forEach(function(v) {
-                        if (typeof slaveSelect[v] === 'undefined'){
-                            slaveSelect[v] = [];
+                        if (typeof slaveThreadsFree[v] === 'undefined'){
+                            slaveThreadsFree[v] = [];
                         }
-                        slaveSelect[v].push(nextObj[v + "Select"] - thisObj[v + 'Select']);
+                        if (typeof slaveThreadsRunning[v] === 'undefined'){
+                            slaveThreadsRunning[v] = [];
+                        }
+                        slaveThreadsFree[v].push(thisObj[v + 'ThreadsFree']);
+                        slaveThreadsRunning[v].push(thisObj[v + 'ThreadsRunning']);
                     });
                 }
                 var series = [{
-                    name: masterName + 'Insert',
+                    name: masterName + '空闲',
                     stack: 'master',
                     type: 'bar',
-                    data: masterInsert,
+                    data: masterThreadsFree,
                     large: true
                 },{
-                    name: masterName + 'Update',
+                    name: masterName + '运行中',
                     stack: 'master',
                     type: 'bar',
-                    data: masterUpdate,
-                    large: true
-                },{
-                    name: masterName + 'Delete',
-                    stack: 'master',
-                    type: 'bar',
-                    data: masterDelete,
-                    large: true
-                },{
-                    name: masterName + 'Select',
-                    stack: 'master',
-                    type: 'bar',
-                    data: masterSelect,
+                    data: masterThreadsRunning,
                     large: true
                 }];
                 slaveNames.forEach(function(v) {
-                    var o = {
-                        name: v + 'Select',
+                    var free = {
+                        name: v + '空闲',
+                        stack: v,
                         type: 'bar',
-                        data: slaveSelect[v],
+                        data: slaveThreadsFree[v],
                         large: true
                     };
-                    series.push(o);
+                    series.push(free);
+                    var running = {
+                        name: v + '运行中',
+                        stack: v,
+                        type: 'bar',
+                        data: slaveThreadsRunning[v],
+                        large: true
+                    };
+                    series.push(running);
                 });
                 var option = {
                     title: {
-                        text: 'sql 统计',
+                        text: '线程统计',
                         left: 10
                     },
                     toolbox: {
