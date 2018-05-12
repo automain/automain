@@ -27,7 +27,7 @@ public class RoleGrantRequestExecutor extends BaseExecutor {
                 if (roleRequestMapping != null) {
                     if (roleRequestMapping.getIsDelete().equals(1)){
                         roleRequestMapping.setIsDelete(0);
-                        TB_ROLE_REQUEST_MAPPING_SERVICE.updateTable(connection, roleRequestMapping);
+                        TB_ROLE_REQUEST_MAPPING_SERVICE.updateTable(connection, roleRequestMapping, false);
                         setJsonResult(request, CODE_SUCCESS, "分配成功");
                     } else {
                         setJsonResult(request, CODE_FAIL, "已分配该权限");

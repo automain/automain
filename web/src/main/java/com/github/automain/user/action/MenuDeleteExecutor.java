@@ -27,7 +27,7 @@ public class MenuDeleteExecutor extends BaseExecutor {
                         TbMenu parent = new TbMenu();
                         parent.setMenuId(parentId);
                         parent.setIsLeaf(1);
-                        TB_MENU_SERVICE.updateTable(connection, parent);
+                        TB_MENU_SERVICE.updateTable(connection, parent, false);
                     }
                 }
             }

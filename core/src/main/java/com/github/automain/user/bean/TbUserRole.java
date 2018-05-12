@@ -76,16 +76,16 @@ public class TbUserRole extends RequestUtil implements BaseBean<TbUserRole> {
     }
 
     @Override
-    public Map<String, Object> notNullColumnMap() {
+    public Map<String, Object> columnMap(boolean all) {
         Map<String, Object> map = new HashMap<String, Object>();
-        if (this.getUserId() != null) {
-            map.put("user_id", this.getUserId());
+        if (all || this.getIsDelete() != null) {
+            map.put("is_delete", this.getIsDelete());
         }
-        if (this.getRoleId() != null) {
+        if (all || this.getRoleId() != null) {
             map.put("role_id", this.getRoleId());
         }
-        if (this.getIsDelete() != null) {
-            map.put("is_delete", this.getIsDelete());
+        if (all || this.getUserId() != null) {
+            map.put("user_id", this.getUserId());
         }
         return map;
     }

@@ -131,25 +131,25 @@ public class TbUser extends RequestUtil implements BaseBean<TbUser> {
     }
 
     @Override
-    public Map<String, Object> notNullColumnMap() {
+    public Map<String, Object> columnMap(boolean all) {
         Map<String, Object> map = new HashMap<String, Object>();
-        if (this.getUserName() != null) {
-            map.put("user_name", this.getUserName());
-        }
-        if (this.getPasswordMd5() != null) {
-            map.put("password_md5", this.getPasswordMd5());
-        }
-        if (this.getCellphone() != null) {
+        if (all || this.getCellphone() != null) {
             map.put("cellphone", this.getCellphone());
         }
-        if (this.getCreateTime() != null) {
+        if (all || this.getCreateTime() != null) {
             map.put("create_time", this.getCreateTime());
         }
-        if (this.getEmail() != null) {
+        if (all || this.getEmail() != null) {
             map.put("email", this.getEmail());
         }
-        if (this.getIsDelete() != null) {
+        if (all || this.getIsDelete() != null) {
             map.put("is_delete", this.getIsDelete());
+        }
+        if (all || this.getPasswordMd5() != null) {
+            map.put("password_md5", this.getPasswordMd5());
+        }
+        if (all || this.getUserName() != null) {
+            map.put("user_name", this.getUserName());
         }
         return map;
     }

@@ -197,45 +197,45 @@ public class DbStatus extends RequestUtil implements BaseBean<DbStatus> {
     }
 
     @Override
-    public Map<String, Object> notNullColumnMap() {
+    public Map<String, Object> columnMap(boolean all) {
         Map<String, Object> map = new HashMap<String, Object>();
-        if (this.getComCommit() != null) {
+        if (all || this.getComCommit() != null) {
             map.put("com_commit", this.getComCommit());
         }
-        if (this.getComDelete() != null) {
+        if (all || this.getComDelete() != null) {
             map.put("com_delete", this.getComDelete());
         }
-        if (this.getComInsert() != null) {
+        if (all || this.getComInsert() != null) {
             map.put("com_insert", this.getComInsert());
         }
-        if (this.getComRollback() != null) {
+        if (all || this.getComRollback() != null) {
             map.put("com_rollback", this.getComRollback());
         }
-        if (this.getComSelect() != null) {
+        if (all || this.getComSelect() != null) {
             map.put("com_select", this.getComSelect());
         }
-        if (this.getComUpdate() != null) {
+        if (all || this.getComUpdate() != null) {
             map.put("com_update", this.getComUpdate());
         }
-        if (this.getCreateTime() != null) {
+        if (all || this.getCreateTime() != null) {
             map.put("create_time", this.getCreateTime());
         }
-        if (this.getPagesData() != null) {
+        if (all || this.getPagesData() != null) {
             map.put("pages_data", this.getPagesData());
         }
-        if (this.getPagesFree() != null) {
+        if (all || this.getPagesFree() != null) {
             map.put("pages_free", this.getPagesFree());
         }
-        if (this.getPagesMisc() != null) {
+        if (all || this.getPagesMisc() != null) {
             map.put("pages_misc", this.getPagesMisc());
         }
-        if (this.getPoolName() != null) {
+        if (all || this.getPoolName() != null) {
             map.put("pool_name", this.getPoolName());
         }
-        if (this.getThreadsFree() != null) {
+        if (all || this.getThreadsFree() != null) {
             map.put("threads_free", this.getThreadsFree());
         }
-        if (this.getThreadsRunning() != null) {
+        if (all || this.getThreadsRunning() != null) {
             map.put("threads_running", this.getThreadsRunning());
         }
         return map;

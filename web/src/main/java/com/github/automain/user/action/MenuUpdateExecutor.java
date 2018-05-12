@@ -14,8 +14,16 @@ public class MenuUpdateExecutor extends BaseExecutor {
     protected String doAction(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         TbMenu bean = new TbMenu();
         bean = bean.beanFromRequest(request);
-        TB_MENU_SERVICE.updateTable(connection, bean);
-        setJsonResult(request, CODE_SUCCESS, "编辑成功");
+        TbMenu tbMenu = TB_MENU_SERVICE.selectTableById(connection, bean.getMenuId());
+        if (tbMenu != null) {
+            bean.setParentId(tbMenu.getParentId());
+            bean.setTopId(tbMenu.getTopId());
+            bean.setIsLeaf(tbMenu.getIsLeaf());
+            TB_MENU_SERVICE.updateTable(connection, bean, true);
+            setJsonResult(request, CODE_SUCCESS, "编辑成功");
+        } else {
+            setJsonResult(request, CODE_FAIL, "未找到记录");
+        }
         return null;
     }
 }

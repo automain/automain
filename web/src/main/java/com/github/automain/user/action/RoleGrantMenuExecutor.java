@@ -28,7 +28,7 @@ public class RoleGrantMenuExecutor extends BaseExecutor {
                 for (Long menuId : menuCheck) {
                     paramBean.setMenuId(menuId);
                     newBean.setMenuId(menuId);
-                    TB_ROLE_MENU_SERVICE.updateTable(connection, paramBean, newBean, true, false);
+                    TB_ROLE_MENU_SERVICE.updateTable(connection, paramBean, newBean, true, false, false);
                 }
             }
             setJsonResult(request, CODE_SUCCESS, "修改成功");

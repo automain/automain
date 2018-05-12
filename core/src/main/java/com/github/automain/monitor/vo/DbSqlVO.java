@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.HashMap;
 import java.util.Map;
 
 public class DbSqlVO extends RequestUtil implements BaseBean<DbSqlVO> {
@@ -94,7 +93,7 @@ public class DbSqlVO extends RequestUtil implements BaseBean<DbSqlVO> {
     }
 
     @Override
-    public Map<String, Object> notNullColumnMap() {
+    public Map<String, Object> columnMap(boolean all) {
         return null;
     }
 

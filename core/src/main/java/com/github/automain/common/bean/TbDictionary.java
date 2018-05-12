@@ -141,31 +141,31 @@ public class TbDictionary extends RequestUtil implements BaseBean<TbDictionary> 
     }
 
     @Override
-    public Map<String, Object> notNullColumnMap() {
+    public Map<String, Object> columnMap(boolean all) {
         Map<String, Object> map = new HashMap<String, Object>();
-        if (this.getDictTableName() != null) {
-            map.put("dict_table_name", this.getDictTableName());
-        }
-        if (this.getDictColumnName() != null) {
+        if (all || this.getDictColumnName() != null) {
             map.put("dict_column_name", this.getDictColumnName());
         }
-        if (this.getDictionaryName() != null) {
+        if (all || this.getDictTableName() != null) {
+            map.put("dict_table_name", this.getDictTableName());
+        }
+        if (all || this.getDictionaryName() != null) {
             map.put("dictionary_name", this.getDictionaryName());
         }
-        if (this.getDictionaryValue() != null) {
+        if (all || this.getDictionaryValue() != null) {
             map.put("dictionary_value", this.getDictionaryValue());
         }
-        if (this.getSequenceNumber() != null) {
-            map.put("sequence_number", this.getSequenceNumber());
+        if (all || this.getIsDelete() != null) {
+            map.put("is_delete", this.getIsDelete());
         }
-        if (this.getParentId() != null) {
-            map.put("parent_id", this.getParentId());
-        }
-        if (this.getIsLeaf() != null) {
+        if (all || this.getIsLeaf() != null) {
             map.put("is_leaf", this.getIsLeaf());
         }
-        if (this.getIsDelete() != null) {
-            map.put("is_delete", this.getIsDelete());
+        if (all || this.getParentId() != null) {
+            map.put("parent_id", this.getParentId());
+        }
+        if (all || this.getSequenceNumber() != null) {
+            map.put("sequence_number", this.getSequenceNumber());
         }
         return map;
     }

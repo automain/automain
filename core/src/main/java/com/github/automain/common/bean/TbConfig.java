@@ -130,24 +130,24 @@ public class TbConfig extends RequestUtil implements BaseBean<TbConfig> {
     }
 
     @Override
-    public Map<String, Object> notNullColumnMap() {
+    public Map<String, Object> columnMap(boolean all) {
         Map<String, Object> map = new HashMap<String, Object>();
-        if (this.getConfigKey() != null) {
+        if (all || this.getConfigKey() != null) {
             map.put("config_key", this.getConfigKey());
         }
-        if (this.getConfigValue() != null) {
+        if (all || this.getConfigValue() != null) {
             map.put("config_value", this.getConfigValue());
         }
-        if (this.getConfigComment() != null) {
+        if (all || this.getConfigComment() != null) {
             map.put("config_comment", this.getConfigComment());
         }
-        if (this.getCreateTime() != null) {
+        if (all || this.getCreateTime() != null) {
             map.put("create_time", this.getCreateTime());
         }
-        if (this.getUpdateTime() != null) {
+        if (all || this.getUpdateTime() != null) {
             map.put("update_time", this.getUpdateTime());
         }
-        if (this.getIsDelete() != null) {
+        if (all || this.getIsDelete() != null) {
             map.put("is_delete", this.getIsDelete());
         }
         return map;

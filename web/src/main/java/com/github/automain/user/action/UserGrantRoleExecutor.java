@@ -28,7 +28,7 @@ public class UserGrantRoleExecutor extends BaseExecutor {
                 for (Long roleId : roleIdList) {
                     paramBean.setRoleId(roleId);
                     newBean.setRoleId(roleId);
-                    TB_USER_ROLE_SERVICE.updateTable(connection, paramBean, newBean, true, false);
+                    TB_USER_ROLE_SERVICE.updateTable(connection, paramBean, newBean, true, false, false);
                 }
             }
             setJsonResult(request, CODE_SUCCESS, "修改成功");

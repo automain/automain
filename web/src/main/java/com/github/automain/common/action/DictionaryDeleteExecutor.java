@@ -29,7 +29,7 @@ public class DictionaryDeleteExecutor extends BaseExecutor {
                         TbDictionary parent = new TbDictionary();
                         parent.setDictionaryId(parentId);
                         parent.setIsLeaf(1);
-                        TB_DICTIONARY_SERVICE.updateTable(connection, parent);
+                        TB_DICTIONARY_SERVICE.updateTable(connection, parent, false);
                     }
                 }
             }

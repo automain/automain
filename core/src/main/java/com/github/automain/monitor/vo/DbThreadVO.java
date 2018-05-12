@@ -71,7 +71,7 @@ public class DbThreadVO extends RequestUtil implements BaseBean<DbThreadVO> {
     }
 
     @Override
-    public Map<String, Object> notNullColumnMap() {
+    public Map<String, Object> columnMap(boolean all) {
         return null;
     }
 

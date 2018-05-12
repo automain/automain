@@ -17,7 +17,7 @@ public class RequestUpdateExecutor extends BaseExecutor {
         if (exist != null && !exist.getRequestMappingId().equals(bean.getRequestMappingId())) {
             setJsonResult(request, CODE_FAIL, "url已存在");
         } else {
-            TB_REQUEST_MAPPING_SERVICE.updateTable(connection, bean);
+            TB_REQUEST_MAPPING_SERVICE.updateTable(connection, bean, false);
             setJsonResult(request, CODE_SUCCESS, "编辑成功");
         }
         return null;

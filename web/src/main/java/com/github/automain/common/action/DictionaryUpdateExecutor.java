@@ -14,7 +14,7 @@ public class DictionaryUpdateExecutor extends BaseExecutor {
     protected String doAction(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         TbDictionary bean = new TbDictionary();
         bean = bean.beanFromRequest(request);
-        TB_DICTIONARY_SERVICE.updateTable(connection, bean);
+        TB_DICTIONARY_SERVICE.updateTable(connection, bean, false);
         setJsonResult(request, CODE_SUCCESS, "编辑成功");
         return null;
     }

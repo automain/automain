@@ -18,7 +18,7 @@ public class ResetPwdExecutor extends BaseExecutor {
             TbUser tbUser = new TbUser();
             tbUser.setUserId(userId);
             tbUser.setPasswordMd5("e10adc3949ba59abbe56e057f20f883e");// 123456
-            TB_USER_SERVICE.updateTable(connection, tbUser);
+            TB_USER_SERVICE.updateTable(connection, tbUser, false);
             setJsonResult(request, CODE_SUCCESS, "更新成功");
         } else {
             setJsonResult(request, CODE_FAIL, "未找到用户");

@@ -86,15 +86,15 @@ public class TbRequestMapping extends RequestUtil implements BaseBean<TbRequestM
     }
 
     @Override
-    public Map<String, Object> notNullColumnMap() {
+    public Map<String, Object> columnMap(boolean all) {
         Map<String, Object> map = new HashMap<String, Object>();
-        if (this.getRequestUrl() != null) {
-            map.put("request_url", this.getRequestUrl());
-        }
-        if (this.getOperationClass() != null) {
+        if (all || this.getOperationClass() != null) {
             map.put("operation_class", this.getOperationClass());
         }
-        if (this.getUrlComment() != null) {
+        if (all || this.getRequestUrl() != null) {
+            map.put("request_url", this.getRequestUrl());
+        }
+        if (all || this.getUrlComment() != null) {
             map.put("url_comment", this.getUrlComment());
         }
         return map;

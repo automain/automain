@@ -27,7 +27,7 @@ public class RoleRevokeUserExecutor extends BaseExecutor {
                 if (userRole != null) {
                     if (userRole.getIsDelete().equals(0)){
                         userRole.setIsDelete(1);
-                        TB_USER_ROLE_SERVICE.updateTable(connection, userRole);
+                        TB_USER_ROLE_SERVICE.updateTable(connection, userRole, false);
                         setJsonResult(request, CODE_SUCCESS, "取消分配成功");
                     } else {
                         setJsonResult(request, CODE_FAIL, "已取消分配该角色");

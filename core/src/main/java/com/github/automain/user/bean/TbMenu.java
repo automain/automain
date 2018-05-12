@@ -152,34 +152,34 @@ public class TbMenu extends RequestUtil implements BaseBean<TbMenu>, Comparable 
     }
 
     @Override
-    public Map<String, Object> notNullColumnMap() {
+    public Map<String, Object> columnMap(boolean all) {
         Map<String, Object> map = new HashMap<String, Object>();
-        if (this.getRequestUrl() != null) {
-            map.put("request_url", this.getRequestUrl());
+        if (all || this.getIsDelete() != null) {
+            map.put("is_delete", this.getIsDelete());
         }
-        if (this.getMenuName() != null) {
-            map.put("menu_name", this.getMenuName());
-        }
-        if (this.getMenuIcon() != null) {
-            map.put("menu_icon", this.getMenuIcon());
-        }
-        if (this.getParentId() != null) {
-            map.put("parent_id", this.getParentId());
-        }
-        if (this.getTopId() != null) {
-            map.put("top_id", this.getTopId());
-        }
-        if (this.getSequenceNumber() != null) {
-            map.put("sequence_number", this.getSequenceNumber());
-        }
-        if (this.getIsSpread() != null) {
-            map.put("is_spread", this.getIsSpread());
-        }
-        if (this.getIsLeaf() != null) {
+        if (all || this.getIsLeaf() != null) {
             map.put("is_leaf", this.getIsLeaf());
         }
-        if (this.getIsDelete() != null) {
-            map.put("is_delete", this.getIsDelete());
+        if (all || this.getIsSpread() != null) {
+            map.put("is_spread", this.getIsSpread());
+        }
+        if (all || this.getMenuIcon() != null) {
+            map.put("menu_icon", this.getMenuIcon());
+        }
+        if (all || this.getMenuName() != null) {
+            map.put("menu_name", this.getMenuName());
+        }
+        if (all || this.getParentId() != null) {
+            map.put("parent_id", this.getParentId());
+        }
+        if (all || this.getRequestUrl() != null) {
+            map.put("request_url", this.getRequestUrl());
+        }
+        if (all || this.getSequenceNumber() != null) {
+            map.put("sequence_number", this.getSequenceNumber());
+        }
+        if (all || this.getTopId() != null) {
+            map.put("top_id", this.getTopId());
         }
         return map;
     }

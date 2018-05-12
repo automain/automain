@@ -131,28 +131,28 @@ public class TbUploadFile extends RequestUtil implements BaseBean<TbUploadFile> 
     }
 
     @Override
-    public Map<String, Object> notNullColumnMap() {
+    public Map<String, Object> columnMap(boolean all) {
         Map<String, Object> map = new HashMap<String, Object>();
-        if (this.getFileExtension() != null) {
+        if (all || this.getFileExtension() != null) {
             map.put("file_extension", this.getFileExtension());
         }
-        if (this.getFilePath() != null) {
-            map.put("file_path", this.getFilePath());
-        }
-        if (this.getFileSize() != null) {
-            map.put("file_size", this.getFileSize());
-        }
-        if (this.getUploadTime() != null) {
-            map.put("upload_time", this.getUploadTime());
-        }
-        if (this.getFileMd5() != null) {
+        if (all || this.getFileMd5() != null) {
             map.put("file_md5", this.getFileMd5());
         }
-        if (this.getImageWidth() != null) {
+        if (all || this.getFilePath() != null) {
+            map.put("file_path", this.getFilePath());
+        }
+        if (all || this.getFileSize() != null) {
+            map.put("file_size", this.getFileSize());
+        }
+        if (all || this.getImageHeight() != null) {
+            map.put("image_height", this.getImageHeight());
+        }
+        if (all || this.getImageWidth() != null) {
             map.put("image_width", this.getImageWidth());
         }
-        if (this.getImageHeight() != null) {
-            map.put("image_height", this.getImageHeight());
+        if (all || this.getUploadTime() != null) {
+            map.put("upload_time", this.getUploadTime());
         }
         return map;
     }

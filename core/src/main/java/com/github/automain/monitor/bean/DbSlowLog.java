@@ -120,24 +120,24 @@ public class DbSlowLog extends RequestUtil implements BaseBean<DbSlowLog> {
     }
 
     @Override
-    public Map<String, Object> notNullColumnMap() {
+    public Map<String, Object> columnMap(boolean all) {
         Map<String, Object> map = new HashMap<String, Object>();
-        if (this.getCreateTime() != null) {
+        if (all || this.getCreateTime() != null) {
             map.put("create_time", this.getCreateTime());
         }
-        if (this.getPoolName() != null) {
+        if (all || this.getPoolName() != null) {
             map.put("pool_name", this.getPoolName());
         }
-        if (this.getSlowDb() != null) {
+        if (all || this.getSlowDb() != null) {
             map.put("slow_db", this.getSlowDb());
         }
-        if (this.getSlowSql() != null) {
+        if (all || this.getSlowSql() != null) {
             map.put("slow_sql", this.getSlowSql());
         }
-        if (this.getSlowState() != null) {
+        if (all || this.getSlowState() != null) {
             map.put("slow_state", this.getSlowState());
         }
-        if (this.getSlowTime() != null) {
+        if (all || this.getSlowTime() != null) {
             map.put("slow_time", this.getSlowTime());
         }
         return map;

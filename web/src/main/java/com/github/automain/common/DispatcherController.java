@@ -74,7 +74,7 @@ public class DispatcherController extends HttpServlet {
             config.setConfigValue(String.valueOf(sv + 1));
             config.setUpdateTime(now);
             SERVLET_CONTEXT.setAttribute("staticVersion", config.getConfigValue());
-            ServiceContainer.TB_CONFIG_SERVICE.updateTable(connection, config);
+            ServiceContainer.TB_CONFIG_SERVICE.updateTable(connection, config, false);
         } else {
             SERVLET_CONTEXT.setAttribute("staticVersion", "0");
             bean.setConfigValue("0");

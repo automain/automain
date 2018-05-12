@@ -22,7 +22,7 @@ public class MenuAddExecutor extends BaseExecutor {
             TbMenu p = new TbMenu();
             p.setMenuId(parent.getMenuId());
             p.setIsLeaf(0);
-            TB_MENU_SERVICE.updateTable(connection, p);
+            TB_MENU_SERVICE.updateTable(connection, p, false);
         }
         setJsonResult(request, CODE_SUCCESS, "添加成功");
         return null;

@@ -27,7 +27,7 @@ public class RoleGrantUserExecutor extends BaseExecutor {
                 if (userRole != null) {
                     if (userRole.getIsDelete().equals(1)){
                         userRole.setIsDelete(0);
-                        TB_USER_ROLE_SERVICE.updateTable(connection, userRole);
+                        TB_USER_ROLE_SERVICE.updateTable(connection, userRole, false);
                         setJsonResult(request, CODE_SUCCESS, "分配成功");
                     } else {
                         setJsonResult(request, CODE_FAIL, "已分配该角色");

@@ -30,7 +30,7 @@ public class UserUpdatePwdExecutor extends BaseExecutor {
                 TbUser newUser = new TbUser();
                 newUser.setUserId(userId);
                 newUser.setPasswordMd5(newMd5);
-                TB_USER_SERVICE.updateTable(connection, newUser);
+                TB_USER_SERVICE.updateTable(connection, newUser, false);
                 setJsonResult(request, CODE_SUCCESS, "修改成功");
             } else {
                 setJsonResult(request, CODE_FAIL, "原密码不正确");

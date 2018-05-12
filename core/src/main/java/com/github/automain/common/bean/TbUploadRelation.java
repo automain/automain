@@ -109,25 +109,25 @@ public class TbUploadRelation extends RequestUtil implements BaseBean<TbUploadRe
     }
 
     @Override
-    public Map<String, Object> notNullColumnMap() {
+    public Map<String, Object> columnMap(boolean all) {
         Map<String, Object> map = new HashMap<String, Object>();
-        if (this.getUploadFileId() != null) {
-            map.put("upload_file_id", this.getUploadFileId());
+        if (all || this.getIsDelete() != null) {
+            map.put("is_delete", this.getIsDelete());
         }
-        if (this.getRecordId() != null) {
+        if (all || this.getRecordId() != null) {
             map.put("record_id", this.getRecordId());
         }
-        if (this.getRecordTableName() != null) {
-            map.put("record_table_name", this.getRecordTableName());
-        }
-        if (this.getRecordLabel() != null) {
+        if (all || this.getRecordLabel() != null) {
             map.put("record_label", this.getRecordLabel());
         }
-        if (this.getSequenceNumber() != null) {
+        if (all || this.getRecordTableName() != null) {
+            map.put("record_table_name", this.getRecordTableName());
+        }
+        if (all || this.getSequenceNumber() != null) {
             map.put("sequence_number", this.getSequenceNumber());
         }
-        if (this.getIsDelete() != null) {
-            map.put("is_delete", this.getIsDelete());
+        if (all || this.getUploadFileId() != null) {
+            map.put("upload_file_id", this.getUploadFileId());
         }
         return map;
     }

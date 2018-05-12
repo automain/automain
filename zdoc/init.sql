@@ -54,7 +54,7 @@ CREATE TABLE `db_status` (
   `pages_free` bigint(20) unsigned NOT NULL COMMENT '空闲页大小',
   `pages_misc` bigint(20) unsigned NOT NULL COMMENT '忙碌页大小',
   PRIMARY KEY (`status_id`),
-  KEY `idx_create_time` (`create_time`)
+  KEY `idx_create_time_pool` (`create_time`,`pool_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `db_status` */
@@ -119,7 +119,7 @@ CREATE TABLE `tb_menu` (
   PRIMARY KEY (`menu_id`),
   KEY `idx_parent_id` (`parent_id`),
   KEY `idx_menu_name` (`menu_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `tb_menu` */
 
@@ -134,8 +134,11 @@ insert  into `tb_menu`(`menu_id`,`request_url`,`menu_name`,`menu_icon`,`parent_i
 (8,'/reload/cache/forward','刷新缓存','refresh',1,0,7,0,1,0),
 (9,'/notice/forward','上线公告','arrow-circle-o-up',1,0,8,0,1,0),
 (10,NULL,'数据库监控','database',1,1,9,0,0,0),
-(11,'/monitor/dbslow/forward','慢查询','exclamation-circle',10,1,1,0,1,0),
-(12,'/monitor/dbstatus/forward?forwardType=sql','sql统计','bar-chart',10,1,2,0,1,0);
+(11,'/monitor/dbslow/forward','慢查询统计','spinner',10,1,1,0,1,0),
+(12,'/monitor/dbstatus/forward?forwardType=sql','sql统计','bar-chart',10,1,2,0,1,0),
+(13,'/monitor/dbstatus/forward?forwardType=transaction','事务统计','object-group',10,1,3,0,1,0),
+(14,'/monitor/dbstatus/forward?forwardType=thread','线程统计','tasks',10,1,4,0,1,0),
+(15,'/monitor/dbstatus/forward?forwardType=pages','内存页统计','save',10,1,5,0,1,0);
 
 /*Table structure for table `tb_request_mapping` */
 
@@ -214,7 +217,7 @@ insert  into `tb_request_mapping`(`request_mapping_id`,`request_url`,`operation_
 (59,'/monitor/dbslow/forward','com.github.automain.monitor.view.DbSlowForwardExecutor','数据库慢查询跳转'),
 (60,'/monitor/dbslow/list','com.github.automain.monitor.view.DbSlowListExecutor','数据库慢查询列表'),
 (61,'/monitor/dbstatus/forward','com.github.automain.monitor.view.DbStatusForwardExecutor','数据库监控跳转'),
-(62,'/monitor/dbsql','com.github.automain.monitor.action.DbSqlExecutor','数据库sql统计');
+(62,'/monitor/dbstatus','com.github.automain.monitor.action.DbStatusExecutor','数据库统计');
 
 /*Table structure for table `tb_role` */
 
@@ -298,9 +301,12 @@ CREATE TABLE `tb_upload_relation` (
   PRIMARY KEY (`upload_relation_id`),
   KEY `idx_id_name_label` (`record_id`,`record_table_name`,`record_label`),
   KEY `idx_sequence_number` (`sequence_number`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `tb_upload_relation` */
+
+insert  into `tb_upload_relation`(`upload_relation_id`,`upload_file_id`,`record_id`,`record_table_name`,`record_label`,`sequence_number`,`is_delete`) values
+(1,1,1,'agfda',NULL,1,0);
 
 /*Table structure for table `tb_user` */
 

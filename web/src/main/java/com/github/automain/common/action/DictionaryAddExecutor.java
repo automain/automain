@@ -22,7 +22,7 @@ public class DictionaryAddExecutor extends BaseExecutor {
             TbDictionary p = new TbDictionary();
             p.setDictionaryId(parent.getDictionaryId());
             p.setIsLeaf(0);
-            TB_DICTIONARY_SERVICE.updateTable(connection, p);
+            TB_DICTIONARY_SERVICE.updateTable(connection, p, false);
         }
         setJsonResult(request, CODE_SUCCESS, "添加成功");
         return null;

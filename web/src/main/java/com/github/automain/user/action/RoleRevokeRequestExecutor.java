@@ -27,7 +27,7 @@ public class RoleRevokeRequestExecutor extends BaseExecutor {
                 if (roleRequestMapping != null) {
                     if (roleRequestMapping.getIsDelete().equals(0)){
                         roleRequestMapping.setIsDelete(1);
-                        TB_ROLE_REQUEST_MAPPING_SERVICE.updateTable(connection, roleRequestMapping);
+                        TB_ROLE_REQUEST_MAPPING_SERVICE.updateTable(connection, roleRequestMapping, false);
                         setJsonResult(request, CODE_SUCCESS, "取消分配成功");
                     } else {
                         setJsonResult(request, CODE_FAIL, "已取消分配该权限");

@@ -316,7 +316,10 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
                 if (jedis != null) {
                     userMap = jedis.hgetAll(userKey);
                 } else {
-                    userMap = (Map<String, String>) RedisUtil.LOCAL_CACHE.get(userKey);
+                    Object obj = RedisUtil.LOCAL_CACHE.get(userKey);
+                    if (obj != null) {
+                        userMap = (Map<String, String>) obj;
+                    }
                 }
                 boolean isRefresh = false;
                 if (userMap == null) {

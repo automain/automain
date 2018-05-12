@@ -48,6 +48,6 @@ public class MenuRevokeRoleExecutor extends BaseExecutor {
         newBean.setMenuId(menuId);
         newBean.setRoleId(roleId);
         newBean.setIsDelete(1);
-        TB_ROLE_MENU_SERVICE.updateTable(connection, paramBean, newBean, false, false);
+        TB_ROLE_MENU_SERVICE.updateTable(connection, paramBean, newBean, false, false, false);
     }
 }

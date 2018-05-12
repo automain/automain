@@ -82,7 +82,7 @@ public class DbPagesVO extends RequestUtil implements BaseBean<DbPagesVO> {
     }
 
     @Override
-    public Map<String, Object> notNullColumnMap() {
+    public Map<String, Object> columnMap(boolean all) {
         return null;
     }
 
