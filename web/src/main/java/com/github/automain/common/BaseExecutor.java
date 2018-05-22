@@ -65,91 +65,13 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
         try {
             jedis = RedisUtil.getJedis();
             connection = ConnectionPool.getConnectionBean(setSlavePool());
-            String jspPath = null;
-            String content = null;
-            if (checkAuthority(jedis, request, response)) {
-                setJsonResult(request, CODE_SUCCESS, "");
-                jspPath = doAction(connection, jedis, request, response);
-            } else {
-                setJsonResult(request, "403", "无权限访问或登录已过期");
-                jspPath = ERROR_URL;
-            }
-            byte[] gzip = null;
+            String jspPath = getJspPath(jedis, connection, request, response);
             isDownloadRequest = "download_file".equals(jspPath);
-            if (toJson || jspPath == null) {
-                content = requestToJson(request, response, jspPath);
-                response.setContentType(JSON_CONTENT_TYPE);
-            } else if (!isDownloadRequest) {
-                response.setContentType(HTML_CONTENT_TYPE);
-                String hasReadNotice = CookieUtil.getCookieByName(request, "hasReadNotice");
-                if (hasReadNotice == null) {
-                    Map<String, String> noticeMap = null;
-                    if (jedis != null) {
-                        noticeMap = jedis.hgetAll("notice_cache_key");
-                    } else {
-                        noticeMap = (Map<String, String>) RedisUtil.LOCAL_CACHE.get("notice_cache_key");
-                    }
-                    if (noticeMap != null && !noticeMap.isEmpty()) {
-                        request.setAttribute("notice_cache_key", noticeMap);
-                        request.setAttribute("vEnter", "\n");
-                        CookieUtil.addCookie(response, "hasReadNotice", "1", -1);
-                    }
-                }
-                content = getJspOutput(request, response, jspPath);
-                String acceptEncoding = request.getHeader("Accept-Encoding");
-                if (HTTPUtil.checkGzip(acceptEncoding, response, content.length(), jspPath)) {
-                    gzip = CompressUtil.gzipCompress(content);
-                }
-            }
-            if (!isDownloadRequest) {
-                if (gzip != null) {
-                    OutputStream os = response.getOutputStream();
-                    os.write(gzip);
-                    os.flush();
-                } else {
-                    PrintWriter writer = response.getWriter();
-                    writer.write(content == null ? "" : content);
-                    writer.flush();
-                }
-            }
+            String content = getContent(jedis, request, response, toJson, isDownloadRequest, jspPath);
+            flushResponse(request, response, isDownloadRequest, jspPath, content);
         } catch (Exception e) {
             e.printStackTrace();
-            try (StringWriter sw = new StringWriter();
-                 PrintWriter pw = new PrintWriter(sw)) {
-                e.printStackTrace(pw);
-                String msg = sw.toString();
-                if (!isDownloadRequest) {
-                    String content = null;
-                    setJsonResult(request, "500", msg.substring(0, msg.indexOf(")") + 1));
-                    if (toJson) {
-                        response.setContentType(JSON_CONTENT_TYPE);
-                        try {
-                            content = requestToJson(request, response, ERROR_URL);
-                        } catch (Exception e1) {
-                            e1.printStackTrace();
-                        }
-                    } else {
-                        response.setContentType(HTML_CONTENT_TYPE);
-                        try {
-                            content = getJspOutput(request, response, ERROR_URL);
-                        } catch (Exception e1) {
-                            e1.printStackTrace();
-                        }
-                    }
-                    PrintWriter writer = response.getWriter();
-                    writer.write(content == null ? "" : content);
-                    writer.flush();
-                }
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            } finally {
-                try {
-                    ConnectionPool.rollbackConnectionBean(connection);
-                    doRollBack();
-                } catch (SQLException e2) {
-                    e2.printStackTrace();
-                }
-            }
+            handleException(connection, request, response, toJson, isDownloadRequest, e);
         } finally {
             try {
                 if (jedis != null) {
@@ -161,6 +83,102 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
             }
             asyncContext.complete();
         }
+    }
+
+    private void handleException(ConnectionBean connection, HttpServletRequest request, HttpServletResponse response, boolean toJson, boolean isDownloadRequest, Exception e) {
+        try (StringWriter sw = new StringWriter();
+             PrintWriter pw = new PrintWriter(sw)) {
+            e.printStackTrace(pw);
+            String msg = sw.toString();
+            if (!isDownloadRequest) {
+                String content = null;
+                setJsonResult(request, "500", msg.substring(0, msg.indexOf(")") + 1));
+                if (toJson) {
+                    response.setContentType(JSON_CONTENT_TYPE);
+                    try {
+                        content = requestToJson(request, response, ERROR_URL);
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
+                } else {
+                    response.setContentType(HTML_CONTENT_TYPE);
+                    try {
+                        content = getJspOutput(request, response, ERROR_URL);
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
+                }
+                PrintWriter writer = response.getWriter();
+                writer.write(content == null ? "" : content);
+                writer.flush();
+            }
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        } finally {
+            try {
+                ConnectionPool.rollbackConnectionBean(connection);
+                doRollBack();
+            } catch (SQLException e2) {
+                e2.printStackTrace();
+            }
+        }
+    }
+
+    private void flushResponse(HttpServletRequest request, HttpServletResponse response, boolean isDownloadRequest, String jspPath, String content) throws IOException {
+        if (!isDownloadRequest) {
+            byte[] gzip = null;
+            String acceptEncoding = request.getHeader("Accept-Encoding");
+            if (HTML_CONTENT_TYPE.equals(response.getContentType()) && HTTPUtil.checkGzip(acceptEncoding, response, content.length(), jspPath)) {
+                gzip = CompressUtil.gzipCompress(content);
+            }
+            if (gzip != null) {
+                OutputStream os = response.getOutputStream();
+                os.write(gzip);
+                os.flush();
+            } else {
+                PrintWriter writer = response.getWriter();
+                writer.write(content == null ? "" : content);
+                writer.flush();
+            }
+        }
+    }
+
+    private String getContent(Jedis jedis, HttpServletRequest request, HttpServletResponse response, boolean toJson, boolean isDownloadRequest, String jspPath) throws ServletException, IOException {
+        String content = null;
+        if (toJson || jspPath == null) {
+            content = requestToJson(request, response, jspPath);
+            response.setContentType(JSON_CONTENT_TYPE);
+        } else if (!isDownloadRequest) {
+            response.setContentType(HTML_CONTENT_TYPE);
+            String hasReadNotice = CookieUtil.getCookieByName(request, "hasReadNotice");
+            if (hasReadNotice == null) {
+                Map<String, String> noticeMap = null;
+                if (jedis != null) {
+                    noticeMap = jedis.hgetAll("notice_cache_key");
+                } else {
+                    noticeMap = (Map<String, String>) RedisUtil.LOCAL_CACHE.get("notice_cache_key");
+                }
+                if (noticeMap != null && !noticeMap.isEmpty()) {
+                    request.setAttribute("notice_cache_key", noticeMap);
+                    request.setAttribute("vEnter", "\n");
+                    CookieUtil.addCookie(response, "hasReadNotice", "1", -1);
+                }
+            }
+            content = getJspOutput(request, response, jspPath);
+        }
+        return content;
+    }
+
+    private String getJspPath(Jedis jedis, ConnectionBean connection, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String jspPath = null;
+        if (checkAuthority(jedis, request, response)) {
+            setJsonResult(request, CODE_SUCCESS, "");
+            jspPath = doAction(connection, jedis, request, response);
+        } else {
+            setJsonResult(request, "403", "无权限访问或登录已过期");
+            jspPath = ERROR_URL;
+        }
+        return jspPath;
     }
 
     /**
