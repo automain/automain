@@ -1,6 +1,7 @@
 package com.github.automain.schedule;
 
 import com.github.automain.common.BaseExecutor;
+import com.github.automain.common.RequestUrl;
 import com.github.automain.monitor.bean.DbSlowLog;
 import com.github.automain.util.HTTPUtil;
 import com.github.automain.util.PropertiesUtil;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.sql.SQLException;
 import java.util.List;
 
+@RequestUrl("/schedule/dbslow")
 public class DbSlowSchedule extends BaseExecutor {
 
     @Override

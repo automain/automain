@@ -1,6 +1,7 @@
 package com.github.automain.user.action;
 
 import com.github.automain.common.BaseExecutor;
+import com.github.automain.common.RequestUrl;
 import com.github.automain.user.bean.TbMenu;
 import com.github.automain.user.bean.TbRoleMenu;
 import com.github.fastjdbc.bean.ConnectionBean;
@@ -12,6 +13,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+@RequestUrl("/menu/grant/role")
 public class MenuGrantRoleExecutor extends BaseExecutor {
 
     @Override

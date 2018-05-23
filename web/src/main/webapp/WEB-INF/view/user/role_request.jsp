@@ -21,8 +21,6 @@
     <thead>
     <tr>
         <th lay-data="{field:'request_url', width:200}">请求相对路径</th>
-        <th lay-data="{field:'operation_class', width:500}">请求处理类的全路径</th>
-        <th lay-data="{field:'url_comment', width:400}">注释</th>
         <th lay-data="{field:'operation', width:180, fixed:'right'}">操作</th>
     </tr>
     </thead>
@@ -59,10 +57,10 @@
                         height: 'full-190'
                     });
                     $(".grant-request-btn").click(function () {
-                        var requestId = $(this).attr("request-id");
+                        var requestUrl = $(this).attr("request-url");
                         $.post("${ctx}/role/grant/request",{
                             roleId: '${roleId}'
-                            , requestMappingId: requestId
+                            , requestUrl: requestUrl
                         }, function (d) {
                             layer.msg(d.msg);
                             if (d.code == code_success){
@@ -71,10 +69,10 @@
                         }, "json");
                     });
                     $(".revoke-request-btn").click(function () {
-                        var requestId = $(this).attr("request-id");
+                        var requestUrl = $(this).attr("request-url");
                         $.post("${ctx}/role/revoke/request",{
                             roleId: '${roleId}'
-                            , requestMappingId: requestId
+                            , requestUrl: requestUrl
                         }, function (d) {
                             layer.msg(d.msg);
                             if (d.code == code_success){

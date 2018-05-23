@@ -1,6 +1,7 @@
 package com.github.automain.common.view;
 
 import com.github.automain.common.BaseExecutor;
+import com.github.automain.common.RequestUrl;
 import com.github.automain.common.bean.TbDictionary;
 import com.github.automain.common.vo.DictionaryVO;
 import com.github.fastjdbc.bean.ConnectionBean;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@RequestUrl("/dictionary/forward")
 public class DictionaryForwardExecutor extends BaseExecutor {
 
     @Override

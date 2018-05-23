@@ -1,6 +1,7 @@
 package com.github.automain.common.view;
 
 import com.github.automain.common.BaseExecutor;
+import com.github.automain.common.RequestUrl;
 import com.github.automain.common.bean.TbConfig;
 import com.github.fastjdbc.bean.ConnectionBean;
 import com.github.fastjdbc.bean.PageBean;
@@ -9,6 +10,7 @@ import redis.clients.jedis.Jedis;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+@RequestUrl("/config/list")
 public class ConfigListExecutor extends BaseExecutor {
 
     @Override

@@ -9,6 +9,7 @@ import com.github.fastjdbc.common.BaseDao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,24 +29,19 @@ public class TbRoleRequestMappingDao extends BaseDao<TbRoleRequestMapping> {
             sql.append(" AND role_id = ?");
             parameterList.add(bean.getRoleId());
         }
-        if (bean.getRequestMappingId() != null) {
-            sql.append(" AND request_mapping_id = ?");
-            parameterList.add(bean.getRequestMappingId());
+        if (bean.getRequestUrl() != null) {
+            sql.append(" AND request_url = ?");
+            parameterList.add(bean.getRequestUrl());
         }
         return sql.toString();
     }
 
     public Set<String> selectRequestUrlByRoleId(ConnectionBean connection, Long roleId) throws SQLException {
-        String sql = "SELECT trm.request_url FROM tb_request_mapping trm LEFT JOIN tb_role_request_mapping trrm ON trrm.request_mapping_id = trm.request_mapping_id AND trrm.is_delete = 0";
-        List<Object> paramList = new ArrayList<Object>(1);
-        if (!roleId.equals(1L)) {
-            sql += " WHERE trrm.role_id = ?";
-            paramList.add(roleId);
-        }
+        String sql = "SELECT trrm.request_url FROM tb_role_request_mapping trrm WHERE trrm.is_delete = 0 AND trrm.role_id = ?";
         ResultSet rs = null;
         Set<String> resultSet = new HashSet<String>();
         try {
-            rs = executeSelectReturnResultSet(connection, sql, paramList);
+            rs = executeSelectReturnResultSet(connection, sql, Collections.singletonList(roleId));
             while (rs.next()) {
                 resultSet.add(rs.getString(1));
             }
@@ -54,4 +50,5 @@ public class TbRoleRequestMappingDao extends BaseDao<TbRoleRequestMapping> {
         }
         return resultSet;
     }
+
 }

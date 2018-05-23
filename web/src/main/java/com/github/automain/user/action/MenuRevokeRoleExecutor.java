@@ -1,6 +1,7 @@
 package com.github.automain.user.action;
 
 import com.github.automain.common.BaseExecutor;
+import com.github.automain.common.RequestUrl;
 import com.github.automain.user.bean.TbRoleMenu;
 import com.github.fastjdbc.bean.ConnectionBean;
 import redis.clients.jedis.Jedis;
@@ -11,6 +12,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+@RequestUrl("/menu/revoke/role")
 public class MenuRevokeRoleExecutor extends BaseExecutor {
 
     @Override

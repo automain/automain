@@ -16,19 +16,33 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @WebServlet(urlPatterns = "/", asyncSupported = true, loadOnStartup = 2)
 public class DispatcherController extends HttpServlet {
 
     private static ServletContext SERVLET_CONTEXT;
 
+    private static Map<String, BaseExecutor> REQUEST_MAPPING;
+
     @Override
     public void init() throws ServletException {
-        SystemUtil.initConnectionPool();
-        initStaticVersion();
+        try {
+            SystemUtil.initConnectionPool();
+            initStaticVersion();
+            REQUEST_MAPPING = initRequestMap(DispatcherController.class.getResource("/").getPath().replace("test-classes", "classes"), new HashMap<String, BaseExecutor>());
+            System.err.println("===============================Init Success===============================");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ServletException(e);
+        }
     }
 
     private void initStaticVersion() {
@@ -85,6 +99,44 @@ public class DispatcherController extends HttpServlet {
         }
     }
 
+    private Map<String, BaseExecutor> initRequestMap(String basePath, Map<String, BaseExecutor> requestMap) throws Exception {
+        File file = new File(basePath);
+        File[] childClassList = file.listFiles();
+        if (childClassList != null) {
+            for (File childClass : childClassList) {
+                if (childClass.isDirectory()) {
+                    initRequestMap(childClass.getPath(), requestMap);
+                } else {
+                    String classPath = childClass.getPath();
+                    if (classPath.endsWith(".class")) {
+                        classPath = classPath.substring(classPath.indexOf("\\classes") + 9, classPath.lastIndexOf("."));
+                        classPath = classPath.replace("\\", ".");
+                        if (classPath.endsWith("Executor")) {
+                            Class clazz = Class.forName(classPath);
+                            if (BaseExecutor.class.isAssignableFrom(clazz) && clazz.isAnnotationPresent(RequestUrl.class)) {
+                                RequestUrl annotation = (RequestUrl) clazz.getAnnotation(RequestUrl.class);
+                                String url = annotation.value();
+                                if (requestMap.containsKey(url)) {
+                                    throw new RuntimeException("url conflict:\nurl---------->"
+                                            + url + "\nconflict Class1---------->"
+                                            + requestMap.get(url).getClass().getName()
+                                            + "\nconflict Class2---------->" + clazz.getName());
+                                }
+                                requestMap.put(url, (BaseExecutor) clazz.newInstance());
+                                System.out.println(url + "\t\t\t\t\t" + clazz.getName());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return requestMap;
+    }
+
+    public static List<String> getRequestUrlList() {
+        return new ArrayList<String>(REQUEST_MAPPING.keySet());
+    }
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         this.doPost(req, resp);
@@ -98,12 +150,7 @@ public class DispatcherController extends HttpServlet {
             if ("/".equals(uri)) {
                 executor = new LoginExecutor();
             } else {
-                Class<?> c = RequestMappingContainer.getRequestMapping(uri);
-                if (c != null) {
-                    executor = (BaseExecutor) c.getDeclaredConstructor().newInstance();
-                } else {
-                    executor = new ResourceNotFoundExecutor();
-                }
+                executor = REQUEST_MAPPING.get(uri);
             }
         } catch (Exception e) {
             e.printStackTrace();

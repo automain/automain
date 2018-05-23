@@ -68,7 +68,7 @@
             $("#intervalTime").html(sub);
         } else {
             window.clearInterval(i);
-            window.location.href = '${ctx}/';
+            top.location.href = '${ctx}/';
         }
     }
 </script>

@@ -23,11 +23,11 @@ public class TbRoleService extends BaseService<TbRole, TbRoleDao> implements Ser
         return getDao().selectTableForCustomPage(connection, bean,  pageFromRequest(request), limitFromRequest(request));
     }
 
-    public PageBean<TbRole> selectTableForForRequest(ConnectionBean connection, TbRole bean, HttpServletRequest request, Long requestMappingId) throws Exception {
+    public PageBean<TbRole> selectTableForForRequest(ConnectionBean connection, TbRole bean, HttpServletRequest request, String requestUrl) throws Exception {
         PageBean<TbRole> pageBean = selectTableForCustomPage(connection, bean, request);
         List<TbRole> data = pageBean.getData();
         TbRoleRequestMapping roleRequestMappingParam = new TbRoleRequestMapping();
-        roleRequestMappingParam.setRequestMappingId(requestMappingId);
+        roleRequestMappingParam.setRequestUrl(requestUrl);
         roleRequestMappingParam.setIsDelete(0);
         for (TbRole role : data) {
             roleRequestMappingParam.setRoleId(role.getRoleId());

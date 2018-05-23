@@ -2,6 +2,7 @@ package com.github.automain.user.view;
 
 import com.alibaba.fastjson.JSON;
 import com.github.automain.common.BaseExecutor;
+import com.github.automain.common.RequestUrl;
 import com.github.automain.common.container.RolePrivilegeContainer;
 import com.github.automain.common.vo.MenuVO;
 import com.github.automain.user.bean.TbMenu;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
+@RequestUrl("/role/forward")
 public class RoleForwardExecutor extends BaseExecutor {
 
     @Override

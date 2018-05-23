@@ -1,6 +1,7 @@
 package com.github.automain.schedule;
 
 import com.github.automain.common.BaseExecutor;
+import com.github.automain.common.RequestUrl;
 import com.github.automain.monitor.bean.DbStatus;
 import com.github.automain.util.HTTPUtil;
 import com.github.automain.util.PropertiesUtil;
@@ -11,6 +12,7 @@ import redis.clients.jedis.Jedis;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+@RequestUrl("/schedule/dbstatus")
 public class DbStatusSchedule extends BaseExecutor {
 
     @Override

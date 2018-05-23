@@ -17,14 +17,24 @@ public class TbRoleRequestMapping extends RequestUtil implements BaseBean<TbRole
     // 角色ID
     private Long roleId;
 
-    // 请求路径ID
-    private Long requestMappingId;
+    // 请求路径
+    private String requestUrl;
 
     // 是否删除(0:否,1;是)
     private Integer isDelete;
 
     // ========== additional column begin ==========
 
+    // 是否有该权限(0:否,1:是)
+    private Integer hasRole;
+
+    public Integer getHasRole() {
+        return hasRole;
+    }
+
+    public void setHasRole(Integer hasRole) {
+        this.hasRole = hasRole;
+    }
 
     // ========== additional column end ==========
 
@@ -44,12 +54,12 @@ public class TbRoleRequestMapping extends RequestUtil implements BaseBean<TbRole
         this.roleId = roleId;
     }
 
-    public Long getRequestMappingId() {
-        return requestMappingId;
+    public String getRequestUrl() {
+        return requestUrl;
     }
 
-    public void setRequestMappingId(Long requestMappingId) {
-        this.requestMappingId = requestMappingId;
+    public void setRequestUrl(String requestUrl) {
+        this.requestUrl = requestUrl;
     }
 
     public Integer getIsDelete() {
@@ -81,8 +91,8 @@ public class TbRoleRequestMapping extends RequestUtil implements BaseBean<TbRole
         if (all || this.getIsDelete() != null) {
             map.put("is_delete", this.getIsDelete());
         }
-        if (all || this.getRequestMappingId() != null) {
-            map.put("request_mapping_id", this.getRequestMappingId());
+        if (all || this.getRequestUrl() != null) {
+            map.put("request_url", this.getRequestUrl());
         }
         if (all || this.getRoleId() != null) {
             map.put("role_id", this.getRoleId());
@@ -95,7 +105,7 @@ public class TbRoleRequestMapping extends RequestUtil implements BaseBean<TbRole
         TbRoleRequestMapping bean = new TbRoleRequestMapping();
         bean.setRoleRequestMappingId(rs.getLong("role_request_mapping_id"));
         bean.setRoleId(rs.getLong("role_id"));
-        bean.setRequestMappingId(rs.getLong("request_mapping_id"));
+        bean.setRequestUrl(rs.getString("request_url"));
         bean.setIsDelete(rs.getInt("is_delete"));
         return bean;
     }
@@ -105,7 +115,7 @@ public class TbRoleRequestMapping extends RequestUtil implements BaseBean<TbRole
         TbRoleRequestMapping bean = new TbRoleRequestMapping();
         bean.setRoleRequestMappingId(getLong("roleRequestMappingId", request));
         bean.setRoleId(getLong("roleId", request));
-        bean.setRequestMappingId(getLong("requestMappingId", request));
+        bean.setRequestUrl(getString("requestUrl", request));
         bean.setIsDelete(getInt("isDelete", request, 0));
         return bean;
     }

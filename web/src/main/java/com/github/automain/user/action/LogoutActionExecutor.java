@@ -1,6 +1,7 @@
 package com.github.automain.user.action;
 
 import com.github.automain.common.BaseExecutor;
+import com.github.automain.common.RequestUrl;
 import com.github.automain.util.CookieUtil;
 import com.github.automain.util.EncryptUtil;
 import com.github.automain.util.PropertiesUtil;
@@ -11,6 +12,7 @@ import redis.clients.jedis.Jedis;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+@RequestUrl("/user/logout/action")
 public class LogoutActionExecutor extends BaseExecutor {
 
     @Override

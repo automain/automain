@@ -1,6 +1,7 @@
 package com.github.automain.user.view;
 
 import com.github.automain.common.BaseExecutor;
+import com.github.automain.common.RequestUrl;
 import com.github.automain.common.bean.TbUploadRelation;
 import com.github.automain.user.bean.TbUser;
 import com.github.automain.util.UploadUtil;
@@ -10,6 +11,7 @@ import redis.clients.jedis.Jedis;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+@RequestUrl("/user/forward")
 public class UserForwardExecutor extends BaseExecutor {
 
     @Override

@@ -1,6 +1,7 @@
 package com.github.automain.common.view;
 
 import com.github.automain.common.BaseExecutor;
+import com.github.automain.common.RequestUrl;
 import com.github.automain.util.RedisUtil;
 import com.github.fastjdbc.bean.ConnectionBean;
 import redis.clients.jedis.Jedis;
@@ -9,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
+@RequestUrl("/notice/forward")
 public class NoticeForwardExecutor extends BaseExecutor {
 
     @Override

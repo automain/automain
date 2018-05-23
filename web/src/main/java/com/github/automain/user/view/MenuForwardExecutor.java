@@ -1,6 +1,7 @@
 package com.github.automain.user.view;
 
 import com.github.automain.common.BaseExecutor;
+import com.github.automain.common.RequestUrl;
 import com.github.automain.common.vo.MenuBreadcrumbVO;
 import com.github.automain.user.bean.TbMenu;
 import com.github.fastjdbc.bean.ConnectionBean;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@RequestUrl("/menu/forward")
 public class MenuForwardExecutor extends BaseExecutor {
 
     @Override

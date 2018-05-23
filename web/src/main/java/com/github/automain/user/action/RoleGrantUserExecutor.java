@@ -1,6 +1,7 @@
 package com.github.automain.user.action;
 
 import com.github.automain.common.BaseExecutor;
+import com.github.automain.common.RequestUrl;
 import com.github.automain.user.bean.TbRole;
 import com.github.automain.user.bean.TbUser;
 import com.github.automain.user.bean.TbUserRole;
@@ -10,6 +11,7 @@ import redis.clients.jedis.Jedis;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+@RequestUrl("/role/grant/user")
 public class RoleGrantUserExecutor extends BaseExecutor {
 
     @Override

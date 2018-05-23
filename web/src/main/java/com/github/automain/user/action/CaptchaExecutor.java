@@ -1,6 +1,7 @@
 package com.github.automain.user.action;
 
 import com.github.automain.common.BaseExecutor;
+import com.github.automain.common.RequestUrl;
 import com.github.automain.util.CaptchaUtil;
 import com.github.automain.util.RedisUtil;
 import com.github.automain.util.SystemUtil;
@@ -10,6 +11,7 @@ import redis.clients.jedis.Jedis;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+@RequestUrl("/user/captcha")
 public class CaptchaExecutor extends BaseExecutor {
 
     private static final String CAPTCHA_RANDOM_KEY = "captchaRandomKey";

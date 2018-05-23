@@ -1,6 +1,7 @@
 package com.github.automain.monitor.action;
 
 import com.github.automain.common.BaseExecutor;
+import com.github.automain.common.RequestUrl;
 import com.github.automain.monitor.vo.DbPagesVO;
 import com.github.automain.monitor.vo.DbSqlVO;
 import com.github.automain.monitor.vo.DbThreadVO;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@RequestUrl("/monitor/dbstatus")
 public class DbStatusExecutor extends BaseExecutor {
 
     @Override

@@ -1,6 +1,7 @@
 package com.github.automain.user.action;
 
 import com.github.automain.common.BaseExecutor;
+import com.github.automain.common.RequestUrl;
 import com.github.automain.user.bean.TbRole;
 import com.github.automain.user.bean.TbRoleMenu;
 import com.github.fastjdbc.bean.ConnectionBean;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
+@RequestUrl("/role/grant/menu")
 public class RoleGrantMenuExecutor extends BaseExecutor {
 
     @Override

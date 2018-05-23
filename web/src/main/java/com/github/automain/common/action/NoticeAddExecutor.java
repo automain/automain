@@ -1,6 +1,7 @@
 package com.github.automain.common.action;
 
 import com.github.automain.common.BaseExecutor;
+import com.github.automain.common.RequestUrl;
 import com.github.automain.util.DateUtil;
 import com.github.automain.util.RedisUtil;
 import com.github.fastjdbc.bean.ConnectionBean;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
+@RequestUrl("/notice/add")
 public class NoticeAddExecutor extends BaseExecutor {
 
     @Override

@@ -2,7 +2,7 @@ package com.github.automain.common.action;
 
 import com.github.automain.common.BaseExecutor;
 import com.github.automain.common.DispatcherController;
-import com.github.automain.common.RequestMappingContainer;
+import com.github.automain.common.RequestUrl;
 import com.github.automain.common.container.DictionaryContainer;
 import com.github.automain.common.container.RolePrivilegeContainer;
 import com.github.automain.util.HTTPUtil;
@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
+@RequestUrl("/reload/cache")
 public class ReloadCacheExecutor extends BaseExecutor {
 
     private static List<String> INNER_IP_PORTS = null;
@@ -45,9 +45,6 @@ public class ReloadCacheExecutor extends BaseExecutor {
         String logReloadLabel = null;
         if (reloadLabel != null) {
             switch (reloadLabel) {
-                case "requestMapping":
-                    RequestMappingContainer.reloadRequestMapping();
-                    break;
                 case "properties":
                     PropertiesUtil.reloadProperties();
                     logReloadLabel = "配置文件";
@@ -65,12 +62,12 @@ public class ReloadCacheExecutor extends BaseExecutor {
                     logReloadLabel = "静态资源";
                     break;
                 default:
-                    RequestMappingContainer.reloadRequestMapping();
-                    logReloadLabel = "访问路径";
+                    PropertiesUtil.reloadProperties();
+                    logReloadLabel = "配置文件";
                     break;
             }
         } else {
-            RequestMappingContainer.reloadRequestMapping();
+            PropertiesUtil.reloadProperties();
         }
         String thisIpPort = request.getServerName() + ":" + request.getServerPort();
         LOGGER.info("刷新缓存地址:" + thisIpPort + ",刷新缓存项:" + logReloadLabel);

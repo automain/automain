@@ -1,6 +1,7 @@
 package com.github.automain.user.action;
 
 import com.github.automain.common.BaseExecutor;
+import com.github.automain.common.RequestUrl;
 import com.github.automain.user.bean.TbUser;
 import com.github.automain.util.CookieUtil;
 import com.github.automain.util.EncryptUtil;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
+@RequestUrl("/user/login/action")
 public class LoginActionExecutor extends BaseExecutor {
 
     private static final String CAPTCHA_RANDOM_KEY = "captchaRandomKey";

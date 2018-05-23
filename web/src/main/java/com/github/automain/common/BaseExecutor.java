@@ -227,6 +227,10 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
         if (user == null) {
             return false;
         }
+        Set<String> roleLabel = RolePrivilegeContainer.getRoleLabelByUserId(user.getUserId());
+        if (roleLabel.contains("admin")) {
+            return true;
+        }
         Set<String> uriSet = RolePrivilegeContainer.getRequestUrlSetByUserId(user.getUserId());
         return uriSet != null && uriSet.contains(uri);
     }
