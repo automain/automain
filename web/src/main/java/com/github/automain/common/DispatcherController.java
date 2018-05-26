@@ -1,13 +1,17 @@
 package com.github.automain.common;
 
 import com.github.automain.common.bean.TbConfig;
+import com.github.automain.common.container.DictionaryContainer;
+import com.github.automain.common.container.RolePrivilegeContainer;
 import com.github.automain.common.container.ServiceContainer;
 import com.github.automain.common.view.ResourceNotFoundExecutor;
 import com.github.automain.user.view.LoginExecutor;
 import com.github.automain.util.HTTPUtil;
+import com.github.automain.util.RedisUtil;
 import com.github.automain.util.SystemUtil;
 import com.github.fastjdbc.bean.ConnectionBean;
 import com.github.fastjdbc.bean.ConnectionPool;
+import redis.clients.jedis.Jedis;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.ServletContext;
@@ -34,45 +38,31 @@ public class DispatcherController extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
+        ConnectionBean connection = null;
+        Jedis jedis = null;
         try {
+            // 初始化context
+            SERVLET_CONTEXT = getServletContext();
+            // 初始化数据库连接池
             SystemUtil.initConnectionPool();
-            initStaticVersion();
+            connection = ConnectionPool.getConnectionBean(null);
+            // 初始化静态资源版本
+            reloadStaticVersion(connection);
+            // 初始化redis连接池
+            SystemUtil.initJedisPool();
+            jedis = RedisUtil.getJedis();
+            // 初始化字典表缓存
+            DictionaryContainer.reloadDictionary(jedis, connection);
+            // 初始化人员角色权限缓存
+            RolePrivilegeContainer.reloadRolePrivilege(jedis, connection);
+            // 初始化访问路径
             REQUEST_MAPPING = initRequestMap(DispatcherController.class.getResource("/").getPath().replace("test-classes", "classes"), new HashMap<String, BaseExecutor>());
             System.err.println("===============================Init Success===============================");
         } catch (Exception e) {
             e.printStackTrace();
             throw new ServletException(e);
-        }
-    }
-
-    private void initStaticVersion() {
-        SERVLET_CONTEXT = getServletContext();
-        ConnectionBean connection = null;
-        try {
-            connection = ConnectionPool.getConnectionBean(null);
-            TbConfig bean = new TbConfig();
-            bean.setConfigKey("staticVersion");
-            bean.setIsDelete(0);
-            TbConfig config = ServiceContainer.TB_CONFIG_SERVICE.selectOneTableByBean(connection, bean);
-            if (config != null) {
-                SERVLET_CONTEXT.setAttribute("staticVersion", config.getConfigValue());
-            } else {
-                SERVLET_CONTEXT.setAttribute("staticVersion", "0");
-                bean.setConfigValue("0");
-                bean.setConfigComment("静态资源版本");
-                Timestamp now = new Timestamp(System.currentTimeMillis());
-                bean.setCreateTime(now);
-                bean.setUpdateTime(now);
-                ServiceContainer.TB_CONFIG_SERVICE.insertIntoTable(connection, bean);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
         } finally {
-            try {
-                ConnectionPool.closeConnectionBean(connection);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            SystemUtil.closeJedisAndConnectionBean(jedis, connection);
         }
     }
 

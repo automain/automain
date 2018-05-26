@@ -3,6 +3,9 @@ package com.github.automain.util;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -55,6 +58,17 @@ public class PropertiesUtil {
     public static final String[] POOL_NAMES = DB_PROPERTIES.getProperty("pool_names").split(",");
     private static final String url = DB_PROPERTIES.getProperty(POOL_NAMES[0] + "_jdbcUrl");
     public static final String DATABASE_NAME = url.substring(url.lastIndexOf("/") + 1, url.indexOf("?"));
+
+    public static List<String> INNER_IP_PORTS = Arrays.asList(CONFIG_PROPERTIES.getProperty("innerIpPort").split(","));
+    public static List<String> INNER_IPS;
+
+    static {
+        List<String> ips = new ArrayList<String>(INNER_IP_PORTS.size());
+        for (String ipPort : INNER_IP_PORTS) {
+            ips.add(ipPort.split(":")[0]);
+        }
+        INNER_IPS = ips;
+    }
 
     public static Properties getProperties(String fileName) {
         return PROPERTIES_MAP.get(fileName);

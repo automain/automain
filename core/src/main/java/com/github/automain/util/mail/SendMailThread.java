@@ -1,7 +1,7 @@
 package com.github.automain.util.mail;
 
-import com.github.automain.util.LogUtil;
 import com.github.automain.util.PropertiesUtil;
+import com.github.automain.util.SystemUtil;
 
 import javax.mail.Address;
 import javax.mail.Authenticator;
@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 
 public class SendMailThread implements Runnable {
 
-    private static Logger LOGGER = LogUtil.getLoggerByName("system");
+    private static Logger LOGGER = SystemUtil.getLoggerByName("system");
 
     // 默认邮件发送邮箱用户名
     private static final String DEFAULT_EMAIL_SENDER_USERNAME = "";

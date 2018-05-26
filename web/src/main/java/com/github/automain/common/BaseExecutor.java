@@ -9,9 +9,9 @@ import com.github.automain.util.CompressUtil;
 import com.github.automain.util.CookieUtil;
 import com.github.automain.util.EncryptUtil;
 import com.github.automain.util.HTTPUtil;
-import com.github.automain.util.LogUtil;
 import com.github.automain.util.PropertiesUtil;
 import com.github.automain.util.RedisUtil;
+import com.github.automain.util.SystemUtil;
 import com.github.automain.util.wapper.JspResponseWrapper;
 import com.github.fastjdbc.bean.ConnectionBean;
 import com.github.fastjdbc.bean.ConnectionPool;
@@ -42,7 +42,7 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
     protected static final String CODE_SUCCESS = "0";// 返回成功
     protected static final String CODE_FAIL = "1";// 返回失败
     protected static final String PAGE_BEAN_PARAM = "pageBean";// 分页对象参数名
-    protected static final Logger LOGGER = LogUtil.getLoggerByName("system");
+    protected static final Logger LOGGER = SystemUtil.getLoggerByName("system");
 
     private AsyncContext asyncContext;
 
@@ -73,14 +73,7 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
             e.printStackTrace();
             handleException(connection, request, response, toJson, isDownloadRequest, e);
         } finally {
-            try {
-                if (jedis != null) {
-                    jedis.close();
-                }
-                ConnectionPool.closeConnectionBean(connection);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            SystemUtil.closeJedisAndConnectionBean(jedis, connection);
             asyncContext.complete();
         }
     }
@@ -227,11 +220,11 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
         if (user == null) {
             return false;
         }
-        Set<String> roleLabel = RolePrivilegeContainer.getRoleLabelByUserId(user.getUserId());
+        Set<String> roleLabel = RolePrivilegeContainer.getRoleLabelByUserId(jedis, user.getUserId());
         if (roleLabel.contains("admin")) {
             return true;
         }
-        Set<String> uriSet = RolePrivilegeContainer.getRequestUrlSetByUserId(user.getUserId());
+        Set<String> uriSet = RolePrivilegeContainer.getRequestUrlSetByUserId(jedis, user.getUserId());
         return uriSet != null && uriSet.contains(uri);
     }
 

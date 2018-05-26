@@ -30,7 +30,7 @@ public class FrameExecutor extends BaseExecutor {
         TbUser user = getSessionUser(jedis, request, response);
         if (user != null) {
             Long userId = user.getUserId();
-            List<MenuVO> menuVOList = RolePrivilegeContainer.getMenuByUserId(userId);
+            List<MenuVO> menuVOList = RolePrivilegeContainer.getMenuByUserId(jedis, userId);
             List<MenuVO> titleList = new ArrayList<MenuVO>();
             List<ChildMenuVO> childrenList = new ArrayList<ChildMenuVO>();
             MenuVO title = null;
