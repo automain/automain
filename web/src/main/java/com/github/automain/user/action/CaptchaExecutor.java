@@ -1,7 +1,7 @@
 package com.github.automain.user.action;
 
 import com.github.automain.common.BaseExecutor;
-import com.github.automain.common.RequestUrl;
+import com.github.automain.common.annotation.RequestUrl;
 import com.github.automain.util.CaptchaUtil;
 import com.github.automain.util.RedisUtil;
 import com.github.automain.util.SystemUtil;

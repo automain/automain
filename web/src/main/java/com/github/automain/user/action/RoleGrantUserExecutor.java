@@ -1,7 +1,7 @@
 package com.github.automain.user.action;
 
 import com.github.automain.common.BaseExecutor;
-import com.github.automain.common.RequestUrl;
+import com.github.automain.common.annotation.RequestUrl;
 import com.github.automain.user.bean.TbRole;
 import com.github.automain.user.bean.TbUser;
 import com.github.automain.user.bean.TbUserRole;

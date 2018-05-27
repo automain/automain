@@ -1,8 +1,8 @@
 package com.github.automain.common.action;
 
 import com.github.automain.common.BaseExecutor;
-import com.github.automain.common.DispatcherController;
-import com.github.automain.common.RequestUrl;
+import com.github.automain.common.controller.DispatcherController;
+import com.github.automain.common.annotation.RequestUrl;
 import com.github.automain.common.container.DictionaryContainer;
 import com.github.automain.common.container.RolePrivilegeContainer;
 import com.github.automain.util.HTTPUtil;

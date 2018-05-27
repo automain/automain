@@ -1,7 +1,7 @@
 package com.github.automain.common.view;
 
 import com.github.automain.common.BaseExecutor;
-import com.github.automain.common.RequestUrl;
+import com.github.automain.common.annotation.RequestUrl;
 import com.github.automain.util.RedisUtil;
 import com.github.fastjdbc.bean.ConnectionBean;
 import redis.clients.jedis.Jedis;

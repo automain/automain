@@ -1,8 +1,8 @@
 package com.github.automain.user.view;
 
 import com.github.automain.common.BaseExecutor;
-import com.github.automain.common.DispatcherController;
-import com.github.automain.common.RequestUrl;
+import com.github.automain.common.controller.DispatcherController;
+import com.github.automain.common.annotation.RequestUrl;
 import com.github.automain.user.bean.TbRoleRequestMapping;
 import com.github.fastjdbc.bean.ConnectionBean;
 import com.github.fastjdbc.bean.PageBean;

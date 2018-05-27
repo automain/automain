@@ -1,4 +1,4 @@
-package com.github.automain.common;
+package com.github.automain.common.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

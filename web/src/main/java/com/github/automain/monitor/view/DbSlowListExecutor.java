@@ -1,7 +1,7 @@
 package com.github.automain.monitor.view;
 
 import com.github.automain.common.BaseExecutor;
-import com.github.automain.common.RequestUrl;
+import com.github.automain.common.annotation.RequestUrl;
 import com.github.automain.monitor.bean.DbSlowLog;
 import com.github.fastjdbc.bean.ConnectionBean;
 import com.github.fastjdbc.bean.PageBean;

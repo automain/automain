@@ -1,7 +1,7 @@
 package com.github.automain.user.view;
 
 import com.github.automain.common.BaseExecutor;
-import com.github.automain.common.RequestUrl;
+import com.github.automain.common.annotation.RequestUrl;
 import com.github.automain.common.bean.TbUploadRelation;
 import com.github.automain.user.bean.TbUser;
 import com.github.automain.util.UploadUtil;

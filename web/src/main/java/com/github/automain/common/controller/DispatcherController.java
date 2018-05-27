@@ -1,5 +1,7 @@
-package com.github.automain.common;
+package com.github.automain.common.controller;
 
+import com.github.automain.common.BaseExecutor;
+import com.github.automain.common.annotation.RequestUrl;
 import com.github.automain.common.bean.TbConfig;
 import com.github.automain.common.container.DictionaryContainer;
 import com.github.automain.common.container.RolePrivilegeContainer;

@@ -1,5 +1,6 @@
-package com.github.automain.common;
+package com.github.automain.common.controller;
 
+import com.github.automain.common.BaseExecutor;
 import com.github.automain.common.action.UploadExecutor;
 
 import javax.servlet.AsyncContext;
