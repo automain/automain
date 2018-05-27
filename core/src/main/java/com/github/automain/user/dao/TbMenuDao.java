@@ -24,8 +24,8 @@ public class TbMenuDao extends BaseDao<TbMenu> {
     private String setSearchCondition(TbMenu bean, List<Object> parameterList) {
         StringBuilder sql = new StringBuilder("SELECT * FROM tb_menu WHERE is_delete = 0 ");
         if (bean.getMenuName() != null) {
-            sql.append(" AND menu_name = ?");
-            parameterList.add(bean.getMenuName());
+            sql.append(" AND menu_name LIKE ?");
+            parameterList.add(bean.getMenuName() + "%");
         }
         if (bean.getParentId() != null) {
             sql.append(" AND parent_id = ?");
