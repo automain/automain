@@ -51,12 +51,12 @@ public class DispatcherController extends HttpServlet {
             // 初始化redis连接池
             SystemUtil.initJedisPool();
             jedis = RedisUtil.getJedis();
+            // 初始化访问路径
+            REQUEST_MAPPING = initRequestMap(DispatcherController.class.getResource("/").getPath().replace("test-classes", "classes"), new HashMap<String, BaseExecutor>());
             // 初始化字典表缓存
             DictionaryContainer.reloadDictionary(jedis, connection);
             // 初始化人员角色权限缓存
-            RolePrivilegeContainer.reloadRolePrivilege(jedis, connection);
-            // 初始化访问路径
-            REQUEST_MAPPING = initRequestMap(DispatcherController.class.getResource("/").getPath().replace("test-classes", "classes"), new HashMap<String, BaseExecutor>());
+            RolePrivilegeContainer.reloadRolePrivilege(jedis, connection, getRequestUrlList());
             System.err.println("===============================Init Success===============================");
         } catch (Exception e) {
             e.printStackTrace();

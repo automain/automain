@@ -18,7 +18,7 @@ import java.util.TreeSet;
 
 public class RolePrivilegeContainer implements ServiceContainer {
 
-    public static void reloadRolePrivilege(Jedis jedis, ConnectionBean connection) {
+    public static void reloadRolePrivilege(Jedis jedis, ConnectionBean connection, List<String> requestUrlList) {
         // 用户->用户所有角色标识
         Map<Long, Set<String>> userRoleLabelMap = new HashMap<Long, Set<String>>();
 
@@ -37,7 +37,7 @@ public class RolePrivilegeContainer implements ServiceContainer {
                 String roleLabel = role.getRoleLabel();
                 roleLabelMap.put(roleId, roleLabel);
 
-                Set<String> requestUrlSet = TB_ROLE_REQUEST_MAPPING_SERVICE.selectRequestUrlByRoleId(connection, roleId);
+                Set<String> requestUrlSet = TB_ROLE_REQUEST_MAPPING_SERVICE.selectRequestUrlByRoleId(connection, roleId, requestUrlList);
                 rolePrivilegeMap.put(roleId, requestUrlSet);
 
                 List<TbMenu> menuList = TB_MENU_SERVICE.selectTableByRoleId(connection, roleId);
@@ -88,50 +88,58 @@ public class RolePrivilegeContainer implements ServiceContainer {
 
 
     private static void putUserRequestUrlCache(Jedis jedis, Long userId, Set<String> requestUrlSet) {
-        String key = "userRequestUrl:" + userId;
-        if (jedis != null) {
-            jedis.sadd(key, requestUrlSet.toArray(new String[0]));
-        } else {
-            RedisUtil.LOCAL_CACHE.put(key, requestUrlSet);
+        if (!requestUrlSet.isEmpty()) {
+            String key = "userRequestUrl:" + userId;
+            if (jedis != null) {
+                jedis.sadd(key, requestUrlSet.toArray(new String[0]));
+            } else {
+                RedisUtil.LOCAL_CACHE.put(key, requestUrlSet);
+            }
         }
     }
 
     private static void putUserMenuCache(Jedis jedis, Long userId, List<MenuVO> menuVOList) {
-        String key = "userMenu:" + userId;
-        if (jedis != null) {
-            jedis.set(key, JSON.toJSONString(menuVOList));
-        } else {
-            RedisUtil.LOCAL_CACHE.put(key, menuVOList);
+        if (!menuVOList.isEmpty()) {
+            String key = "userMenu:" + userId;
+            if (jedis != null) {
+                jedis.set(key, JSON.toJSONString(menuVOList));
+            } else {
+                RedisUtil.LOCAL_CACHE.put(key, menuVOList);
+            }
         }
     }
 
     private static void putRoleLabelUserCache(Jedis jedis, String roleLabel, Set<Long> userSet) {
-        String key = "roleLabelUser:" + roleLabel;
-        if (jedis != null) {
-            int size = userSet.size();
-            String[] value = new String[size];
-            int i = 0;
-            for (Long userId : userSet) {
-                value[i] = String.valueOf(userId);
-                i++;
+        if (!userSet.isEmpty()) {
+            String key = "roleLabelUser:" + roleLabel;
+            if (jedis != null) {
+                int size = userSet.size();
+                String[] value = new String[size];
+                int i = 0;
+                for (Long userId : userSet) {
+                    value[i] = String.valueOf(userId);
+                    i++;
+                }
+                jedis.sadd(key, value);
+            } else {
+                RedisUtil.LOCAL_CACHE.put(key, userSet);
             }
-            jedis.sadd(key, value);
-        } else {
-            RedisUtil.LOCAL_CACHE.put(key, userSet);
         }
     }
 
     private static void putUserRoleLabelCache(Jedis jedis, Map<Long, Set<String>> userRoleLabelMap) {
-        if (jedis != null) {
-            for (Map.Entry<Long, Set<String>> entry : userRoleLabelMap.entrySet()) {
-                Long userId = entry.getKey();
-                Set<String> roleLabelSet = entry.getValue();
-                String key = "userRoleLabel:" + userId;
-                jedis.sadd(key, roleLabelSet.toArray(new String[0]));
-            }
-        } else {
-            for (Map.Entry<Long, Set<String>> entry : userRoleLabelMap.entrySet()) {
-                RedisUtil.LOCAL_CACHE.put("userRoleLabel:" + entry.getKey(), entry.getValue());
+        if (!userRoleLabelMap.isEmpty()) {
+            if (jedis != null) {
+                for (Map.Entry<Long, Set<String>> entry : userRoleLabelMap.entrySet()) {
+                    Long userId = entry.getKey();
+                    Set<String> roleLabelSet = entry.getValue();
+                    String key = "userRoleLabel:" + userId;
+                    jedis.sadd(key, roleLabelSet.toArray(new String[0]));
+                }
+            } else {
+                for (Map.Entry<Long, Set<String>> entry : userRoleLabelMap.entrySet()) {
+                    RedisUtil.LOCAL_CACHE.put("userRoleLabel:" + entry.getKey(), entry.getValue());
+                }
             }
         }
     }

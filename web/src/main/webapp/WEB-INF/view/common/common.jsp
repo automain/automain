@@ -34,7 +34,7 @@
      * 延迟加载时间
      * @type {number}
      */
-    var loadingTime = 50;
+    var loadingTime = 100;
     /**
      * 成功返回码
      * @type {number}

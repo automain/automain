@@ -35,7 +35,7 @@ public class ReloadCacheExecutor extends BaseExecutor {
                     logReloadLabel = "数据字典";
                     break;
                 case "role":
-                    RolePrivilegeContainer.reloadRolePrivilege(jedis, connection);
+                    RolePrivilegeContainer.reloadRolePrivilege(jedis, connection, DispatcherController.getRequestUrlList());
                     logReloadLabel = "角色权限";
                     break;
                 case "staticVersion":
