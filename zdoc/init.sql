@@ -222,12 +222,7 @@ CREATE TABLE `tb_upload_relation` (
   PRIMARY KEY (`upload_relation_id`),
   KEY `idx_id_name_label` (`record_id`,`record_table_name`,`record_label`),
   KEY `idx_sequence_number` (`sequence_number`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-/*Data for the table `tb_upload_relation` */
-
-insert  into `tb_upload_relation`(`upload_relation_id`,`upload_file_id`,`record_id`,`record_table_name`,`record_label`,`sequence_number`,`is_delete`) values
-(1,1,1,'agfda',NULL,1,0);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Table structure for table `tb_user` */
 
