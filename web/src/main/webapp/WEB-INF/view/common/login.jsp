@@ -3,34 +3,46 @@
 <head>
     <%@include file="../common/common.jsp" %>
     <link rel="stylesheet" href="${ctx}/static/css/common/login.css?v=${staticVersion}" media="all"/>
-    <title>CMS</title>
+    <title>登录</title>
 </head>
-<body class="bg-body">
+<body>
 <form class="layui-form" action="#">
-    <div class="layui-layout layui-layout-login">
-        <h1>
-            <strong>CMS管理系统后台</strong>
-            <em>Management System</em>
-        </h1>
-        <div class="layui-login layui-login-icon fa fa-user">
-            <input type="text" placeholder="账号" class="login_txtbx" name="username" lay-verify="username"/>
-        </div>
-        <div class="layui-login layui-login-icon fa fa-lock">
-            <input type="password" placeholder="密码" class="login_txtbx" name="password" lay-verify="password"/>
-        </div>
-        <div class="layui-val-icon layui-login">
-            <input type="hidden" id="captchaRandomKey" name="captchaRandomKey"/>
-            <div class="layui-code-box">
-                <input type="text" id="captcha-value" name="captchaValue" placeholder="验证码" maxlength="4" class="login_txtbx" lay-verify="captcha">
-                <img src="" class="login_captcha_img" id="login_captcha_img" onclick="initCaptcha()">
+    <div class="layadmin-user-login layadmin-user-display-show">
+        <div class="layadmin-user-login-main">
+            <div class="layadmin-user-login-box layadmin-user-login-header">
+                <h2>CMS管理系统</h2>
+                <p>Management System</p>
+            </div>
+            <div class="layadmin-user-login-box layadmin-user-login-body layui-form">
+                <div class="layui-form-item">
+                    <label class="layadmin-user-login-icon layui-icon layui-icon-username" for="username"></label>
+                    <input type="text" name="username" id="username" lay-verify="username" placeholder="用户名" class="layui-input">
+                </div>
+                <div class="layui-form-item">
+                    <label class="layadmin-user-login-icon layui-icon layui-icon-password" for="password"></label>
+                    <input type="password" name="password" id="password" lay-verify="password" placeholder="密码" class="layui-input">
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-row">
+                        <div class="layui-col-xs7">
+                            <input type="hidden" id="captchaRandomKey" name="captchaRandomKey"/>
+                            <label class="layadmin-user-login-icon layui-icon layui-icon-vercode" for="captcha"></label>
+                            <input type="text" id="captcha-value" name="captchaValue" maxlength="4" id="captcha" lay-verify="captcha" placeholder="图形验证码" class="layui-input">
+                        </div>
+                        <div class="layui-col-xs5">
+                            <div style="margin-left: 10px;">
+                                <img src="" class="layadmin-user-login-codeimg" id="login_captcha_img" onclick="initCaptcha()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <button class="layui-btn layui-btn-fluid" id="submit-btn" lay-submit lay-filter="login">登 录</button>
+                </div>
             </div>
         </div>
-        <div class="layui-submit layui-login">
-            <input type="button" id="submit-btn" value="立即登陆" class="submit-btn" lay-submit lay-filter="login"/>
-        </div>
-        <div class="layui-login-text">
-            <p>&copy; 2016-2017 Automain 版权所有</p>
-            <p><a href="https://automain.github.io/desc" title="">Powered By Automain</a></p>
+        <div class="layui-trans layadmin-user-login-footer">
+            <p>&copy; 2018 <a href="https://automain.github.io/desc" target="_blank">automain</a></p>
         </div>
     </div>
 </form>
@@ -46,9 +58,10 @@
             }
         }, "json");
     }
+
     layui.use('form', function () {
         initCaptcha();
-        $("#captcha-value").bind("keydown",function(e){
+        $("#captcha-value").bind("keydown", function (e) {
             var theEvent = e || window.event;
             var code = theEvent.keyCode || theEvent.which || theEvent.charCode;
             if (code == 13) {

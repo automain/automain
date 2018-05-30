@@ -23,7 +23,7 @@ public class CaptchaExecutor extends BaseExecutor {
 
     @Override
     protected String doAction(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        CaptchaUtil captchaUtil = new CaptchaUtil(157, 42);
+        CaptchaUtil captchaUtil = new CaptchaUtil(120, 40);
         String captcha = captchaUtil.getCaptcha();
         request.setAttribute("image", captchaUtil.getBase64Image());
         String key = SystemUtil.randomUUID();
