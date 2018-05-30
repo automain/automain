@@ -1,4 +1,6 @@
 html {
+    background-color:#f2f2f2;
+    color:#666;
     scrollbar-arrow-color: #1aa094; /**//*三角箭头的颜色*/
     scrollbar-face-color: #1aa094; /**//*立体滚动条的颜色*/
     scrollbar-3dlight-color: #F5F5F5; /**//*立体滚动条亮边的颜色*/
@@ -24,7 +26,6 @@ html {
     height: 12px;
     background-color: #F5F5F5;
 }
-
 /*定义滚动条轨道 内阴影+圆角*/
 ::-webkit-scrollbar-track
 {
@@ -39,5 +40,8 @@ html {
     border-radius: 10px;
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
     background-color: #1aa094;
+}
+::-webkit-input-placeholder {
+    color:#ccc
 }
 .layui-table-cell .layui-form-checkbox[lay-skin="primary"]{top: 50%;transform: translateY(-50%);}

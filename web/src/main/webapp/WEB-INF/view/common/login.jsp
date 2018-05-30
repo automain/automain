@@ -27,7 +27,7 @@
                         <div class="layui-col-xs7">
                             <input type="hidden" id="captchaRandomKey" name="captchaRandomKey"/>
                             <label class="layadmin-user-login-icon layui-icon layui-icon-vercode" for="captcha"></label>
-                            <input type="text" id="captcha-value" name="captchaValue" maxlength="4" id="captcha" lay-verify="captcha" placeholder="图形验证码" class="layui-input">
+                            <input type="text" name="captchaValue" maxlength="4" id="captcha" lay-verify="captcha" placeholder="图形验证码" class="layui-input">
                         </div>
                         <div class="layui-col-xs5">
                             <div style="margin-left: 10px;">
@@ -37,7 +37,7 @@
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <button class="layui-btn layui-btn-fluid" id="submit-btn" lay-submit lay-filter="login">登 录</button>
+                    <button class="layui-btn layui-btn-fluid" lay-submit lay-filter="login">登 录</button>
                 </div>
             </div>
         </div>
@@ -61,13 +61,6 @@
 
     layui.use('form', function () {
         initCaptcha();
-        $("#captcha-value").bind("keydown", function (e) {
-            var theEvent = e || window.event;
-            var code = theEvent.keyCode || theEvent.which || theEvent.charCode;
-            if (code == 13) {
-                $("#submit-btn").click();
-            }
-        });
         var form = layui.form;
         form.verify({
             username: function (value) {
