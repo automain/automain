@@ -11,7 +11,7 @@
         <div class="layadmin-user-login-main">
             <div class="layadmin-user-login-box layadmin-user-login-header">
                 <h2>CMS管理系统</h2>
-                <p>Management System</p>
+                <p>基于layui实现</p>
             </div>
             <div class="layadmin-user-login-box layadmin-user-login-body layui-form">
                 <div class="layui-form-item">
