@@ -316,7 +316,7 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
     protected static TbUser getSessionUser(Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         String accessToken = CookieUtil.getCookieByName(request, "accessToken");
         if (accessToken == null) {
-            accessToken = request.getHeader("Authorization");
+            accessToken = request.getHeader("accessToken");
         }
         if (accessToken != null) {
             String decrypt = EncryptUtil.AESDecrypt(accessToken.getBytes(PropertiesUtil.DEFAULT_CHARSET), PropertiesUtil.SECURITY_KEY);
@@ -350,8 +350,6 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
                             userMap.put("cellphone", user.getCellphone());
                             userMap.put("email", user.getEmail());
                             isRefresh = true;
-                        } catch (Exception e) {
-                            e.printStackTrace();
                         } finally {
                             ConnectionPool.closeConnectionBean(connection);
                         }
@@ -359,6 +357,7 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
                 } else {
                     long cacheExpire = Long.parseLong(userMap.get("expireTime"));
                     if (cacheExpire < System.currentTimeMillis()) {
+                        RedisUtil.LOCAL_CACHE.remove(userKey);
                         return null;
                     } else if (expireTime < System.currentTimeMillis()) {
                         isRefresh = true;
@@ -375,13 +374,12 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
                     String value = userId + "_" + newExpireTime;
                     String newAccessToken = EncryptUtil.AESEncrypt(value.getBytes(PropertiesUtil.DEFAULT_CHARSET), PropertiesUtil.SECURITY_KEY);
                     CookieUtil.addCookie(response, "accessToken", newAccessToken, -1);
+                    response.setHeader("accessToken", newAccessToken);
                 }
                 TbUser user = new TbUser();
-                if (userMap != null) {
-                    user.setUserName(userMap.get("userName"));
-                    user.setCellphone(userMap.get("cellphone"));
-                    user.setEmail(userMap.get("email"));
-                }
+                user.setUserName(userMap.get("userName"));
+                user.setCellphone(userMap.get("cellphone"));
+                user.setEmail(userMap.get("email"));
                 user.setUserId(userId);
                 return user;
             }
