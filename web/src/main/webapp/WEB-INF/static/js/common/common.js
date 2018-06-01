@@ -23,7 +23,7 @@ function alertByFull(layer, title, url) {
  * @returns {boolean}
  */
 function checkIsNotNull(data) {
-    return data != "" && data != undefined && data != null;
+    return data != null && typeof data !== "undefined" && typeof data.valueOf() === "string" && data.length > 0;
 }
 
 /**
