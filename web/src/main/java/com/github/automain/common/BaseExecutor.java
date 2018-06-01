@@ -319,6 +319,7 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
             accessToken = request.getHeader("accessToken");
         }
         if (accessToken != null) {
+            response.setHeader("accessToken", accessToken);
             String decrypt = EncryptUtil.AESDecrypt(accessToken.getBytes(PropertiesUtil.DEFAULT_CHARSET), PropertiesUtil.SECURITY_KEY);
             String[] arr = decrypt.split("_");
             if (arr.length == 2) {
