@@ -73,12 +73,9 @@ CREATE TABLE `tb_config` (
   `is_delete` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否删除(0:否,1:是)',
   PRIMARY KEY (`config_id`),
   KEY `idx_config_key` (`config_key`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `tb_config` */
-
-insert  into `tb_config`(`config_id`,`config_key`,`config_value`,`config_comment`,`create_time`,`update_time`,`is_delete`) values
-(1,'staticVersion','0','静态资源版本','2018-04-22 18:59:14','2018-04-22 18:59:17',0);
 
 /*Table structure for table `tb_dictionary` */
 
@@ -125,14 +122,14 @@ CREATE TABLE `tb_menu` (
 
 insert  into `tb_menu`(`menu_id`,`request_url`,`menu_name`,`menu_icon`,`parent_id`,`top_id`,`sequence_number`,`is_spread`,`is_leaf`,`is_delete`) values
 (1,NULL,'系统管理','gears',0,0,1,0,0,0),
-(2,'/dictionary/forward','字典管理','book',1,0,2,0,1,0),
-(3,'/user/forward','用户管理','user',1,0,3,0,1,0),
-(4,'/role/forward','角色管理','user-secret',1,0,4,0,1,0),
-(5,'/menu/forward','菜单管理','navicon',1,0,5,0,1,0),
-(6,'/config/forward','全局配置','cog',1,0,6,0,1,0),
-(7,'/reload/cache/forward','刷新缓存','refresh',1,0,7,0,1,0),
-(8,'/notice/forward','上线公告','arrow-circle-o-up',1,0,8,0,1,0),
-(9,NULL,'数据库监控','database',1,1,9,0,0,0),
+(2,'/dictionary/forward','字典管理','book',1,1,1,0,1,0),
+(3,'/user/forward','用户管理','user',1,1,2,0,1,0),
+(4,'/role/forward','角色管理','user-secret',1,1,3,0,1,0),
+(5,'/menu/forward','菜单管理','navicon',1,1,4,0,1,0),
+(6,'/config/forward','全局配置','cog',1,1,5,0,1,0),
+(7,'/reload/cache/forward','刷新缓存','refresh',1,1,6,0,1,0),
+(8,'/notice/forward','上线公告','arrow-circle-o-up',1,1,7,0,1,0),
+(9,NULL,'数据库监控','database',1,1,8,0,0,0),
 (10,'/monitor/dbslow/forward','慢查询统计','spinner',9,1,1,0,1,0),
 (11,'/monitor/dbstatus/forward?forwardType=sql','sql统计','bar-chart',9,1,2,0,1,0),
 (12,'/monitor/dbstatus/forward?forwardType=transaction','事务统计','object-group',9,1,3,0,1,0),
@@ -223,6 +220,8 @@ CREATE TABLE `tb_upload_relation` (
   KEY `idx_id_name_label` (`record_id`,`record_table_name`,`record_label`),
   KEY `idx_sequence_number` (`sequence_number`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `tb_upload_relation` */
 
 /*Table structure for table `tb_user` */
 
