@@ -6,7 +6,7 @@
 </head>
 <body>
 <div class="layui-fluid">
-    <div class="layui-row layui-col-space15">
+    <div class="layui-row">
         <div class="layui-col-md12">
             <div class="layui-card">
                 <blockquote class="layui-elem-quote">
