@@ -5,62 +5,72 @@
     <title></title>
 </head>
 <body>
-<span class="layui-breadcrumb">
-    <c:forEach items="${parentList}" var="parent">
-        <a href="${ctx}/dictionary/forward?parentId=${parent.parentId}">${parent.dictionaryName}</a>
-    </c:forEach>
-    <a><cite><c:out value="${cite}"/></cite></a>
-</span>
-<blockquote class="layui-elem-quote" style="margin-top: 5px;">
-    <div class="layui-form">
-        <div class="layui-inline">
-            <button class="layui-btn layui-btn-sm layui-btn-normal" id="dictionary_add">
-                <i class="fa fa-plus"></i> 添加
-            </button>
-        </div>
-        <div class="layui-inline">
-            <button class="layui-btn layui-btn-sm layui-btn-danger" id="dictionary_delete">
-                <i class="fa fa-remove"></i> 删除
-            </button>
-        </div>
-        <div class="layui-inline">
-            <select class="layui-select" id="table-name-search" lay-filter="table-name-search" lay-search>
-                <option value="">请选择表名</option>
-                <c:forEach items="${tableNameList}" var="tableName">
-                    <option value="${tableName}">${tableName}</option>
-                </c:forEach>
-            </select>
-        </div>
-        <div class="layui-inline">
-            <select class="layui-select" id="column-name-search">
-                <option value="">请选择字段名</option>
-            </select>
-        </div>
-        <div class="layui-inline">
-            <button class="layui-btn layui-btn-sm layui-btn-warm" id="dictionary_refresh">
-                <i class="fa fa-search"></i> 搜索
-            </button>
+<div class="layui-card layadmin-header">
+    <div class="layui-breadcrumb">
+        <c:forEach items="${parentList}" var="parent">
+            <a href="${ctx}/dictionary/forward?parentId=${parent.parentId}">${parent.dictionaryName}</a>
+        </c:forEach>
+        <a><cite><c:out value="${cite}"/></cite></a>
+    </div>
+</div>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <blockquote class="layui-elem-quote">
+                    <div class="layui-form">
+                        <div class="layui-inline">
+                            <button class="layui-btn layui-btn-sm layui-btn-normal" id="dictionary_add">
+                                <i class="fa fa-plus"></i> 添加
+                            </button>
+                        </div>
+                        <div class="layui-inline">
+                            <button class="layui-btn layui-btn-sm layui-btn-danger" id="dictionary_delete">
+                                <i class="fa fa-remove"></i> 删除
+                            </button>
+                        </div>
+                        <div class="layui-inline">
+                            <select class="layui-select" id="table-name-search" lay-filter="table-name-search" lay-search>
+                                <option value="">请选择表名</option>
+                                <c:forEach items="${tableNameList}" var="tableName">
+                                    <option value="${tableName}">${tableName}</option>
+                                </c:forEach>
+                            </select>
+                        </div>
+                        <div class="layui-inline">
+                            <select class="layui-select" id="column-name-search">
+                                <option value="">请选择字段名</option>
+                            </select>
+                        </div>
+                        <div class="layui-inline">
+                            <button class="layui-btn layui-btn-sm layui-btn-warm" id="dictionary_refresh">
+                                <i class="fa fa-search"></i> 搜索
+                            </button>
+                        </div>
+                    </div>
+                </blockquote>
+                <table class="layui-table" lay-skin="line" lay-filter="tb_dictionary" lay-data="{id: 'tb_dictionary'}">
+                    <thead>
+                    <tr>
+                        <th lay-data="{field:'dictionary_id',checkbox:true, fixed:'left'}"></th>
+                        <th lay-data="{field:'dict_table_name', width:160}">表名</th>
+                        <th lay-data="{field:'dict_column_name', width:160}">字段名</th>
+                        <th lay-data="{field:'dictionary_name', width:160}">字典名</th>
+                        <th lay-data="{field:'dictionary_value', width:160}">字典值</th>
+                        <th lay-data="{field:'sequence_number', width:160}">排序标识</th>
+                        <th lay-data="{field:'parent_id', width:160}">父级</th>
+                        <th lay-data="{field:'is_leaf', width:160}">是否是叶子节点</th>
+                        <th lay-data="{field:'operation', width:180, fixed:'right'}">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="dictionary_list_body">
+                    </tbody>
+                </table>
+                <div id="dictionary_page"></div>
+            </div>
         </div>
     </div>
-</blockquote>
-<table class="layui-table" lay-skin="line" lay-filter="tb_dictionary" lay-data="{id: 'tb_dictionary'}">
-    <thead>
-    <tr>
-        <th lay-data="{field:'dictionary_id',checkbox:true, fixed:'left'}"></th>
-        <th lay-data="{field:'dict_table_name', width:160}">表名</th>
-        <th lay-data="{field:'dict_column_name', width:160}">字段名</th>
-        <th lay-data="{field:'dictionary_name', width:160}">字典名</th>
-        <th lay-data="{field:'dictionary_value', width:160}">字典值</th>
-        <th lay-data="{field:'sequence_number', width:160}">排序标识</th>
-        <th lay-data="{field:'parent_id', width:160}">父级</th>
-        <th lay-data="{field:'is_leaf', width:160}">是否是叶子节点</th>
-        <th lay-data="{field:'operation', width:180, fixed:'right'}">操作</th>
-    </tr>
-    </thead>
-    <tbody id="dictionary_list_body">
-    </tbody>
-</table>
-<div id="dictionary_page"></div>
+</div>
 </body>
 </html>
 <script>
@@ -70,12 +80,12 @@
         layer = layui.layer;
         laypage = layui.laypage;
         table = layui.table;
-        form.on('select(table-name-search)',function(data){
-            if (data.value != ''){
-                $.post("${ctx}/dictionary/column/list",{
+        form.on('select(table-name-search)', function (data) {
+            if (data.value != '') {
+                $.post("${ctx}/dictionary/column/list", {
                     tableName: data.value
-                }, function(d){
-                    if(d.code == code_success){
+                }, function (d) {
+                    if (d.code == code_success) {
                         var columnList = d.columnList;
                         $("#column-name-search").empty();
                         $("#column-name-search").append('<option value="">请选择字段名</option>');
@@ -84,17 +94,17 @@
                         }
                         form.render('select');
                     }
-                },"json");
+                }, "json");
             }
         });
         $("#dictionary_add").click(function () {
             alertByFull(layer, "添加", "${ctx}/dictionary/forward?forwardType=add&parentId=${parentId}");
         });
         $("#dictionary_delete").click(function () {
-            layer.confirm('确认删除?', {icon: 3, title:'提示'}, function(index) {
+            layer.confirm('确认删除?', {icon: 3, title: '提示'}, function (index) {
                 var checkStatusData = table.checkStatus('tb_dictionary').data;
                 var deleteCheck = new Array();
-                checkStatusData.forEach(function(val, index){
+                checkStatusData.forEach(function (val, index) {
                     deleteCheck.push(val.dictionary_id);
                 });
                 doDelete(layer, deleteCheck, "${ctx}/dictionary/delete", reloadDictionaryList(1));
@@ -106,6 +116,7 @@
         });
         reloadDictionaryList(1);
     });
+
     function reloadDictionaryList(page) {
         var index = layer.load();
         setTimeout(function () {

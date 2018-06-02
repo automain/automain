@@ -5,52 +5,62 @@
     <title></title>
 </head>
 <body>
-<span class="layui-breadcrumb">
-    <c:forEach items="${parentList}" var="parent">
-        <a href="${ctx}/menu/forward?parentId=${parent.parentId}">${parent.menuName}</a>
-    </c:forEach>
-    <a><cite><c:out value="${cite}"/></cite></a>
-</span>
-<blockquote class="layui-elem-quote">
-    <div class="layui-form">
-        <div class="layui-inline">
-            <button class="layui-btn layui-btn-sm layui-btn-normal" id="menu_add">
-                <i class="fa fa-plus"></i> 添加
-            </button>
-        </div>
-        <div class="layui-inline">
-            <button class="layui-btn layui-btn-sm layui-btn-danger" id="menu_delete">
-                <i class="fa fa-remove"></i> 删除
-            </button>
-        </div>
-        <div class="layui-inline">
-            <input type="text" class="layui-input" autocomplete="off" id="menu-name-search" placeholder="请输入菜单名称">
-        </div>
-        <div class="layui-inline">
-            <button class="layui-btn layui-btn-sm layui-btn-warm" id="menu_refresh">
-                <i class="fa fa-search"></i> 搜索
-            </button>
+<div class="layui-card layadmin-header">
+    <div class="layui-breadcrumb">
+        <c:forEach items="${parentList}" var="parent">
+            <a href="${ctx}/menu/forward?parentId=${parent.parentId}">${parent.menuName}</a>
+        </c:forEach>
+        <a><cite><c:out value="${cite}"/></cite></a>
+    </div>
+</div>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <blockquote class="layui-elem-quote">
+                    <div class="layui-form">
+                        <div class="layui-inline">
+                            <button class="layui-btn layui-btn-sm layui-btn-normal" id="menu_add">
+                                <i class="fa fa-plus"></i> 添加
+                            </button>
+                        </div>
+                        <div class="layui-inline">
+                            <button class="layui-btn layui-btn-sm layui-btn-danger" id="menu_delete">
+                                <i class="fa fa-remove"></i> 删除
+                            </button>
+                        </div>
+                        <div class="layui-inline">
+                            <input type="text" class="layui-input" autocomplete="off" id="menu-name-search" placeholder="请输入菜单名称">
+                        </div>
+                        <div class="layui-inline">
+                            <button class="layui-btn layui-btn-sm layui-btn-warm" id="menu_refresh">
+                                <i class="fa fa-search"></i> 搜索
+                            </button>
+                        </div>
+                    </div>
+                </blockquote>
+                <table class="layui-table" lay-skin="line" lay-filter="tb_menu" lay-data="{id: 'tb_menu'}">
+                    <thead>
+                    <tr>
+                        <th lay-data="{field:'menu_id',checkbox:true, fixed:'left'}"></th>
+                        <th lay-data="{field:'request_url', width:260}">请求路径</th>
+                        <th lay-data="{field:'menu_name', width:160}">菜单名称</th>
+                        <th lay-data="{field:'menu_icon', width:160}">菜单图标</th>
+                        <th lay-data="{field:'sequence_number', width:160}">菜单排序</th>
+                        <th lay-data="{field:'parent_id', width:160}">父级菜单</th>
+                        <th lay-data="{field:'is_spread', width:160}">是否默认展开</th>
+                        <th lay-data="{field:'is_leaf', width:160}">是否是叶子节点</th>
+                        <th lay-data="{field:'operation', width:270, fixed:'right'}">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="menu_list_body">
+                    </tbody>
+                </table>
+                <div id="menu_page"></div>
+            </div>
         </div>
     </div>
-</blockquote>
-<table class="layui-table" lay-skin="line" lay-filter="tb_menu" lay-data="{id: 'tb_menu'}">
-    <thead>
-    <tr>
-        <th lay-data="{field:'menu_id',checkbox:true, fixed:'left'}"></th>
-        <th lay-data="{field:'request_url', width:260}">请求路径</th>
-        <th lay-data="{field:'menu_name', width:160}">菜单名称</th>
-        <th lay-data="{field:'menu_icon', width:160}">菜单图标</th>
-        <th lay-data="{field:'sequence_number', width:160}">菜单排序</th>
-        <th lay-data="{field:'parent_id', width:160}">父级菜单</th>
-        <th lay-data="{field:'is_spread', width:160}">是否默认展开</th>
-        <th lay-data="{field:'is_leaf', width:160}">是否是叶子节点</th>
-        <th lay-data="{field:'operation', width:270, fixed:'right'}">操作</th>
-    </tr>
-    </thead>
-    <tbody id="menu_list_body">
-    </tbody>
-</table>
-<div id="menu_page"></div>
+</div>
 </body>
 </html>
 <script>
@@ -64,10 +74,10 @@
             alertByFull(layer, "添加", "${ctx}/menu/forward?forwardType=add&parentId=${parentId}&topId=${topId}");
         });
         $("#menu_delete").click(function () {
-            layer.confirm('确认删除?', {icon: 3, title:'提示'}, function(index) {
+            layer.confirm('确认删除?', {icon: 3, title: '提示'}, function (index) {
                 var checkStatusData = table.checkStatus('tb_menu').data;
                 var deleteCheck = new Array();
-                checkStatusData.forEach(function(val, index){
+                checkStatusData.forEach(function (val, index) {
                     deleteCheck.push(val.menu_id);
                 });
                 doDelete(layer, deleteCheck, "${ctx}/menu/delete", reloadMenuList(1));
@@ -79,6 +89,7 @@
         });
         reloadMenuList(1);
     });
+
     function reloadMenuList(page) {
         var index = layer.load();
         setTimeout(function () {

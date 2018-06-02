@@ -5,41 +5,49 @@
     <title></title>
 </head>
 <body>
-<blockquote class="layui-elem-quote">
-    <div class="layui-form">
-        <div class="layui-inline">
-            <button class="layui-btn layui-btn-sm layui-btn-normal" id="role_add">
-                <i class="fa fa-plus"></i> 添加
-            </button>
-        </div>
-        <div class="layui-inline">
-            <button class="layui-btn layui-btn-sm layui-btn-danger" id="role_delete">
-                <i class="fa fa-remove"></i> 删除
-            </button>
-        </div>
-        <div class="layui-inline">
-            <input type="text" class="layui-input" autocomplete="off" id="role-name-search" placeholder="请输入角色名称">
-        </div>
-        <div class="layui-inline">
-            <button class="layui-btn layui-btn-sm layui-btn-warm" id="role_refresh">
-                <i class="fa fa-search"></i> 搜索
-            </button>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <blockquote class="layui-elem-quote">
+                    <div class="layui-form">
+                        <div class="layui-inline">
+                            <button class="layui-btn layui-btn-sm layui-btn-normal" id="role_add">
+                                <i class="fa fa-plus"></i> 添加
+                            </button>
+                        </div>
+                        <div class="layui-inline">
+                            <button class="layui-btn layui-btn-sm layui-btn-danger" id="role_delete">
+                                <i class="fa fa-remove"></i> 删除
+                            </button>
+                        </div>
+                        <div class="layui-inline">
+                            <input type="text" class="layui-input" autocomplete="off" id="role-name-search" placeholder="请输入角色名称">
+                        </div>
+                        <div class="layui-inline">
+                            <button class="layui-btn layui-btn-sm layui-btn-warm" id="role_refresh">
+                                <i class="fa fa-search"></i> 搜索
+                            </button>
+                        </div>
+                    </div>
+                </blockquote>
+                <table class="layui-table" lay-skin="line" lay-filter="tb_role" lay-data="{id: 'tb_role'}">
+                    <thead>
+                    <tr>
+                        <th lay-data="{field:'role_id',checkbox:true, fixed:'left'}"></th>
+                        <th lay-data="{field:'role_name', width:160}">角色名称</th>
+                        <th lay-data="{field:'role_label', width:160}">角色标识</th>
+                        <th lay-data="{field:'operation', width:360, fixed:'right'}">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="role_list_body">
+                    </tbody>
+                </table>
+                <div id="role_page"></div>
+            </div>
         </div>
     </div>
-</blockquote>
-<table class="layui-table" lay-skin="line" lay-filter="tb_role" lay-data="{id: 'tb_role'}">
-    <thead>
-    <tr>
-        <th lay-data="{field:'role_id',checkbox:true, fixed:'left'}"></th>
-        <th lay-data="{field:'role_name', width:160}">角色名称</th>
-        <th lay-data="{field:'role_label', width:160}">角色标识</th>
-        <th lay-data="{field:'operation', width:360, fixed:'right'}">操作</th>
-    </tr>
-    </thead>
-    <tbody id="role_list_body">
-    </tbody>
-</table>
-<div id="role_page"></div>
+</div>
 </body>
 </html>
 <script>
@@ -53,10 +61,10 @@
             alertByFull(layer, "添加", "${ctx}/role/forward?forwardType=add");
         });
         $("#role_delete").click(function () {
-            layer.confirm('确认删除?', {icon: 3, title:'提示'}, function(index) {
+            layer.confirm('确认删除?', {icon: 3, title: '提示'}, function (index) {
                 var checkStatusData = table.checkStatus('tb_role').data;
                 var deleteCheck = new Array();
-                checkStatusData.forEach(function(val, index){
+                checkStatusData.forEach(function (val, index) {
                     deleteCheck.push(val.role_id);
                 });
                 doDelete(layer, deleteCheck, "${ctx}/role/delete", reloadRoleList(1));
@@ -68,6 +76,7 @@
         });
         reloadRoleList(1);
     });
+
     function reloadRoleList(page) {
         var index = layer.load();
         setTimeout(function () {

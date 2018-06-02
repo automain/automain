@@ -5,33 +5,41 @@
     <title></title>
 </head>
 <body>
-<blockquote class="layui-elem-quote">
-    <div class="layui-form">
-        <div class="layui-inline">
-            <input type="text" class="layui-input" autocomplete="off" id="create_time_search" placeholder="请输入创建时间">
-        </div>
-        <div class="layui-inline">
-            <button class="layui-btn layui-btn-sm layui-btn-warm" id="slow_log_search">
-                <i class="fa fa-search"></i> 搜索
-            </button>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <blockquote class="layui-elem-quote">
+                    <div class="layui-form">
+                        <div class="layui-inline">
+                            <input type="text" class="layui-input" autocomplete="off" id="create_time_search" placeholder="请输入创建时间">
+                        </div>
+                        <div class="layui-inline">
+                            <button class="layui-btn layui-btn-sm layui-btn-warm" id="slow_log_search">
+                                <i class="fa fa-search"></i> 搜索
+                            </button>
+                        </div>
+                    </div>
+                </blockquote>
+                <table class="layui-table" lay-skin="line" lay-filter="db_slow_log" lay-data="{id: 'db_slow_log'}">
+                    <thead>
+                    <tr>
+                        <th lay-data="{field:'create_time', width:160}">创建时间</th>
+                        <th lay-data="{field:'pool_name', width:160}">连接池名称</th>
+                        <th lay-data="{field:'slow_db', width:160}">慢查询库</th>
+                        <th lay-data="{field:'slow_state', width:160}">慢查询状态</th>
+                        <th lay-data="{field:'slow_time', width:160}">慢查询用时</th>
+                        <th lay-data="{field:'slow_sql', width:460}">慢查询sql</th>
+                    </tr>
+                    </thead>
+                    <tbody id="db_slow_list_body">
+                    </tbody>
+                </table>
+                <div id="db_slow_page"></div>
+            </div>
         </div>
     </div>
-</blockquote>
-<table class="layui-table" lay-skin="line" lay-filter="db_slow_log" lay-data="{id: 'db_slow_log'}">
-    <thead>
-    <tr>
-        <th lay-data="{field:'create_time', width:160}">创建时间</th>
-        <th lay-data="{field:'pool_name', width:160}">连接池名称</th>
-        <th lay-data="{field:'slow_db', width:160}">慢查询库</th>
-        <th lay-data="{field:'slow_state', width:160}">慢查询状态</th>
-        <th lay-data="{field:'slow_time', width:160}">慢查询用时</th>
-        <th lay-data="{field:'slow_sql', width:460}">慢查询sql</th>
-    </tr>
-    </thead>
-    <tbody id="db_slow_list_body">
-    </tbody>
-</table>
-<div id="db_slow_page"></div>
+</div>
 </body>
 </html>
 <script>
@@ -44,20 +52,21 @@
         var laydate = layui.laydate;
         laydate.render({
             elem: '#create_time_search'
-            ,type: 'datetime'
-            ,range: true
+            , type: 'datetime'
+            , range: true
         });
         $("#slow_log_search").click(function () {
             reloadSlowLogList(1);
         });
         reloadSlowLogList(1);
     });
+
     function reloadSlowLogList(page) {
         var index = layer.load();
         setTimeout(function () {
             $.post("${ctx}/monitor/dbslow/list", {
                 page: page
-                ,createTimeRange: $("#create_time_search").val()
+                , createTimeRange: $("#create_time_search").val()
             }, function (data) {
                 if (data.code == code_success) {
                     $("#db_slow_list_body").html(data.data);
