@@ -6,15 +6,23 @@
     <title></title>
 </head>
 <body>
-<form class="layui-form layui-form-pane" action="">
-    <input type="hidden" id="roleId" value="${roleId}">
-    <div class="layui-form-item">
-        <ul id="menu-tree" class="ztree"></ul>
+<div class="layui-fluid">
+    <div class="layui-row">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <form class="layui-form layui-form-pane" action="">
+                    <input type="hidden" id="roleId" value="${roleId}">
+                    <div class="layui-form-item">
+                        <ul id="menu-tree" class="ztree"></ul>
+                    </div>
+                    <div class="layui-form-item">
+                        <button class="layui-btn" lay-submit lay-filter="grant_menu_submit">立即提交</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-    <div class="layui-form-item">
-        <button class="layui-btn" lay-submit lay-filter="grant_menu_submit">立即提交</button>
-    </div>
-</form>
+</div>
 </body>
 </html>
 <script src="${ctx}/static/ztree/js/jquery.ztree.core.min.js?v=${staticVersion}"></script>
@@ -23,7 +31,7 @@
     var setting = {
         check: {
             enable: true,
-            chkboxType:  { "Y" : "ps", "N" : "ps" }
+            chkboxType: {"Y": "ps", "N": "ps"}
         },
         view: {
             showIcon: false
@@ -41,7 +49,7 @@
                 var menuCheck = new Array();
                 var zTree = $.fn.zTree.getZTreeObj("menu-tree"),
                     nodes = zTree.getCheckedNodes();
-                for (var i=0, l=nodes.length; i<l; i++) {
+                for (var i = 0, l = nodes.length; i < l; i++) {
                     menuCheck.push(nodes[i].id);
                 }
                 $.ajax({

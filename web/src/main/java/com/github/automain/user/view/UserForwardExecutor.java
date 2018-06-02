@@ -55,6 +55,13 @@ public class UserForwardExecutor extends BaseExecutor {
             case "update":
                 TbUser bean = TB_USER_SERVICE.selectTableById(connection, userId);
                 request.setAttribute("bean", bean);
+                TbUploadRelation relation = new TbUploadRelation();
+                if (sessionUser != null) {
+                    relation.setRecordTableName(bean.tableName());
+                    relation.setRecordId(bean.getUserId());
+                }
+                String img = UploadUtil.getLastFile(connection, request, relation);
+                request.setAttribute("imgPath", img);
                 jspPath = "user/user_update";
                 break;
             default:

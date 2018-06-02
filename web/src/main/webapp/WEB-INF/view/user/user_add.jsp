@@ -6,6 +6,7 @@
 </head>
 <body>
 <form class="layui-form layui-form-pane" action="">
+    <input type="hidden" id="uploadFileId" name="uploadFileId">
     <div class="layui-form-item">
         <label class="layui-form-label">用户名</label>
         <div class="layui-input-block">
@@ -25,6 +26,18 @@
         </div>
     </div>
     <div class="layui-form-item">
+        <label class="layui-form-label">选择头像</label>
+        <div class="layui-input-block">
+            <button type="button" class="layui-btn" id="file"><i class="fa fa-upload"></i>选择头像</button>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">头像</label>
+        <div class="layui-input-block">
+            <img id="uploadImage" src="${imgPath}" <c:if test="${imgPath != null}">width="200px" </c:if>>
+        </div>
+    </div>
+    <div class="layui-form-item">
         <div class="layui-input-block">
             <button class="layui-btn" lay-submit lay-filter="user_submit">立即提交</button>
         </div>
@@ -33,9 +46,21 @@
 </body>
 </html>
 <script>
-    layui.use(['form', 'layer'], function () {
+    layui.use(['form', 'layer', 'upload'], function () {
         var form = layui.form
-            , layer = layui.layer;
+            , layer = layui.layer
+            , upload = layui.upload;
+        upload.render({
+            elem: "#file"
+            ,url: '${ctx}/upload?json=1'
+            ,size: 2048
+            ,done: function(res){
+                $("#uploadFileId").val(res.uploadFileId);
+                $("#uploadImage").attr("src",res.imagePath);
+                $("#uploadImage").attr("width","200px");
+                layer.msg(res.msg);
+            }
+        });
         form.verify({
             user_name: function (value) {
                 if (value.length == 0) {

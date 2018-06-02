@@ -41,6 +41,7 @@
                     <thead>
                     <tr>
                         <th lay-data="{field:'user_id',checkbox:true, fixed:'left'}"></th>
+                        <th lay-data="{field:'img_path', width:80, event: 'showImg', style:'cursor: pointer;'}">头像</th>
                         <th lay-data="{field:'user_name', width:160}">用户名</th>
                         <th lay-data="{field:'cellphone', width:160}">手机号</th>
                         <th lay-data="{field:'create_time', width:160}">创建时间</th>
@@ -106,6 +107,20 @@
                     table.init('tb_user', {
                         height: 'full-190'
                     });
+                    table.on('tool(tb_user)', function(obj){
+                        var data = obj.data;
+                        if(obj.event === 'showImg') {
+                            var content = data.img_path;
+                            content = content.replace('class="layui-nav-img"', 'width="100%"');
+                            layer.open({
+                                type: 1,
+                                shade: false,
+                                title: false,
+                                content: content
+                            });
+                        }
+                    });
+
                     $(".update-btn").click(function () {
                         var updateId = $(this).attr("update-id");
                         alertByFull(layer, "编辑", "${ctx}/user/forward?forwardType=update&userId=" + updateId);

@@ -5,29 +5,37 @@
     <title></title>
 </head>
 <body>
-<blockquote class="layui-elem-quote">
-    <div class="layui-form">
-        <div class="layui-inline">
-            <input type="text" class="layui-input" autocomplete="off" id="request-url-search" placeholder="请输入请求相对路径">
-        </div>
-        <div class="layui-inline">
-            <button class="layui-btn layui-btn-sm layui-btn-warm" id="request_refresh">
-                <i class="fa fa-search"></i> 搜索
-            </button>
+<div class="layui-fluid">
+    <div class="layui-row">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <blockquote class="layui-elem-quote">
+                    <div class="layui-form">
+                        <div class="layui-inline">
+                            <input type="text" class="layui-input" autocomplete="off" id="request-url-search" placeholder="请输入请求相对路径">
+                        </div>
+                        <div class="layui-inline">
+                            <button class="layui-btn layui-btn-sm layui-btn-warm" id="request_refresh">
+                                <i class="fa fa-search"></i> 搜索
+                            </button>
+                        </div>
+                    </div>
+                </blockquote>
+                <table class="layui-table" lay-skin="line" lay-filter="role_request" lay-data="{id: 'role_request'}">
+                    <thead>
+                    <tr>
+                        <th lay-data="{field:'request_url', width:200}">请求相对路径</th>
+                        <th lay-data="{field:'operation', width:180, fixed:'right'}">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="request_list_body">
+                    </tbody>
+                </table>
+                <div id="request_page"></div>
+            </div>
         </div>
     </div>
-</blockquote>
-<table class="layui-table"  lay-skin="line" lay-filter="role_request" lay-data="{id: 'role_request'}">
-    <thead>
-    <tr>
-        <th lay-data="{field:'request_url', width:200}">请求相对路径</th>
-        <th lay-data="{field:'operation', width:180, fixed:'right'}">操作</th>
-    </tr>
-    </thead>
-    <tbody id="request_list_body">
-    </tbody>
-</table>
-<div id="request_page"></div>
+</div>
 </body>
 </html>
 <script>
@@ -42,6 +50,7 @@
         });
         reloadRequestList(1);
     });
+
     function reloadRequestList(page) {
         var index = layer.load();
         setTimeout(function () {
@@ -58,24 +67,24 @@
                     });
                     $(".grant-request-btn").click(function () {
                         var requestUrl = $(this).attr("request-url");
-                        $.post("${ctx}/role/grant/request",{
+                        $.post("${ctx}/role/grant/request", {
                             roleId: '${roleId}'
                             , requestUrl: requestUrl
                         }, function (d) {
                             layer.msg(d.msg);
-                            if (d.code == code_success){
+                            if (d.code == code_success) {
                                 reloadRequestList(data.curr);
                             }
                         }, "json");
                     });
                     $(".revoke-request-btn").click(function () {
                         var requestUrl = $(this).attr("request-url");
-                        $.post("${ctx}/role/revoke/request",{
+                        $.post("${ctx}/role/revoke/request", {
                             roleId: '${roleId}'
                             , requestUrl: requestUrl
                         }, function (d) {
                             layer.msg(d.msg);
-                            if (d.code == code_success){
+                            if (d.code == code_success) {
                                 reloadRequestList(data.curr);
                             }
                         }, "json");

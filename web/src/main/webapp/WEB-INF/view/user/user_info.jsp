@@ -47,7 +47,7 @@
 </body>
 </html>
 <script>
-    layui.use(['form', 'layer','upload'], function () {
+    layui.use(['form', 'layer', 'upload'], function () {
         var form = layui.form
             , layer = layui.layer
             , upload = layui.upload;

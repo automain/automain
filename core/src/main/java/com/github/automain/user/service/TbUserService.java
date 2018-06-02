@@ -1,9 +1,11 @@
 package com.github.automain.user.service;
 
+import com.github.automain.common.bean.TbUploadRelation;
 import com.github.automain.common.container.ServiceContainer;
 import com.github.automain.user.bean.TbUser;
 import com.github.automain.user.bean.TbUserRole;
 import com.github.automain.user.dao.TbUserDao;
+import com.github.automain.util.UploadUtil;
 import com.github.fastjdbc.bean.ConnectionBean;
 import com.github.fastjdbc.bean.PageBean;
 import com.github.fastjdbc.common.BaseService;
@@ -19,11 +21,20 @@ public class TbUserService extends BaseService<TbUser, TbUserDao> implements Ser
     }
 
     public PageBean<TbUser> selectTableForCustomPage(ConnectionBean connection, TbUser bean, HttpServletRequest request) throws Exception {
-        return getDao().selectTableForCustomPage(connection, bean,  pageFromRequest(request), limitFromRequest(request));
+        PageBean<TbUser> pageBean = getDao().selectTableForCustomPage(connection, bean,  pageFromRequest(request), limitFromRequest(request));
+        List<TbUser> data = pageBean.getData();
+        TbUploadRelation uploadRelation = new TbUploadRelation();
+        for (TbUser user : data) {
+            uploadRelation.setRecordTableName(user.tableName());
+            uploadRelation.setRecordId(user.getUserId());
+            String imgPath = UploadUtil.getLastFile(connection, request, uploadRelation);
+            user.setImgPath(imgPath);
+        }
+        return pageBean;
     }
 
     public PageBean<TbUser> selectTableForUserRole(ConnectionBean connection, TbUser bean, HttpServletRequest request, Long roleId) throws Exception {
-        PageBean<TbUser> pageBean = selectTableForCustomPage(connection, bean, request);
+        PageBean<TbUser> pageBean = getDao().selectTableForCustomPage(connection, bean,  pageFromRequest(request), limitFromRequest(request));
         List<TbUser> data = pageBean.getData();
         TbUserRole userRoleParam = new TbUserRole();
         userRoleParam.setRoleId(roleId);

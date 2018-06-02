@@ -30,7 +30,9 @@ public class UserUpdateExecutor extends BaseExecutor {
             if (MailUtil.checkEmailExist(bean.getEmail())) {
                 TB_USER_SERVICE.updateTable(connection, bean, false);
                 Long uploadFileId = getLong("uploadFileId", request, 0L);
-                UploadUtil.saveFileRelation(connection, uploadFileId, bean.getUserId(), bean.tableName(), null, 0);
+                if (!uploadFileId.equals(0L)) {
+                    UploadUtil.saveFileRelation(connection, uploadFileId, bean.getUserId(), bean.tableName(), null, 0);
+                }
                 setJsonResult(request, CODE_SUCCESS, "编辑成功");
             } else {
                 setJsonResult(request, CODE_FAIL, "邮箱不存在");

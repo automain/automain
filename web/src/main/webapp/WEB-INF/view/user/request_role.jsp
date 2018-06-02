@@ -5,30 +5,38 @@
     <title></title>
 </head>
 <body>
-<blockquote class="layui-elem-quote">
-    <div class="layui-form">
-        <div class="layui-inline">
-            <input type="text" class="layui-input" autocomplete="off" id="role-name-search" placeholder="请输入角色名称">
-        </div>
-        <div class="layui-inline">
-            <button class="layui-btn layui-btn-sm layui-btn-warm" id="role_refresh">
-                <i class="fa fa-search"></i> 搜索
-            </button>
+<div class="layui-fluid">
+    <div class="layui-row">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <blockquote class="layui-elem-quote">
+                    <div class="layui-form">
+                        <div class="layui-inline">
+                            <input type="text" class="layui-input" autocomplete="off" id="role-name-search" placeholder="请输入角色名称">
+                        </div>
+                        <div class="layui-inline">
+                            <button class="layui-btn layui-btn-sm layui-btn-warm" id="role_refresh">
+                                <i class="fa fa-search"></i> 搜索
+                            </button>
+                        </div>
+                    </div>
+                </blockquote>
+                <table class="layui-table" lay-skin="line" lay-filter="request_role" lay-data="{id: 'request_role'}">
+                    <thead>
+                    <tr>
+                        <th lay-data="{field:'role_name', width:160}">角色名称</th>
+                        <th lay-data="{field:'role_label', width:160}">角色标识</th>
+                        <th lay-data="{field:'operation', width:180, fixed:'right'}">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="role_list_body">
+                    </tbody>
+                </table>
+                <div id="role_page"></div>
+            </div>
         </div>
     </div>
-</blockquote>
-<table class="layui-table" lay-skin="line" lay-filter="request_role" lay-data="{id: 'request_role'}">
-    <thead>
-    <tr>
-        <th lay-data="{field:'role_name', width:160}">角色名称</th>
-        <th lay-data="{field:'role_label', width:160}">角色标识</th>
-        <th lay-data="{field:'operation', width:180, fixed:'right'}">操作</th>
-    </tr>
-    </thead>
-    <tbody id="role_list_body">
-    </tbody>
-</table>
-<div id="role_page"></div>
+</div>
 </body>
 </html>
 <script>
@@ -43,6 +51,7 @@
         });
         reloadRoleList(1);
     });
+
     function reloadRoleList(page) {
         var index = layer.load();
         setTimeout(function () {
@@ -59,24 +68,24 @@
                     });
                     $(".grant-role-btn").click(function () {
                         var roleId = $(this).attr("role-id");
-                        $.post("${ctx}/role/grant/request",{
+                        $.post("${ctx}/role/grant/request", {
                             roleId: roleId
                             , requestMappingId: '${requestMappingId}'
                         }, function (d) {
                             layer.msg(d.msg);
-                            if (d.code == code_success){
+                            if (d.code == code_success) {
                                 reloadRoleList(data.curr);
                             }
                         }, "json");
                     });
                     $(".revoke-role-btn").click(function () {
                         var roleId = $(this).attr("role-id");
-                        $.post("${ctx}/role/revoke/request",{
+                        $.post("${ctx}/role/revoke/request", {
                             roleId: roleId
                             , requestMappingId: '${requestMappingId}'
                         }, function (d) {
                             layer.msg(d.msg);
-                            if (d.code == code_success){
+                            if (d.code == code_success) {
                                 reloadRoleList(data.curr);
                             }
                         }, "json");

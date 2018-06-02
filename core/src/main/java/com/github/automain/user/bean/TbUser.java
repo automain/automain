@@ -57,6 +57,17 @@ public class TbUser extends RequestUtil implements BaseBean<TbUser> {
         this.hasRole = hasRole;
     }
 
+    // 头像
+    private String imgPath;
+
+    public String getImgPath() {
+        return imgPath;
+    }
+
+    public void setImgPath(String imgPath) {
+        this.imgPath = imgPath;
+    }
+
     // ========== additional column end ==========
 
     public Long getUserId() {

@@ -9,6 +9,7 @@
     <c:forEach items="${pageBean.data}" var="item">
         <tr>
             <td>${item.userId}</td>
+            <td><c:if test="${item.imgPath != null}"><img src="${item.imgPath}" class="layui-nav-img"/></c:if></td>
             <td><c:out value="${item.userName}"/></td>
             <td><c:out value="${item.cellphone}"/></td>
             <td><fmt:formatDate value="${item.createTime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
