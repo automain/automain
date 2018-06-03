@@ -46,10 +46,6 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
 
     private AsyncContext asyncContext;
 
-    public AsyncContext getAsyncContext() {
-        return asyncContext;
-    }
-
     public void setAsyncContext(AsyncContext asyncContext) {
         this.asyncContext = asyncContext;
     }
@@ -154,7 +150,7 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
                 if (noticeMap != null && !noticeMap.isEmpty()) {
                     request.setAttribute("notice_cache_key", noticeMap);
                     request.setAttribute("vEnter", "\n");
-                    CookieUtil.addCookie(response, "hasReadNotice", "1", -1);
+                    CookieUtil.addCookie(response, "hasReadNotice", "1", 1800);
                 }
             }
             content = getJspOutput(request, response, jspPath);
@@ -221,6 +217,9 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
             return false;
         }
         Set<String> roleLabel = RolePrivilegeContainer.getRoleLabelByUserId(jedis, user.getUserId());
+        if (roleLabel == null) {
+            return false;
+        }
         if (roleLabel.contains("admin")) {
             return true;
         }

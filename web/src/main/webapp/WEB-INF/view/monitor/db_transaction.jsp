@@ -6,30 +6,39 @@
     <title></title>
 </head>
 <body>
-<div class="layui-container">
-    <div class="layui-form-item">
-        <label class="layui-form-label">时间:</label>
-        <div class="layui-input-inline">
-            <input type="text" class="layui-input" id="tps_time">
-        </div>
-        <div class="layui-input-inline">
-            <button class="layui-btn" onclick="initTPS()">查询</button>
+<div class="layui-fluid">
+    <div class="layui-row">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-container">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">时间:</label>
+                        <div class="layui-input-inline">
+                            <input type="text" class="layui-input" id="tps_time">
+                        </div>
+                        <div class="layui-input-inline">
+                            <button class="layui-btn" onclick="initTPS()">查询</button>
+                        </div>
+                    </div>
+                    <div id="tps_panel" style="height: 480px"></div>
+                </div>
+            </div>
         </div>
     </div>
-    <div id="tps_panel" style="height: 480px"></div>
 </div>
 </body>
 </html>
 <script>
-    layui.use('laydate', function(){
+    layui.use('laydate', function () {
         var laydate = layui.laydate;
         laydate.render({
             elem: '#tps_time'
-            ,value: new Date()
+            , value: new Date()
             , btns: ['now', 'confirm']
         });
         initTPS();
     });
+
     function initTPS() {
         var dom = document.getElementById("tps_panel");
         var myChart = echarts.init(dom);
@@ -37,7 +46,7 @@
         $.post("${ctx}/monitor/dbstatus", {
             dataType: 'transaction',
             startTime: $("#tps_time").val()
-        }, function(data){
+        }, function (data) {
             if (data.code == code_success) {
                 var dbTransactionVOList = data.dbTransactionVOList;
                 var valueData = [];
@@ -102,6 +111,6 @@
                     myChart.setOption(option, true);
                 }
             }
-        },"json");
+        }, "json");
     }
 </script>

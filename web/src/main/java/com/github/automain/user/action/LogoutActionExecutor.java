@@ -36,6 +36,7 @@ public class LogoutActionExecutor extends BaseExecutor {
                 }
             }
             CookieUtil.deleteCookieByName(response, "accessToken");
+            CookieUtil.deleteCookieByName(response, "hasReadNotice");
         }
         setJsonResult(request, CODE_SUCCESS, "退出成功");
         return null;

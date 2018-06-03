@@ -40,7 +40,7 @@ public class TbRoleRequestMappingService extends BaseService<TbRoleRequestMappin
         List<String> urlList = new ArrayList<String>();
         if (searchUrl != null) {
             for (String url : requestUrlList) {
-                if (url.startsWith(searchUrl)) {
+                if (url.contains(searchUrl)) {
                     urlList.add(url);
                 }
             }

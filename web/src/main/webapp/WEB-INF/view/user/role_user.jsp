@@ -30,6 +30,7 @@
                 <table class="layui-table" lay-skin="line" lay-filter="role_user" lay-data="{id: 'role_user'}">
                     <thead>
                     <tr>
+                        <th lay-data="{field:'img_path', width:80, event: 'showImg', style:'cursor: pointer;'}">头像</th>
                         <th lay-data="{field:'user_name', width:160}">用户名</th>
                         <th lay-data="{field:'cellphone', width:160}">手机号</th>
                         <th lay-data="{field:'create_time', width:160}">创建时间</th>
@@ -81,6 +82,19 @@
                     renderPage(laypage, "user_page", data.count, data.curr, reloadUserList);
                     table.init('role_user', {
                         height: 'full-190'
+                    });
+                    table.on('tool(role_user)', function(obj){
+                        var data = obj.data;
+                        if(obj.event === 'showImg') {
+                            var content = data.img_path;
+                            content = content.replace('class="layui-nav-img"', 'width="100%"');
+                            layer.open({
+                                type: 1,
+                                shade: false,
+                                title: false,
+                                content: content
+                            });
+                        }
                     });
                     $(".grant-role-btn").click(function () {
                         var userId = $(this).attr("user-id");

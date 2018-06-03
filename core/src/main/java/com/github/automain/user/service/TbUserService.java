@@ -34,7 +34,7 @@ public class TbUserService extends BaseService<TbUser, TbUserDao> implements Ser
     }
 
     public PageBean<TbUser> selectTableForUserRole(ConnectionBean connection, TbUser bean, HttpServletRequest request, Long roleId) throws Exception {
-        PageBean<TbUser> pageBean = getDao().selectTableForCustomPage(connection, bean,  pageFromRequest(request), limitFromRequest(request));
+        PageBean<TbUser> pageBean = selectTableForCustomPage(connection, bean, request);
         List<TbUser> data = pageBean.getData();
         TbUserRole userRoleParam = new TbUserRole();
         userRoleParam.setRoleId(roleId);
