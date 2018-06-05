@@ -14,7 +14,7 @@
                     <div class="layui-form-item">
                         <label class="layui-form-label">时间:</label>
                         <div class="layui-input-inline">
-                            <input type="text" class="layui-input" id="pages_time">
+                            <input type="text" class="layui-input" autocomplete="off" id="pages_time">
                         </div>
                         <div class="layui-input-inline">
                             <button class="layui-btn" onclick="initPages()">查询</button>

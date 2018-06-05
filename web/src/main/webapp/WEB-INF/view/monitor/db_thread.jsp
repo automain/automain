@@ -14,7 +14,7 @@
                     <div class="layui-form-item">
                         <label class="layui-form-label">时间:</label>
                         <div class="layui-input-inline">
-                            <input type="text" class="layui-input" id="thread_time">
+                            <input type="text" class="layui-input" autocomplete="off" id="thread_time">
                         </div>
                         <div class="layui-input-inline">
                             <button class="layui-btn" onclick="initThread()">查询</button>
