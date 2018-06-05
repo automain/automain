@@ -12,6 +12,11 @@ import javax.servlet.http.HttpServletResponse;
 public class HomeExecutor extends BaseExecutor {
 
     @Override
+    protected boolean checkAuthority(Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        return checkUserLogin(jedis, request, response);
+    }
+
+    @Override
     protected String doAction(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         return "/common/home";
     }
