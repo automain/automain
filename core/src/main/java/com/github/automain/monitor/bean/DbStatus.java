@@ -12,26 +12,38 @@ import java.util.Map;
 
 public class DbStatus extends RequestUtil implements BaseBean<DbStatus> {
 
-    // 提交数
-    private Long comCommit;
+    // 状态ID
+    private Long statusId;
 
-    // 删除数
-    private Long comDelete;
+    // 创建时间
+    private Timestamp createTime;
 
-    // 添加数
-    private Long comInsert;
-
-    // 回滚数
-    private Long comRollback;
+    // 连接池名称
+    private String poolName;
 
     // 查询数
     private Long comSelect;
 
+    // 添加数
+    private Long comInsert;
+
+    // 删除数
+    private Long comDelete;
+
     // 编辑数
     private Long comUpdate;
 
-    // 创建时间
-    private Timestamp createTime;
+    // 提交数
+    private Long comCommit;
+
+    // 回滚数
+    private Long comRollback;
+
+    // 空闲线程数
+    private Long threadsFree;
+
+    // 运行中线程数
+    private Long threadsRunning;
 
     // 已用页大小
     private Long pagesData;
@@ -41,18 +53,6 @@ public class DbStatus extends RequestUtil implements BaseBean<DbStatus> {
 
     // 忙碌页大小
     private Long pagesMisc;
-
-    // 连接池名称
-    private String poolName;
-
-    // 主键
-    private Long statusId;
-
-    // 空闲线程数
-    private Long threadsFree;
-
-    // 运行中线程数
-    private Long threadsRunning;
 
     // ========== additional column begin ==========
 
@@ -69,36 +69,28 @@ public class DbStatus extends RequestUtil implements BaseBean<DbStatus> {
 
     // ========== additional column end ==========
 
-    public Long getComCommit() {
-        return comCommit;
+    public Long getStatusId() {
+        return statusId;
     }
 
-    public void setComCommit(Long comCommit) {
-        this.comCommit = comCommit;
+    public void setStatusId(Long statusId) {
+        this.statusId = statusId;
     }
 
-    public Long getComDelete() {
-        return comDelete;
+    public Timestamp getCreateTime() {
+        return createTime;
     }
 
-    public void setComDelete(Long comDelete) {
-        this.comDelete = comDelete;
+    public void setCreateTime(Timestamp createTime) {
+        this.createTime = createTime;
     }
 
-    public Long getComInsert() {
-        return comInsert;
+    public String getPoolName() {
+        return poolName;
     }
 
-    public void setComInsert(Long comInsert) {
-        this.comInsert = comInsert;
-    }
-
-    public Long getComRollback() {
-        return comRollback;
-    }
-
-    public void setComRollback(Long comRollback) {
-        this.comRollback = comRollback;
+    public void setPoolName(String poolName) {
+        this.poolName = poolName;
     }
 
     public Long getComSelect() {
@@ -109,6 +101,22 @@ public class DbStatus extends RequestUtil implements BaseBean<DbStatus> {
         this.comSelect = comSelect;
     }
 
+    public Long getComInsert() {
+        return comInsert;
+    }
+
+    public void setComInsert(Long comInsert) {
+        this.comInsert = comInsert;
+    }
+
+    public Long getComDelete() {
+        return comDelete;
+    }
+
+    public void setComDelete(Long comDelete) {
+        this.comDelete = comDelete;
+    }
+
     public Long getComUpdate() {
         return comUpdate;
     }
@@ -117,12 +125,36 @@ public class DbStatus extends RequestUtil implements BaseBean<DbStatus> {
         this.comUpdate = comUpdate;
     }
 
-    public Timestamp getCreateTime() {
-        return createTime;
+    public Long getComCommit() {
+        return comCommit;
     }
 
-    public void setCreateTime(Timestamp createTime) {
-        this.createTime = createTime;
+    public void setComCommit(Long comCommit) {
+        this.comCommit = comCommit;
+    }
+
+    public Long getComRollback() {
+        return comRollback;
+    }
+
+    public void setComRollback(Long comRollback) {
+        this.comRollback = comRollback;
+    }
+
+    public Long getThreadsFree() {
+        return threadsFree;
+    }
+
+    public void setThreadsFree(Long threadsFree) {
+        this.threadsFree = threadsFree;
+    }
+
+    public Long getThreadsRunning() {
+        return threadsRunning;
+    }
+
+    public void setThreadsRunning(Long threadsRunning) {
+        this.threadsRunning = threadsRunning;
     }
 
     public Long getPagesData() {
@@ -149,38 +181,6 @@ public class DbStatus extends RequestUtil implements BaseBean<DbStatus> {
         this.pagesMisc = pagesMisc;
     }
 
-    public String getPoolName() {
-        return poolName;
-    }
-
-    public void setPoolName(String poolName) {
-        this.poolName = poolName;
-    }
-
-    public Long getStatusId() {
-        return statusId;
-    }
-
-    public void setStatusId(Long statusId) {
-        this.statusId = statusId;
-    }
-
-    public Long getThreadsFree() {
-        return threadsFree;
-    }
-
-    public void setThreadsFree(Long threadsFree) {
-        this.threadsFree = threadsFree;
-    }
-
-    public Long getThreadsRunning() {
-        return threadsRunning;
-    }
-
-    public void setThreadsRunning(Long threadsRunning) {
-        this.threadsRunning = threadsRunning;
-    }
-
     @Override
     public String tableName() {
         return "db_status";
@@ -199,26 +199,35 @@ public class DbStatus extends RequestUtil implements BaseBean<DbStatus> {
     @Override
     public Map<String, Object> columnMap(boolean all) {
         Map<String, Object> map = new HashMap<String, Object>();
-        if (all || this.getComCommit() != null) {
-            map.put("com_commit", this.getComCommit());
+        if (all || this.getCreateTime() != null) {
+            map.put("create_time", this.getCreateTime());
         }
-        if (all || this.getComDelete() != null) {
-            map.put("com_delete", this.getComDelete());
-        }
-        if (all || this.getComInsert() != null) {
-            map.put("com_insert", this.getComInsert());
-        }
-        if (all || this.getComRollback() != null) {
-            map.put("com_rollback", this.getComRollback());
+        if (all || this.getPoolName() != null) {
+            map.put("pool_name", this.getPoolName());
         }
         if (all || this.getComSelect() != null) {
             map.put("com_select", this.getComSelect());
         }
+        if (all || this.getComInsert() != null) {
+            map.put("com_insert", this.getComInsert());
+        }
+        if (all || this.getComDelete() != null) {
+            map.put("com_delete", this.getComDelete());
+        }
         if (all || this.getComUpdate() != null) {
             map.put("com_update", this.getComUpdate());
         }
-        if (all || this.getCreateTime() != null) {
-            map.put("create_time", this.getCreateTime());
+        if (all || this.getComCommit() != null) {
+            map.put("com_commit", this.getComCommit());
+        }
+        if (all || this.getComRollback() != null) {
+            map.put("com_rollback", this.getComRollback());
+        }
+        if (all || this.getThreadsFree() != null) {
+            map.put("threads_free", this.getThreadsFree());
+        }
+        if (all || this.getThreadsRunning() != null) {
+            map.put("threads_running", this.getThreadsRunning());
         }
         if (all || this.getPagesData() != null) {
             map.put("pages_data", this.getPagesData());
@@ -229,55 +238,46 @@ public class DbStatus extends RequestUtil implements BaseBean<DbStatus> {
         if (all || this.getPagesMisc() != null) {
             map.put("pages_misc", this.getPagesMisc());
         }
-        if (all || this.getPoolName() != null) {
-            map.put("pool_name", this.getPoolName());
-        }
-        if (all || this.getThreadsFree() != null) {
-            map.put("threads_free", this.getThreadsFree());
-        }
-        if (all || this.getThreadsRunning() != null) {
-            map.put("threads_running", this.getThreadsRunning());
-        }
         return map;
     }
 
     @Override
     public DbStatus beanFromResultSet(ResultSet rs) throws SQLException {
         DbStatus bean = new DbStatus();
-        bean.setComCommit(rs.getLong("com_commit"));
-        bean.setComDelete(rs.getLong("com_delete"));
-        bean.setComInsert(rs.getLong("com_insert"));
-        bean.setComRollback(rs.getLong("com_rollback"));
-        bean.setComSelect(rs.getLong("com_select"));
-        bean.setComUpdate(rs.getLong("com_update"));
+        bean.setStatusId(rs.getLong("status_id"));
         bean.setCreateTime(rs.getTimestamp("create_time"));
+        bean.setPoolName(rs.getString("pool_name"));
+        bean.setComSelect(rs.getLong("com_select"));
+        bean.setComInsert(rs.getLong("com_insert"));
+        bean.setComDelete(rs.getLong("com_delete"));
+        bean.setComUpdate(rs.getLong("com_update"));
+        bean.setComCommit(rs.getLong("com_commit"));
+        bean.setComRollback(rs.getLong("com_rollback"));
+        bean.setThreadsFree(rs.getLong("threads_free"));
+        bean.setThreadsRunning(rs.getLong("threads_running"));
         bean.setPagesData(rs.getLong("pages_data"));
         bean.setPagesFree(rs.getLong("pages_free"));
         bean.setPagesMisc(rs.getLong("pages_misc"));
-        bean.setPoolName(rs.getString("pool_name"));
-        bean.setStatusId(rs.getLong("status_id"));
-        bean.setThreadsFree(rs.getLong("threads_free"));
-        bean.setThreadsRunning(rs.getLong("threads_running"));
         return bean;
     }
 
     @Override
     public DbStatus beanFromRequest(HttpServletRequest request) {
         DbStatus bean = new DbStatus();
-        bean.setComCommit(getLong("comCommit", request));
-        bean.setComDelete(getLong("comDelete", request));
-        bean.setComInsert(getLong("comInsert", request));
-        bean.setComRollback(getLong("comRollback", request));
-        bean.setComSelect(getLong("comSelect", request));
-        bean.setComUpdate(getLong("comUpdate", request));
+        bean.setStatusId(getLong("statusId", request));
         bean.setCreateTime(getTimestamp("createTime", request));
+        bean.setPoolName(getString("poolName", request));
+        bean.setComSelect(getLong("comSelect", request));
+        bean.setComInsert(getLong("comInsert", request));
+        bean.setComDelete(getLong("comDelete", request));
+        bean.setComUpdate(getLong("comUpdate", request));
+        bean.setComCommit(getLong("comCommit", request));
+        bean.setComRollback(getLong("comRollback", request));
+        bean.setThreadsFree(getLong("threadsFree", request));
+        bean.setThreadsRunning(getLong("threadsRunning", request));
         bean.setPagesData(getLong("pagesData", request));
         bean.setPagesFree(getLong("pagesFree", request));
         bean.setPagesMisc(getLong("pagesMisc", request));
-        bean.setPoolName(getString("poolName", request));
-        bean.setStatusId(getLong("statusId", request));
-        bean.setThreadsFree(getLong("threadsFree", request));
-        bean.setThreadsRunning(getLong("threadsRunning", request));
         bean.setCreateTimeRange(getString("createTimeRange", request));
         return bean;
     }

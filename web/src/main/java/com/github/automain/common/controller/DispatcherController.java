@@ -38,6 +38,10 @@ public class DispatcherController extends HttpServlet {
 
     private static Map<String, BaseExecutor> REQUEST_MAPPING;
 
+    private static List<String> INNER_IP_LIST;
+
+    private static List<String> INNER_IP_PORT_LIST;
+
     @Override
     public void init() throws ServletException {
         ConnectionBean connection = null;
@@ -59,6 +63,8 @@ public class DispatcherController extends HttpServlet {
             DictionaryContainer.reloadDictionary(jedis, connection);
             // 初始化人员角色权限缓存
             RolePrivilegeContainer.reloadRolePrivilege(jedis, connection, getRequestUrlList());
+            // 初始化内部地址端口
+            reloadInnerIpPort(connection);
             System.err.println("===============================Init Success===============================");
         } catch (Exception e) {
             e.printStackTrace();
@@ -89,6 +95,11 @@ public class DispatcherController extends HttpServlet {
             bean.setUpdateTime(now);
             ServiceContainer.TB_CONFIG_SERVICE.insertIntoTable(connection, bean);
         }
+    }
+
+    public static void reloadInnerIpPort(ConnectionBean connection) throws SQLException {
+        INNER_IP_LIST = ServiceContainer.TB_INNER_IP_PORT_SERVICE.selectInnerIpList(connection);
+        INNER_IP_PORT_LIST = ServiceContainer.TB_INNER_IP_PORT_SERVICE.selectInnerIpPortList(connection);
     }
 
     private Map<String, BaseExecutor> initRequestMap(String basePath, Map<String, BaseExecutor> requestMap) throws Exception {
@@ -127,6 +138,14 @@ public class DispatcherController extends HttpServlet {
 
     public static List<String> getRequestUrlList() {
         return new ArrayList<String>(REQUEST_MAPPING.keySet());
+    }
+
+    public static List<String> getInnerIpList() {
+        return INNER_IP_LIST;
+    }
+
+    public static List<String> getInnerIpPortList() {
+        return INNER_IP_PORT_LIST;
     }
 
     @Override

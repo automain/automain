@@ -17,7 +17,7 @@ public class ReloadCacheExecutor extends BaseExecutor {
 
     @Override
     protected boolean checkAuthority(Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        return (PropertiesUtil.INNER_IPS != null && PropertiesUtil.INNER_IPS.contains(HTTPUtil.getRequestIp(request))) || super.checkAuthority(jedis, request, response);
+        return (DispatcherController.getInnerIpList().contains(HTTPUtil.getRequestIp(request))) || super.checkAuthority(jedis, request, response);
     }
 
     @Override
@@ -42,14 +42,18 @@ public class ReloadCacheExecutor extends BaseExecutor {
                     DispatcherController.reloadStaticVersion(connection);
                     logReloadLabel = "静态资源";
                     break;
+                case "ipport":
+                    DispatcherController.reloadInnerIpPort(connection);
+                    logReloadLabel = "地址端口";
+                    break;
             }
         }
         if ("properties".equals(reloadLabel)) {
             String thisIpPort = request.getServerName() + ":" + request.getServerPort();
             LOGGER.info("刷新缓存地址:" + thisIpPort + ",刷新缓存项:" + logReloadLabel);
-            if (PropertiesUtil.INNER_IPS != null && !PropertiesUtil.INNER_IPS.contains(HTTPUtil.getRequestIp(request))) {
+            if (!DispatcherController.getInnerIpList().contains(HTTPUtil.getRequestIp(request))) {
                 String requestUri = request.getRequestURI();
-                for (String ipPort : PropertiesUtil.INNER_IP_PORTS) {
+                for (String ipPort : DispatcherController.getInnerIpPortList()) {
                     if (thisIpPort.equals(ipPort)) {
                         continue;
                     }

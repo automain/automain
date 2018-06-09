@@ -37,6 +37,6 @@ public class FrameExecutor extends BaseExecutor {
             request.setAttribute("menuVOList", JSON.toJSONString(menuVOList));
             request.setAttribute("userName", user.getUserName());
         }
-        return "/common/frame";
+        return "common/frame";
     }
 }

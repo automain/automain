@@ -12,6 +12,9 @@ import java.util.Map;
 
 public class DbSlowLog extends RequestUtil implements BaseBean<DbSlowLog> {
 
+    // 慢查询ID
+    private Long slowId;
+
     // 创建时间
     private Timestamp createTime;
 
@@ -21,17 +24,14 @@ public class DbSlowLog extends RequestUtil implements BaseBean<DbSlowLog> {
     // 慢查询库
     private String slowDb;
 
-    // 主键
-    private Long slowId;
-
-    // 慢查询sql
-    private String slowSql;
+    // 慢查询用时
+    private Integer slowTime;
 
     // 慢查询状态
     private String slowState;
 
-    // 慢查询用时
-    private Integer slowTime;
+    // 慢查询sql
+    private String slowSql;
 
     // ========== additional column begin ==========
 
@@ -47,6 +47,14 @@ public class DbSlowLog extends RequestUtil implements BaseBean<DbSlowLog> {
     }
 
     // ========== additional column end ==========
+
+    public Long getSlowId() {
+        return slowId;
+    }
+
+    public void setSlowId(Long slowId) {
+        this.slowId = slowId;
+    }
 
     public Timestamp getCreateTime() {
         return createTime;
@@ -72,20 +80,12 @@ public class DbSlowLog extends RequestUtil implements BaseBean<DbSlowLog> {
         this.slowDb = slowDb;
     }
 
-    public Long getSlowId() {
-        return slowId;
+    public Integer getSlowTime() {
+        return slowTime;
     }
 
-    public void setSlowId(Long slowId) {
-        this.slowId = slowId;
-    }
-
-    public String getSlowSql() {
-        return slowSql;
-    }
-
-    public void setSlowSql(String slowSql) {
-        this.slowSql = slowSql;
+    public void setSlowTime(Integer slowTime) {
+        this.slowTime = slowTime;
     }
 
     public String getSlowState() {
@@ -96,12 +96,12 @@ public class DbSlowLog extends RequestUtil implements BaseBean<DbSlowLog> {
         this.slowState = slowState;
     }
 
-    public Integer getSlowTime() {
-        return slowTime;
+    public String getSlowSql() {
+        return slowSql;
     }
 
-    public void setSlowTime(Integer slowTime) {
-        this.slowTime = slowTime;
+    public void setSlowSql(String slowSql) {
+        this.slowSql = slowSql;
     }
 
     @Override
@@ -131,14 +131,14 @@ public class DbSlowLog extends RequestUtil implements BaseBean<DbSlowLog> {
         if (all || this.getSlowDb() != null) {
             map.put("slow_db", this.getSlowDb());
         }
-        if (all || this.getSlowSql() != null) {
-            map.put("slow_sql", this.getSlowSql());
+        if (all || this.getSlowTime() != null) {
+            map.put("slow_time", this.getSlowTime());
         }
         if (all || this.getSlowState() != null) {
             map.put("slow_state", this.getSlowState());
         }
-        if (all || this.getSlowTime() != null) {
-            map.put("slow_time", this.getSlowTime());
+        if (all || this.getSlowSql() != null) {
+            map.put("slow_sql", this.getSlowSql());
         }
         return map;
     }
@@ -146,26 +146,26 @@ public class DbSlowLog extends RequestUtil implements BaseBean<DbSlowLog> {
     @Override
     public DbSlowLog beanFromResultSet(ResultSet rs) throws SQLException {
         DbSlowLog bean = new DbSlowLog();
+        bean.setSlowId(rs.getLong("slow_id"));
         bean.setCreateTime(rs.getTimestamp("create_time"));
         bean.setPoolName(rs.getString("pool_name"));
         bean.setSlowDb(rs.getString("slow_db"));
-        bean.setSlowId(rs.getLong("slow_id"));
-        bean.setSlowSql(rs.getString("slow_sql"));
-        bean.setSlowState(rs.getString("slow_state"));
         bean.setSlowTime(rs.getInt("slow_time"));
+        bean.setSlowState(rs.getString("slow_state"));
+        bean.setSlowSql(rs.getString("slow_sql"));
         return bean;
     }
 
     @Override
     public DbSlowLog beanFromRequest(HttpServletRequest request) {
         DbSlowLog bean = new DbSlowLog();
+        bean.setSlowId(getLong("slowId", request));
         bean.setCreateTime(getTimestamp("createTime", request));
         bean.setPoolName(getString("poolName", request));
         bean.setSlowDb(getString("slowDb", request));
-        bean.setSlowId(getLong("slowId", request));
-        bean.setSlowSql(getString("slowSql", request));
-        bean.setSlowState(getString("slowState", request));
         bean.setSlowTime(getInt("slowTime", request));
+        bean.setSlowState(getString("slowState", request));
+        bean.setSlowSql(getString("slowSql", request));
         bean.setCreateTimeRange(getString("createTimeRange", request));
         return bean;
     }

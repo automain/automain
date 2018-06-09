@@ -50,7 +50,7 @@ public class TbDictionaryDao extends BaseDao<TbDictionary> {
         List<String> tableNameList = new ArrayList<String>();
         try {
             String sql = "SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = ?";
-            rs = BaseDao.executeSelectReturnResultSet(connection, sql, Collections.singletonList(PropertiesUtil.DATABASE_NAME));
+            rs = executeSelectReturnResultSet(connection, sql, Collections.singletonList(PropertiesUtil.DATABASE_NAME));
             while (rs.next()) {
                 tableNameList.add(rs.getString(1));
             }
