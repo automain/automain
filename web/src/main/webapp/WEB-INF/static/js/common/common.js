@@ -8,7 +8,6 @@ function alertByFull(layer, title, url) {
     layer.open({
         title: title,
         type: 2,
-        shift: 0,
         area: ['100%', '100%'],
         content: url,
         success: function (layero, index) {
