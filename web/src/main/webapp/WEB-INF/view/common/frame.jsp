@@ -105,8 +105,12 @@
 
     function parseTree(tree, isChild) {
         var html = '';
+        var tag = 'li';
+        var tagClass = ' class="layui-nav-item"';
         if (isChild) {
-            html += '<ul class="layui-nav-child">';
+            tag = 'dd';
+            tagClass = '';
+            html += '<dl class="layui-nav-child">';
         }
         for (var i = 0; i < tree.length; i++) {
             var node = tree[i];
@@ -119,23 +123,26 @@
             if (link) {
                 layHref = 'lay-href="${ctx}' + link + '" ';
             }
-            var spread = '';
             if (node.isSpread === 1) {
-                spread = ' layui-nav-itemed';
+                if (isChild) {
+                    tagClass = ' class="layui-nav-itemed"';
+                } else {
+                    tagClass = ' class="layui-nav-item layui-nav-itemed"';
+                }
             }
             var tip = '';
             if (!isChild) {
                 tip = 'lay-tips="' + node.name + '" lay-direction="2"';
             }
-            html += '<li class="layui-nav-item' + spread + '"><a ' + layHref + tip + '>'
+            html += '<' + tag + tagClass + '><a ' + layHref + tip + '>'
                 + '<i class="layui-menu-icon fa fa-' + icon + '"></i><cite>' + node.name + '</cite></a>';
             if (node.children) {
                 html += parseTree(node.children, true);
             }
-            html += '</li>';
+            html += '</' + tag + '>';
         }
         if (isChild) {
-            html += '</ul>';
+            html += '</dl>';
         }
         return html;
     }
