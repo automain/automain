@@ -41,8 +41,9 @@ public class RedisUtil {
      * @return
      */
     public static boolean getDistributeLock(Jedis jedis, String lockKey, int expireSeconds) {
+        int now = SystemUtil.getNowSecond();
+        int expireTime = now + expireSeconds;
         if (jedis != null) {
-            long expireTime = SystemUtil.getNowSecond() + expireSeconds;
             long result = jedis.setnx(lockKey, String.valueOf(expireTime));
             if (result == 1) {
                 jedis.expire(lockKey, expireSeconds);
@@ -56,8 +57,21 @@ public class RedisUtil {
                     return result == 1;
                 }
             }
+        } else {
+            Object o = LOCAL_CACHE.get(lockKey);
+            if (o == null) {
+                LOCAL_CACHE.put(lockKey, expireTime);
+                return true;
+            } else {
+                long expire = Long.parseLong(o.toString());
+                if (expire > now) {
+                    return false;
+                } else {
+                    LOCAL_CACHE.put(lockKey, expireTime);
+                    return true;
+                }
+            }
         }
-        return false;
     }
 
     /**
@@ -70,6 +84,8 @@ public class RedisUtil {
     public static boolean releaseDistributeLock(Jedis jedis, String lockKey) {
         if (jedis != null) {
             jedis.del(lockKey);
+        } else {
+            LOCAL_CACHE.remove(lockKey);
         }
         return false;
     }

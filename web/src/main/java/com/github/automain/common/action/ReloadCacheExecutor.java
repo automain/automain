@@ -5,7 +5,7 @@ import com.github.automain.common.controller.DispatcherController;
 import com.github.automain.common.annotation.RequestUrl;
 import com.github.automain.common.container.DictionaryContainer;
 import com.github.automain.common.container.RolePrivilegeContainer;
-import com.github.automain.util.HTTPUtil;
+import com.github.automain.util.http.HTTPUtil;
 import com.github.automain.util.PropertiesUtil;
 import com.github.fastjdbc.bean.ConnectionBean;
 import redis.clients.jedis.Jedis;
@@ -57,7 +57,7 @@ public class ReloadCacheExecutor extends BaseExecutor {
                     if (thisIpPort.equals(ipPort)) {
                         continue;
                     }
-                    HTTPUtil.httpPost("http://" + ipPort + requestUri);
+                    HTTPUtil.sendRequest("http://" + ipPort + requestUri, HTTPUtil.POST_METHOD, false);
                 }
             }
         }

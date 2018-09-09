@@ -3,12 +3,15 @@ package com.github.automain.common.controller;
 import com.github.automain.common.BaseExecutor;
 import com.github.automain.common.annotation.RequestUrl;
 import com.github.automain.common.bean.TbConfig;
+import com.github.automain.common.bean.TbSchedule;
 import com.github.automain.common.container.DictionaryContainer;
 import com.github.automain.common.container.RolePrivilegeContainer;
 import com.github.automain.common.container.ServiceContainer;
+import com.github.automain.schedule.ScheduleThread;
 import com.github.automain.common.view.ResourceNotFoundExecutor;
 import com.github.automain.user.view.LoginExecutor;
-import com.github.automain.util.HTTPUtil;
+import com.github.automain.util.http.HTTPUtil;
+import com.github.automain.util.PropertiesUtil;
 import com.github.automain.util.RedisUtil;
 import com.github.automain.util.SystemUtil;
 import com.github.fastjdbc.bean.ConnectionBean;
@@ -30,6 +33,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @WebServlet(urlPatterns = "/", asyncSupported = true, loadOnStartup = 2)
 public class DispatcherController extends HttpServlet {
@@ -42,6 +48,8 @@ public class DispatcherController extends HttpServlet {
 
     private static List<String> INNER_IP_PORT_LIST;
 
+    private static ScheduledExecutorService SCHEDULE_THREAD_POOL = null;
+
     @Override
     public void init() throws ServletException {
         ConnectionBean connection = null;
@@ -52,6 +60,8 @@ public class DispatcherController extends HttpServlet {
             // 初始化数据库连接池
             SystemUtil.initConnectionPool();
             connection = ConnectionPool.getConnectionBean(null);
+            // 初始化日志
+            SystemUtil.initLogConfig();
             // 初始化静态资源版本
             reloadStaticVersion(connection);
             // 初始化redis连接池
@@ -65,6 +75,8 @@ public class DispatcherController extends HttpServlet {
             RolePrivilegeContainer.reloadRolePrivilege(jedis, connection, getRequestUrlList());
             // 初始化内部地址端口
             reloadInnerIpPort(connection);
+            // 初始化定时任务
+            reloadSchedule(connection, jedis);
             System.err.println("===============================Init Success===============================");
         } catch (Exception e) {
             e.printStackTrace();
@@ -134,6 +146,41 @@ public class DispatcherController extends HttpServlet {
             }
         }
         return requestMap;
+    }
+
+    public static void reloadSchedule(ConnectionBean connection, Jedis jedis) throws SQLException {
+        if (PropertiesUtil.OPEN_SCHEDULE) {
+            if (SCHEDULE_THREAD_POOL != null) {
+                SCHEDULE_THREAD_POOL.shutdown();
+                SCHEDULE_THREAD_POOL = null;
+            }
+            TbSchedule bean = new TbSchedule();
+            bean.setIsDelete(0);
+            List<TbSchedule> scheduleList = ServiceContainer.TB_SCHEDULE_SERVICE.selectTableByBean(connection, bean);
+            int size = scheduleList.size();
+            if (size > 0) {
+                SCHEDULE_THREAD_POOL = Executors.newScheduledThreadPool(size);
+                for (TbSchedule schedule : scheduleList) {
+                    startSchedule(schedule, jedis);
+                }
+            }
+        }
+    }
+
+    private static void startSchedule(TbSchedule schedule, Jedis jedis) {
+        long initialDelay = 0L;
+        long jump = schedule.getDelayTime();
+        long now = SystemUtil.getNowSecond();
+        long start = schedule.getStartExecuteTime().getTime() / 1000;
+        long diff = now - start;
+        if (diff > 0) {
+            if (diff > jump) {
+                initialDelay = jump - (diff % jump);
+            } else {
+                initialDelay = jump - diff;
+            }
+            SCHEDULE_THREAD_POOL.scheduleAtFixedRate(new ScheduleThread(schedule.getScheduleUrl(), jedis, jump), initialDelay, jump, TimeUnit.SECONDS);
+        }
     }
 
     public static List<String> getRequestUrlList() {

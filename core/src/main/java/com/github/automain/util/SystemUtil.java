@@ -86,7 +86,7 @@ public class SystemUtil {
     }
 
     /**
-     *  初始化log配置
+     * 初始化log配置
      */
     public static void initLogConfig() {
         try {
@@ -195,12 +195,13 @@ public class SystemUtil {
      *
      * @return
      */
-    public static long getNowSecond() {
-        return System.currentTimeMillis() / 1000;
+    public static int getNowSecond() {
+        return (int) (System.currentTimeMillis() / 1000);
     }
 
     /**
      * 当前系统是否为windows
+     *
      * @return
      */
     public static boolean checkIsWindows() {
@@ -210,6 +211,7 @@ public class SystemUtil {
 
     /**
      * 关闭redis连接和数据库连接
+     *
      * @param jedis
      * @param connection
      */

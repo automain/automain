@@ -3,6 +3,7 @@ package com.github.automain.util;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,8 +16,15 @@ public class PropertiesUtil {
 
     public static final String WEB_INFO_PATH = CLASS_PATH.replace("/classes/", "");
 
+    public static Map<String, String> API_KEY_MAP = null;
+
     static {
         reloadProperties();
+        Properties properties = getProperties("apikey.properties");
+        API_KEY_MAP = new HashMap<String, String>();
+        for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+            API_KEY_MAP.put(entry.getKey().toString(), entry.getValue().toString());
+        }
     }
 
     public static void reloadProperties() {
@@ -40,7 +48,7 @@ public class PropertiesUtil {
     }
 
     public static final String DEFAULT_CHARSET = "UTF-8";
-    public static final Properties CONFIG_PROPERTIES = getProperties("config.properties");
+    private static final Properties CONFIG_PROPERTIES = getProperties("config.properties");
     public static final String ENVIRONMENT = CONFIG_PROPERTIES.getProperty("environment");
     private static final int SESSION_EXPIRE_SECONDS = Integer.parseInt(CONFIG_PROPERTIES.getProperty("sessionExpireSeconds"));
     public static final long SESSION_EXPIRE_MILLISECOND = SESSION_EXPIRE_SECONDS * 1000;
@@ -48,8 +56,11 @@ public class PropertiesUtil {
     public static final long CACHE_EXPIRE_MILLISECOND = CACHE_EXPIRE_SECONDS * 1000;
     public static final String SECURITY_KEY = CONFIG_PROPERTIES.getProperty("securityKey");
     public static final String UPLOADS_PATH = CONFIG_PROPERTIES.getProperty("uploadsPath");
+    public static final String CDN_PATH = CONFIG_PROPERTIES.getProperty("cdnPath");
     public static final boolean OPEN_CACHE = Boolean.parseBoolean(CONFIG_PROPERTIES.getProperty("openCache", "false"));
     public static final String CACHE_PATH = CONFIG_PROPERTIES.getProperty("cachePath");
+    public static final boolean OPEN_SCHEDULE = Boolean.parseBoolean(CONFIG_PROPERTIES.getProperty("openSchedule", "false"));
+    public static final String PROJECT_HOST = CONFIG_PROPERTIES.getProperty("projectHost");
 
     private static final Properties DB_PROPERTIES = getProperties("db.properties");
     public static final String[] POOL_NAMES = DB_PROPERTIES.getProperty("pool_names").split(",");

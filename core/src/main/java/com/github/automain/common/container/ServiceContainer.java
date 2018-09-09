@@ -3,16 +3,19 @@ package com.github.automain.common.container;
 import com.github.automain.common.bean.TbConfig;
 import com.github.automain.common.bean.TbDictionary;
 import com.github.automain.common.bean.TbInnerIpPort;
+import com.github.automain.common.bean.TbSchedule;
 import com.github.automain.common.bean.TbUploadFile;
 import com.github.automain.common.bean.TbUploadRelation;
 import com.github.automain.common.dao.TbConfigDao;
 import com.github.automain.common.dao.TbDictionaryDao;
 import com.github.automain.common.dao.TbInnerIpPortDao;
+import com.github.automain.common.dao.TbScheduleDao;
 import com.github.automain.common.dao.TbUploadFileDao;
 import com.github.automain.common.dao.TbUploadRelationDao;
 import com.github.automain.common.service.TbConfigService;
 import com.github.automain.common.service.TbDictionaryService;
 import com.github.automain.common.service.TbInnerIpPortService;
+import com.github.automain.common.service.TbScheduleService;
 import com.github.automain.common.service.TbUploadFileService;
 import com.github.automain.common.service.TbUploadRelationService;
 import com.github.automain.monitor.bean.DbSlowLog;
@@ -56,6 +59,7 @@ public interface ServiceContainer {
     DbSlowLogService DB_SLOW_LOG_SERVICE = new DbSlowLogService(new DbSlowLog(), new DbSlowLogDao());
     DbStatusService DB_STATUS_SERVICE = new DbStatusService(new DbStatus(), new DbStatusDao());
     TbInnerIpPortService TB_INNER_IP_PORT_SERVICE = new TbInnerIpPortService(new TbInnerIpPort(), new TbInnerIpPortDao());
+    TbScheduleService TB_SCHEDULE_SERVICE = new TbScheduleService(new TbSchedule(), new TbScheduleDao());
     // ==================== frame end ====================
 
     // ==================== business start ==================

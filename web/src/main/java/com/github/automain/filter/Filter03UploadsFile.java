@@ -1,6 +1,6 @@
 package com.github.automain.filter;
 
-import com.github.automain.util.HTTPUtil;
+import com.github.automain.util.http.HTTPUtil;
 import com.github.automain.util.PropertiesUtil;
 
 import javax.servlet.Filter;

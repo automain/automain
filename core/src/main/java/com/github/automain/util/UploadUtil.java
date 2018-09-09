@@ -24,8 +24,6 @@ public class UploadUtil implements ServiceContainer {
 
     public static final List<String> IMG_TYPES = Collections.unmodifiableList(Arrays.asList("bmp", "jpg", "jpeg", "png", "gif"));
 
-    private static final String CDN_PATH = PropertiesUtil.CONFIG_PROPERTIES.getProperty("cdnPath");
-
     /**
      * 保存base64到文件
      *
@@ -103,7 +101,7 @@ public class UploadUtil implements ServiceContainer {
      * @return
      */
     private static String concatPathForFile(HttpServletRequest request, String filePath) {
-        return StringUtils.isNotBlank(CDN_PATH) ? CDN_PATH + filePath : request.getContextPath() + "/uploads" + filePath;
+        return StringUtils.isNotBlank(PropertiesUtil.CDN_PATH) ? PropertiesUtil.CDN_PATH + filePath : request.getContextPath() + "/uploads" + filePath;
     }
 
     /**
