@@ -14,7 +14,6 @@
     <div class="layui-row">
         <div class="layui-col-md4"><button class="layui-btn layui-btn-lg" onclick="reloadCache('properties')">配置文件</button></div>
         <div class="layui-col-md4"><button class="layui-btn layui-btn-lg" onclick="reloadCache('dictionary')">数据字典</button></div>
-        <div class="layui-col-md4"><button class="layui-btn layui-btn-lg" onclick="reloadCache('ipport')">地址端口</button></div>
     </div>
     <div class="layui-row">
         <div class="layui-col-md4"><button class="layui-btn layui-btn-lg" onclick="reloadCache('role')">角色权限</button></div>
