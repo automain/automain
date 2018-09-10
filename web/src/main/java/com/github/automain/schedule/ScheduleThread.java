@@ -24,7 +24,7 @@ public class ScheduleThread implements Runnable {
     @Override
     public void run() {
         try {
-            int expireSeconds = jump > 300 ? 300 : jump > 10 ? (int) (jump - 10) : (int) (jump / 2);
+            int expireSeconds = jump > 59 ? 50 : (int) (jump / 2);
             String lockKey = "SCHEDULE_" + scheduleUrl;
             boolean lock = RedisUtil.getDistributeLock(jedis, lockKey, expireSeconds);
             if (lock) {
