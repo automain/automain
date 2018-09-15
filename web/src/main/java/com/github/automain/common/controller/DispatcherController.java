@@ -103,6 +103,7 @@ public class DispatcherController extends HttpServlet {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private Map<String, BaseExecutor> initRequestMap(String basePath, Map<String, BaseExecutor> requestMap) throws Exception {
         File file = new File(basePath);
         File[] childClassList = file.listFiles();

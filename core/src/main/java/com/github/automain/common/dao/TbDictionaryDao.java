@@ -5,6 +5,7 @@ import com.github.automain.util.PropertiesUtil;
 import com.github.fastjdbc.bean.ConnectionBean;
 import com.github.fastjdbc.bean.ConnectionPool;
 import com.github.fastjdbc.bean.PageBean;
+import com.github.fastjdbc.bean.PageParameterBean;
 import com.github.fastjdbc.common.BaseDao;
 
 import java.sql.ResultSet;
@@ -18,13 +19,29 @@ public class TbDictionaryDao extends BaseDao<TbDictionary> {
 
     @SuppressWarnings("unchecked")
     public PageBean<TbDictionary> selectTableForCustomPage(ConnectionBean connection, TbDictionary bean, int page, int limit) throws Exception {
+        List<Object> countParameterList = new ArrayList<Object>();
         List<Object> parameterList = new ArrayList<Object>();
-        String sql = setSearchCondition(bean, parameterList);
-        return selectTableForPage(connection, bean, sql, parameterList, page, limit);
+        String countSql = setSearchCondition(bean, countParameterList, true);
+        String sql = setSearchCondition(bean, parameterList, false);
+        PageParameterBean<TbDictionary> pageParameterBean = new PageParameterBean<TbDictionary>();
+        pageParameterBean.setConnection(connection);
+        pageParameterBean.setBean(bean);
+        pageParameterBean.setCountSql(countSql);
+        pageParameterBean.setCountParameterList(countParameterList);
+        pageParameterBean.setSql(sql);
+        pageParameterBean.setParameterList(parameterList);
+        pageParameterBean.setPage(page);
+        pageParameterBean.setLimit(limit);
+        return selectTableForPage(pageParameterBean);
     }
 
-    private String setSearchCondition(TbDictionary bean, List<Object> parameterList) {
-        StringBuilder sql = new StringBuilder("SELECT * FROM tb_dictionary WHERE is_delete = 0 ");
+    private String setSearchCondition(TbDictionary bean, List<Object> parameterList, boolean isCountSql) {
+        StringBuilder sql = new StringBuilder("SELECT ");
+        sql.append(isCountSql ? "COUNT(1)" : "*").append(" FROM tb_dictionary WHERE is_delete = 0 ");
+        if (bean.getSequenceNumber() != null) {
+            sql.append(" AND sequence_number = ?");
+            parameterList.add(bean.getSequenceNumber());
+        }
         if (bean.getDictTableName() != null) {
             sql.append(" AND dict_table_name = ?");
             parameterList.add(bean.getDictTableName());
@@ -36,6 +53,18 @@ public class TbDictionaryDao extends BaseDao<TbDictionary> {
         if (bean.getParentId() != null) {
             sql.append(" AND parent_id = ?");
             parameterList.add(bean.getParentId());
+        }
+        if (bean.getDictionaryName() != null) {
+            sql.append(" AND dictionary_name = ?");
+            parameterList.add(bean.getDictionaryName());
+        }
+        if (bean.getDictionaryValue() != null) {
+            sql.append(" AND dictionary_value = ?");
+            parameterList.add(bean.getDictionaryValue());
+        }
+        if (bean.getIsLeaf() != null) {
+            sql.append(" AND is_leaf = ?");
+            parameterList.add(bean.getIsLeaf());
         }
         return sql.toString();
     }

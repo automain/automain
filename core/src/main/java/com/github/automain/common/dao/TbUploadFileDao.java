@@ -3,6 +3,7 @@ package com.github.automain.common.dao;
 import com.github.automain.common.bean.TbUploadFile;
 import com.github.fastjdbc.bean.ConnectionBean;
 import com.github.fastjdbc.bean.PageBean;
+import com.github.fastjdbc.bean.PageParameterBean;
 import com.github.fastjdbc.common.BaseDao;
 
 import java.util.ArrayList;
@@ -12,13 +13,25 @@ public class TbUploadFileDao extends BaseDao<TbUploadFile> {
 
     @SuppressWarnings("unchecked")
     public PageBean<TbUploadFile> selectTableForCustomPage(ConnectionBean connection, TbUploadFile bean, int page, int limit) throws Exception {
+        List<Object> countParameterList = new ArrayList<Object>();
         List<Object> parameterList = new ArrayList<Object>();
-        String sql = setSearchCondition(bean, parameterList);
-        return selectTableForPage(connection, bean, sql, parameterList, page, limit);
+        String countSql = setSearchCondition(bean, countParameterList, true);
+        String sql = setSearchCondition(bean, parameterList, false);
+        PageParameterBean<TbUploadFile> pageParameterBean = new PageParameterBean<TbUploadFile>();
+        pageParameterBean.setConnection(connection);
+        pageParameterBean.setBean(bean);
+        pageParameterBean.setCountSql(countSql);
+        pageParameterBean.setCountParameterList(countParameterList);
+        pageParameterBean.setSql(sql);
+        pageParameterBean.setParameterList(parameterList);
+        pageParameterBean.setPage(page);
+        pageParameterBean.setLimit(limit);
+        return selectTableForPage(pageParameterBean);
     }
 
-    private String setSearchCondition(TbUploadFile bean, List<Object> parameterList) throws Exception {
-        StringBuilder sql = new StringBuilder("SELECT * FROM tb_upload_file WHERE 1 = 1 ");
+    private String setSearchCondition(TbUploadFile bean, List<Object> parameterList, boolean isCountSql) throws Exception {
+        StringBuilder sql = new StringBuilder("SELECT ");
+        sql.append(isCountSql ? "COUNT(1)" : "*").append(" FROM tb_upload_file WHERE 1 = 1 ");
         if (bean.getFileExtension() != null) {
             sql.append(" AND file_extension = ?");
             parameterList.add(bean.getFileExtension());

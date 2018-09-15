@@ -31,7 +31,7 @@ public class CaptchaExecutor extends BaseExecutor {
             jedis.set(key, captcha);
             jedis.expire(key, 180);
         } else {
-            RedisUtil.LOCAL_CACHE.put(key, captcha);
+            RedisUtil.setLocalCache(key, captcha);
         }
         request.setAttribute(CAPTCHA_RANDOM_KEY, key);
         return null;

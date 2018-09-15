@@ -30,7 +30,35 @@ public class RedisUtil {
     /**
      * 关闭redis时使用的本地缓存
      */
-    public static Map<String, Object> LOCAL_CACHE = new ConcurrentHashMap<String, Object>();
+    private static Map<String, Object> LOCAL_CACHE = new ConcurrentHashMap<String, Object>();
+
+    /**
+     * 获取本地缓存
+     * @param key
+     * @param <T>
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public static<T> T getLocalCache(String key) {
+        return (T) LOCAL_CACHE.get(key);
+    }
+
+    /**
+     * 设置本地缓存
+     * @param key
+     * @param value
+     */
+    public static void setLocalCache(String key, Object value) {
+        LOCAL_CACHE.put(key, value);
+    }
+
+    /**
+     * 删除本地缓存
+     * @param key
+     */
+    public static void delLocalCache(String key) {
+        LOCAL_CACHE.remove(key);
+    }
 
     /**
      * 获取分布式锁
@@ -58,16 +86,15 @@ public class RedisUtil {
                 }
             }
         } else {
-            Object o = LOCAL_CACHE.get(lockKey);
-            if (o == null) {
-                LOCAL_CACHE.put(lockKey, expireTime);
+            Long expire = getLocalCache(lockKey);
+            if (expire == null) {
+                setLocalCache(lockKey, expireTime);
                 return true;
             } else {
-                long expire = Long.parseLong(o.toString());
                 if (expire > now) {
                     return false;
                 } else {
-                    LOCAL_CACHE.put(lockKey, expireTime);
+                    setLocalCache(lockKey, expireTime);
                     return true;
                 }
             }
@@ -85,7 +112,7 @@ public class RedisUtil {
         if (jedis != null) {
             jedis.del(lockKey);
         } else {
-            LOCAL_CACHE.remove(lockKey);
+            delLocalCache(lockKey);
         }
         return false;
     }

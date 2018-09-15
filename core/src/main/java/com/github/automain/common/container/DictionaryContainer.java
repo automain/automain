@@ -47,7 +47,7 @@ public class DictionaryContainer {
             if (jedis != null) {
                 jedis.set(key, JSON.toJSONString(voList));
             } else {
-                RedisUtil.LOCAL_CACHE.put(key, voList);
+                RedisUtil.setLocalCache(key, voList);
             }
         }
     }
@@ -67,7 +67,7 @@ public class DictionaryContainer {
         if (jedis != null) {
             return JSON.parseArray(jedis.get(key), DictionaryVO.class);
         } else {
-            return (List<DictionaryVO>) RedisUtil.LOCAL_CACHE.get(key);
+            return RedisUtil.getLocalCache(key);
         }
     }
 

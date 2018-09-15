@@ -4,6 +4,7 @@ import com.github.automain.user.bean.TbMenu;
 import com.github.fastjdbc.bean.ConnectionBean;
 import com.github.fastjdbc.bean.ConnectionPool;
 import com.github.fastjdbc.bean.PageBean;
+import com.github.fastjdbc.bean.PageParameterBean;
 import com.github.fastjdbc.common.BaseDao;
 
 import java.sql.ResultSet;
@@ -16,16 +17,28 @@ public class TbMenuDao extends BaseDao<TbMenu> {
 
     @SuppressWarnings("unchecked")
     public PageBean<TbMenu> selectTableForCustomPage(ConnectionBean connection, TbMenu bean, int page, int limit) throws Exception {
+        List<Object> countParameterList = new ArrayList<Object>();
         List<Object> parameterList = new ArrayList<Object>();
-        String sql = setSearchCondition(bean, parameterList);
-        return selectTableForPage(connection, bean, sql, parameterList, page, limit);
+        String countSql = setSearchCondition(bean, countParameterList, true);
+        String sql = setSearchCondition(bean, parameterList, false);
+        PageParameterBean<TbMenu> pageParameterBean = new PageParameterBean<TbMenu>();
+        pageParameterBean.setConnection(connection);
+        pageParameterBean.setBean(bean);
+        pageParameterBean.setCountSql(countSql);
+        pageParameterBean.setCountParameterList(countParameterList);
+        pageParameterBean.setSql(sql);
+        pageParameterBean.setParameterList(parameterList);
+        pageParameterBean.setPage(page);
+        pageParameterBean.setLimit(limit);
+        return selectTableForPage(pageParameterBean);
     }
 
-    private String setSearchCondition(TbMenu bean, List<Object> parameterList) {
-        StringBuilder sql = new StringBuilder("SELECT * FROM tb_menu WHERE is_delete = 0 ");
+    private String setSearchCondition(TbMenu bean, List<Object> parameterList, boolean isCountSql) {
+        StringBuilder sql = new StringBuilder("SELECT ");
+        sql.append(isCountSql ? "COUNT(1)" : "*").append(" FROM tb_menu WHERE is_delete = 0 ");
         if (bean.getMenuName() != null) {
-            sql.append(" AND menu_name LIKE ?");
-            parameterList.add(bean.getMenuName() + "%");
+            sql.append(" AND menu_name = ?");
+            parameterList.add(bean.getMenuName());
         }
         if (bean.getParentId() != null) {
             sql.append(" AND parent_id = ?");
@@ -46,6 +59,10 @@ public class TbMenuDao extends BaseDao<TbMenu> {
         if (bean.getSequenceNumber() != null) {
             sql.append(" AND sequence_number = ?");
             parameterList.add(bean.getSequenceNumber());
+        }
+        if (bean.getIsSpread() != null) {
+            sql.append(" AND is_spread = ?");
+            parameterList.add(bean.getIsSpread());
         }
         if (bean.getIsLeaf() != null) {
             sql.append(" AND is_leaf = ?");

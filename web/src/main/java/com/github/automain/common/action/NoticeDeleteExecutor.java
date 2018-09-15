@@ -19,7 +19,7 @@ public class NoticeDeleteExecutor extends BaseExecutor {
         if (jedis != null) {
             jedis.del("notice_cache_key");
         } else {
-            RedisUtil.LOCAL_CACHE.remove("notice_cache_key");
+            RedisUtil.delLocalCache("notice_cache_key");
         }
         CookieUtil.deleteCookieByName(response, "hasReadNotice");
         setJsonResult(request, CODE_SUCCESS, "清除成功");

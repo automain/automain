@@ -3,6 +3,7 @@ package com.github.automain.common.dao;
 import com.github.automain.common.bean.TbUploadRelation;
 import com.github.fastjdbc.bean.ConnectionBean;
 import com.github.fastjdbc.bean.PageBean;
+import com.github.fastjdbc.bean.PageParameterBean;
 import com.github.fastjdbc.common.BaseDao;
 
 import java.sql.SQLException;
@@ -13,13 +14,25 @@ public class TbUploadRelationDao extends BaseDao<TbUploadRelation> {
 
     @SuppressWarnings("unchecked")
     public PageBean<TbUploadRelation> selectTableForCustomPage(ConnectionBean connection, TbUploadRelation bean, int page, int limit) throws Exception {
+        List<Object> countParameterList = new ArrayList<Object>();
         List<Object> parameterList = new ArrayList<Object>();
-        String sql = setSearchCondition(bean, parameterList);
-        return selectTableForPage(connection, bean, sql, parameterList, page, limit);
+        String countSql = setSearchCondition(bean, countParameterList, true);
+        String sql = setSearchCondition(bean, parameterList, false);
+        PageParameterBean<TbUploadRelation> pageParameterBean = new PageParameterBean<TbUploadRelation>();
+        pageParameterBean.setConnection(connection);
+        pageParameterBean.setBean(bean);
+        pageParameterBean.setCountSql(countSql);
+        pageParameterBean.setCountParameterList(countParameterList);
+        pageParameterBean.setSql(sql);
+        pageParameterBean.setParameterList(parameterList);
+        pageParameterBean.setPage(page);
+        pageParameterBean.setLimit(limit);
+        return selectTableForPage(pageParameterBean);
     }
 
-    private String setSearchCondition(TbUploadRelation bean, List<Object> parameterList) {
-        StringBuilder sql = new StringBuilder("SELECT * FROM tb_upload_relation WHERE is_delete = 0 ");
+    private String setSearchCondition(TbUploadRelation bean, List<Object> parameterList, boolean isCountSql) {
+        StringBuilder sql = new StringBuilder("SELECT ");
+        sql.append(isCountSql ? "COUNT(1)" : "*").append(" FROM tb_upload_relation WHERE is_delete = 0 ");
         if (bean.getRecordId() != null) {
             sql.append(" AND record_id = ?");
             parameterList.add(bean.getRecordId());

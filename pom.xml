@@ -56,7 +56,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version>
+                <version>3.8.0</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
@@ -71,7 +71,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-war-plugin</artifactId>
-                    <version>3.2.1</version>
+                    <version>3.2.2</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -81,7 +81,7 @@
         <dependency>
             <groupId>com.github.automain</groupId>
             <artifactId>fastjdbc</artifactId>
-            <version>1.4</version>
+            <version>1.5</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -96,12 +96,12 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.11</version>
+            <version>8.0.12</version>
         </dependency>
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>3.1.0</version>
+            <version>3.2.0</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -111,12 +111,12 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.47</version>
+            <version>1.2.49</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.7</version>
+            <version>3.8</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
@@ -126,7 +126,7 @@
         <dependency>
             <groupId>com.sun.mail</groupId>
             <artifactId>javax.mail</artifactId>
-            <version>1.6.1</version>
+            <version>1.6.2</version>
         </dependency>
         <dependency>
             <groupId>dnsjava</groupId>
@@ -141,12 +141,12 @@
         <dependency>
             <groupId>com.google.zxing</groupId>
             <artifactId>core</artifactId>
-            <version>3.3.2</version>
+            <version>3.3.3</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
-            <version>3.17</version>
+            <version>4.0.0</version>
         </dependency>
     </dependencies>
 

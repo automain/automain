@@ -403,7 +403,7 @@ public class ExcelUtil {
 
     @SuppressWarnings("unchecked")
     private static boolean addCellToList(String type, boolean notNull, List retList, Cell cell) {
-        switch (cell.getCellTypeEnum()) {
+        switch (cell.getCellType()) {
             case STRING:
                 if (TYPE_STRING.equals(type)) {
                     retList.add(cell.getStringCellValue());

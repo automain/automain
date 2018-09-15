@@ -33,7 +33,7 @@ public class LoginActionExecutor extends BaseExecutor {
         if (jedis != null) {
             captcha = jedis.get(key);
         } else {
-            captcha = RedisUtil.LOCAL_CACHE.get(key);
+            captcha = RedisUtil.getLocalCache(key);
         }
         if (captcha != null) {
             String sessionCaptcha = String.valueOf(captcha);
@@ -58,8 +58,8 @@ public class LoginActionExecutor extends BaseExecutor {
                             jedis.hmset(userKey, userMap);
                             jedis.expire(userKey, PropertiesUtil.CACHE_EXPIRE_SECONDS);
                         } else {
-                            RedisUtil.LOCAL_CACHE.remove(key);
-                            RedisUtil.LOCAL_CACHE.put(userKey, userMap);
+                            RedisUtil.delLocalCache(key);
+                            RedisUtil.setLocalCache(userKey, userMap);
                         }
                         String value = user.getUserId() + "_" + expireTime;
                         String accessToken = EncryptUtil.AESEncrypt(value.getBytes(PropertiesUtil.DEFAULT_CHARSET), PropertiesUtil.SECURITY_KEY);

@@ -32,7 +32,7 @@ public class LogoutActionExecutor extends BaseExecutor {
                 if (jedis != null) {
                     jedis.del(userKey);
                 } else {
-                    RedisUtil.LOCAL_CACHE.remove(userKey);
+                    RedisUtil.delLocalCache(userKey);
                 }
             }
             CookieUtil.deleteCookieByName(response, "accessToken");

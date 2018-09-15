@@ -145,7 +145,7 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
                 if (jedis != null) {
                     noticeMap = jedis.hgetAll("notice_cache_key");
                 } else {
-                    noticeMap = (Map<String, String>) RedisUtil.LOCAL_CACHE.get("notice_cache_key");
+                    noticeMap = RedisUtil.getLocalCache("notice_cache_key");
                 }
                 if (noticeMap != null && !noticeMap.isEmpty()) {
                     request.setAttribute("notice_cache_key", noticeMap);
@@ -331,10 +331,7 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
                 if (jedis != null) {
                     userMap = jedis.hgetAll(userKey);
                 } else {
-                    Object obj = RedisUtil.LOCAL_CACHE.get(userKey);
-                    if (obj != null) {
-                        userMap = (Map<String, String>) obj;
-                    }
+                    userMap = RedisUtil.getLocalCache(userKey);
                 }
                 boolean isRefresh = false;
                 if (userMap == null) {
@@ -357,7 +354,7 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
                 } else {
                     long cacheExpire = Long.parseLong(userMap.get("expireTime"));
                     if (cacheExpire < System.currentTimeMillis()) {
-                        RedisUtil.LOCAL_CACHE.remove(userKey);
+                        RedisUtil.delLocalCache(userKey);
                         return null;
                     } else if (expireTime < System.currentTimeMillis()) {
                         isRefresh = true;
@@ -369,7 +366,7 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
                         jedis.hmset(userKey, userMap);
                         jedis.expire(userKey, PropertiesUtil.CACHE_EXPIRE_SECONDS);
                     } else {
-                        RedisUtil.LOCAL_CACHE.put(userKey, userMap);
+                        RedisUtil.setLocalCache(userKey, userMap);
                     }
                     String value = userId + "_" + newExpireTime;
                     String newAccessToken = EncryptUtil.AESEncrypt(value.getBytes(PropertiesUtil.DEFAULT_CHARSET), PropertiesUtil.SECURITY_KEY);

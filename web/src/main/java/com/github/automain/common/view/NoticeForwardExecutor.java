@@ -8,7 +8,6 @@ import redis.clients.jedis.Jedis;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
 
 @RequestUrl("/notice/forward")
 public class NoticeForwardExecutor extends BaseExecutor {
@@ -22,14 +21,12 @@ public class NoticeForwardExecutor extends BaseExecutor {
                 jspPath = "common/notice_add";
                 break;
             default:
-                Map<String, String> noticeMap = null;
                 if (jedis != null) {
-                    noticeMap = jedis.hgetAll("notice_cache_key");
+                    request.setAttribute("noticeMap", jedis.hgetAll("notice_cache_key"));
                 } else {
-                    noticeMap = (Map<String, String>) RedisUtil.LOCAL_CACHE.get("notice_cache_key");
+                    request.setAttribute("noticeMap", RedisUtil.getLocalCache("notice_cache_key"));
                 }
                 request.setAttribute("vEnter", "\n");
-                request.setAttribute("noticeMap", noticeMap);
                 jspPath = "common/notice_tab";
         }
         return jspPath;

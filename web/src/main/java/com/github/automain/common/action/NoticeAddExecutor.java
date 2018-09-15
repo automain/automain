@@ -28,7 +28,7 @@ public class NoticeAddExecutor extends BaseExecutor {
             jedis.hmset("notice_cache_key", noticeMap);
             jedis.expireAt("notice_cache_key", DateUtil.convertStringToLong(noticeEndTime, DateUtil.SIMPLE_DATE_TIME_PATTERN) / 1000);
         } else {
-            RedisUtil.LOCAL_CACHE.put("notice_cache_key", noticeMap);
+            RedisUtil.setLocalCache("notice_cache_key", noticeMap);
         }
         setJsonResult(request, CODE_SUCCESS, "添加成功");
         return null;

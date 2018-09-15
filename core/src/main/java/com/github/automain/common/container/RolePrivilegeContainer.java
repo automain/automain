@@ -93,7 +93,7 @@ public class RolePrivilegeContainer implements ServiceContainer {
             if (jedis != null) {
                 jedis.sadd(key, requestUrlSet.toArray(new String[0]));
             } else {
-                RedisUtil.LOCAL_CACHE.put(key, requestUrlSet);
+                RedisUtil.setLocalCache(key, requestUrlSet);
             }
         }
     }
@@ -104,7 +104,7 @@ public class RolePrivilegeContainer implements ServiceContainer {
             if (jedis != null) {
                 jedis.set(key, JSON.toJSONString(menuVOList));
             } else {
-                RedisUtil.LOCAL_CACHE.put(key, menuVOList);
+                RedisUtil.setLocalCache(key, menuVOList);
             }
         }
     }
@@ -122,7 +122,7 @@ public class RolePrivilegeContainer implements ServiceContainer {
                 }
                 jedis.sadd(key, value);
             } else {
-                RedisUtil.LOCAL_CACHE.put(key, userSet);
+                RedisUtil.setLocalCache(key, userSet);
             }
         }
     }
@@ -138,7 +138,7 @@ public class RolePrivilegeContainer implements ServiceContainer {
                 }
             } else {
                 for (Map.Entry<Long, Set<String>> entry : userRoleLabelMap.entrySet()) {
-                    RedisUtil.LOCAL_CACHE.put("userRoleLabel:" + entry.getKey(), entry.getValue());
+                    RedisUtil.setLocalCache("userRoleLabel:" + entry.getKey(), entry.getValue());
                 }
             }
         }
@@ -201,7 +201,7 @@ public class RolePrivilegeContainer implements ServiceContainer {
             }
             return result;
         } else {
-            return (Set<Long>) RedisUtil.LOCAL_CACHE.get(key);
+            return RedisUtil.getLocalCache(key);
         }
     }
 
@@ -217,7 +217,7 @@ public class RolePrivilegeContainer implements ServiceContainer {
         if (jedis != null) {
             return jedis.smembers(key);
         } else {
-            return (Set<String>) RedisUtil.LOCAL_CACHE.get(key);
+            return RedisUtil.getLocalCache(key);
         }
     }
 
@@ -233,7 +233,7 @@ public class RolePrivilegeContainer implements ServiceContainer {
         if (jedis != null) {
             return jedis.smembers(key);
         } else {
-            return (Set<String>) RedisUtil.LOCAL_CACHE.get(key);
+            return RedisUtil.getLocalCache(key);
         }
     }
 
@@ -249,7 +249,7 @@ public class RolePrivilegeContainer implements ServiceContainer {
         if (jedis != null) {
             return JSON.parseArray(jedis.get(key), MenuVO.class);
         } else {
-            return (List<MenuVO>) RedisUtil.LOCAL_CACHE.get(key);
+            return RedisUtil.getLocalCache(key);
         }
     }
 
