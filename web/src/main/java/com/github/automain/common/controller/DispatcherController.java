@@ -7,13 +7,13 @@ import com.github.automain.common.bean.TbSchedule;
 import com.github.automain.common.container.DictionaryContainer;
 import com.github.automain.common.container.RolePrivilegeContainer;
 import com.github.automain.common.container.ServiceContainer;
-import com.github.automain.schedule.ScheduleThread;
 import com.github.automain.common.view.ResourceNotFoundExecutor;
+import com.github.automain.schedule.ScheduleThread;
 import com.github.automain.user.view.LoginExecutor;
-import com.github.automain.util.http.HTTPUtil;
 import com.github.automain.util.PropertiesUtil;
 import com.github.automain.util.RedisUtil;
 import com.github.automain.util.SystemUtil;
+import com.github.automain.util.http.HTTPUtil;
 import com.github.fastjdbc.bean.ConnectionBean;
 import com.github.fastjdbc.bean.ConnectionPool;
 import redis.clients.jedis.Jedis;
@@ -55,16 +55,18 @@ public class DispatcherController extends HttpServlet {
             SERVLET_CONTEXT = getServletContext();
             // 初始化数据库连接池
             SystemUtil.initConnectionPool();
-            connection = ConnectionPool.getConnectionBean(null);
-            // 初始化日志
-            SystemUtil.initLogConfig();
-            // 初始化静态资源版本
-            reloadStaticVersion(connection);
             // 初始化redis连接池
             SystemUtil.initJedisPool();
-            jedis = RedisUtil.getJedis();
+            // 初始化日志
+            SystemUtil.initLogConfig();
             // 初始化访问路径
             REQUEST_MAPPING = initRequestMap(DispatcherController.class.getResource("/").getPath().replace("test-classes", "classes"), new HashMap<String, BaseExecutor>());
+            // 获取数据库连接
+            connection = ConnectionPool.getConnectionBean(null);
+            // 获取redis连接
+            jedis = RedisUtil.getJedis();
+            // 初始化静态资源版本
+            reloadStaticVersion(connection);
             // 初始化字典表缓存
             DictionaryContainer.reloadDictionary(jedis, connection);
             // 初始化人员角色权限缓存

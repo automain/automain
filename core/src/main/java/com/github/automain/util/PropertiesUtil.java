@@ -67,6 +67,10 @@ public class PropertiesUtil {
     private static final String url = DB_PROPERTIES.getProperty(POOL_NAMES[0] + "_jdbcUrl");
     public static final String DATABASE_NAME = url.substring(url.lastIndexOf("/") + 1, url.indexOf("?"));
 
+    private static final Properties ZK_PROPERTIES = getProperties("zk.properties");
+    public static final String ZK_SERVERS = ZK_PROPERTIES.getProperty("servers");
+    public static final String DETAULT_NAMESPACE = ZK_PROPERTIES.getProperty("defaultNamespace");
+    public static final boolean OPEN_ZOOKEEPER = Boolean.parseBoolean(ZK_PROPERTIES.getProperty("openZookeeper", "false"));
     public static Properties getProperties(String fileName) {
         return PROPERTIES_MAP.get(fileName);
     }
