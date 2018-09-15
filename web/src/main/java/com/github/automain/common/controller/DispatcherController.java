@@ -2,7 +2,6 @@ package com.github.automain.common.controller;
 
 import com.github.automain.common.BaseExecutor;
 import com.github.automain.common.annotation.RequestUrl;
-import com.github.automain.common.bean.TbConfig;
 import com.github.automain.common.bean.TbSchedule;
 import com.github.automain.common.container.DictionaryContainer;
 import com.github.automain.common.container.RolePrivilegeContainer;
@@ -28,7 +27,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -65,8 +63,6 @@ public class DispatcherController extends HttpServlet {
             connection = ConnectionPool.getConnectionBean(null);
             // 获取redis连接
             jedis = RedisUtil.getJedis();
-            // 初始化静态资源版本
-            reloadStaticVersion(connection);
             // 初始化字典表缓存
             DictionaryContainer.reloadDictionary(jedis, connection);
             // 初始化人员角色权限缓存
@@ -82,27 +78,8 @@ public class DispatcherController extends HttpServlet {
         }
     }
 
-    public static void reloadStaticVersion(ConnectionBean connection) throws SQLException {
-        TbConfig bean = new TbConfig();
-        bean.setConfigKey("staticVersion");
-        bean.setIsDelete(0);
-        TbConfig config = ServiceContainer.TB_CONFIG_SERVICE.selectOneTableByBean(connection, bean);
-        Timestamp now = new Timestamp(System.currentTimeMillis());
-        if (config != null) {
-            String staticVersion = config.getConfigValue();
-            long sv = Long.parseLong(staticVersion);
-            config.setConfigValue(String.valueOf(sv + 1));
-            config.setUpdateTime(now);
-            SERVLET_CONTEXT.setAttribute("staticVersion", config.getConfigValue());
-            ServiceContainer.TB_CONFIG_SERVICE.updateTable(connection, config, false);
-        } else {
-            SERVLET_CONTEXT.setAttribute("staticVersion", "0");
-            bean.setConfigValue("0");
-            bean.setConfigComment("静态资源版本");
-            bean.setCreateTime(now);
-            bean.setUpdateTime(now);
-            ServiceContainer.TB_CONFIG_SERVICE.insertIntoTable(connection, bean);
-        }
+    public static void setServletContext(String key, String value) {
+        SERVLET_CONTEXT.setAttribute(key, value);
     }
 
     @SuppressWarnings("unchecked")

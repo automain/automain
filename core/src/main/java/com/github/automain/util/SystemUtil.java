@@ -4,10 +4,6 @@ import com.github.fastjdbc.bean.ConnectionBean;
 import com.github.fastjdbc.bean.ConnectionPool;
 import com.zaxxer.hikari.HikariConfig;
 import org.apache.commons.io.FileUtils;
-import org.apache.curator.RetryPolicy;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.retry.ExponentialBackoffRetry;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -30,27 +26,6 @@ import java.util.logging.Logger;
 public class SystemUtil {
 
     private static Map<String, Logger> LOGGER_MAP = new HashMap<String, Logger>();
-
-    private static RetryPolicy RETRY_POLICY = new ExponentialBackoffRetry(1000, 3);
-
-    /**
-     * 获取zookeeper连接
-     *
-     * @param namespace
-     * @return
-     */
-    public static CuratorFramework getClient(String namespace) {
-        if (!PropertiesUtil.OPEN_ZOOKEEPER) {
-            return null;
-        }
-        CuratorFramework client = CuratorFrameworkFactory.builder()
-                .connectString(PropertiesUtil.ZK_SERVERS)
-                .retryPolicy(RETRY_POLICY)
-                .namespace(namespace == null ? PropertiesUtil.DETAULT_NAMESPACE : namespace)
-                .build();
-        client.start();
-        return client;
-    }
 
     /**
      * 初始化连接池
