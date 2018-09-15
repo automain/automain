@@ -25,30 +25,26 @@ public class ReloadCacheExecutor extends BaseExecutor {
 
     static {
         CuratorFramework client = ZKUtil.getClient(null);
-        NodeCacheListener listener = () -> {
-            LOGGER.info("reload static version");
-            ConnectionBean connection = ConnectionPool.getConnectionBean(null);
-            try {
-                TbConfig bean = new TbConfig();
-                bean.setConfigKey("staticVersion");
-                TbConfig config = ServiceContainer.TB_CONFIG_SERVICE.selectOneTableByBean(connection, bean);
-                if (config != null) {
-                    DispatcherController.setServletContext("staticVersion", config.getConfigValue());
-                } else {
-                    DispatcherController.setServletContext("staticVersion", "0");
+        if (client != null) {
+            NodeCacheListener listener = () -> {
+                LOGGER.info("reload static version");
+                ConnectionBean connection = null;
+                try {
+                    connection = ConnectionPool.getConnectionBean(null);
+                    DispatcherController.reloadStaticVersion(connection);
+                } finally {
+                    ConnectionPool.closeConnectionBean(connection);
                 }
-            } finally {
-                ConnectionPool.closeConnectionBean(connection);
+            };
+            try {
+                ZKUtil.addListenerByPath(client, "staticVersion", listener);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        };
-        try {
-            ZKUtil.addListenerByPath(client, "staticVersion", listener);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
-    public static void refreshStaticVersion() throws SQLException {
+    private void refreshStaticVersion() throws SQLException {
         ConnectionBean connection = null;
         try {
             connection = ConnectionPool.getConnectionBean(null);
@@ -94,6 +90,8 @@ public class ReloadCacheExecutor extends BaseExecutor {
                     try (CuratorFramework client = ZKUtil.getClient(null)) {
                         if (client != null) {
                             client.setData().forPath("/staticVersion");
+                        } else {
+                            DispatcherController.reloadStaticVersion(connection);
                         }
                     }
                     break;

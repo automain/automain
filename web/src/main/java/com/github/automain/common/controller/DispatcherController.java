@@ -2,6 +2,7 @@ package com.github.automain.common.controller;
 
 import com.github.automain.common.BaseExecutor;
 import com.github.automain.common.annotation.RequestUrl;
+import com.github.automain.common.bean.TbConfig;
 import com.github.automain.common.bean.TbSchedule;
 import com.github.automain.common.container.DictionaryContainer;
 import com.github.automain.common.container.RolePrivilegeContainer;
@@ -63,6 +64,8 @@ public class DispatcherController extends HttpServlet {
             connection = ConnectionPool.getConnectionBean(null);
             // 获取redis连接
             jedis = RedisUtil.getJedis();
+            // 初始化静态资源版本
+            reloadStaticVersion(connection);
             // 初始化字典表缓存
             DictionaryContainer.reloadDictionary(jedis, connection);
             // 初始化人员角色权限缓存
@@ -75,6 +78,17 @@ public class DispatcherController extends HttpServlet {
             throw new ServletException(e);
         } finally {
             SystemUtil.closeJedisAndConnectionBean(jedis, connection);
+        }
+    }
+
+    public static void reloadStaticVersion(ConnectionBean connection) throws Exception {
+        TbConfig bean = new TbConfig();
+        bean.setConfigKey("staticVersion");
+        TbConfig config = ServiceContainer.TB_CONFIG_SERVICE.selectOneTableByBean(connection, bean);
+        if (config != null) {
+            setServletContext("staticVersion", config.getConfigValue());
+        } else {
+            setServletContext("staticVersion", "0");
         }
     }
 
