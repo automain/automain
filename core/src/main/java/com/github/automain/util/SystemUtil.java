@@ -3,17 +3,18 @@ package com.github.automain.util;
 import com.github.fastjdbc.bean.ConnectionBean;
 import com.github.fastjdbc.bean.ConnectionPool;
 import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
@@ -31,31 +32,32 @@ public class SystemUtil {
      * 初始化连接池
      */
     public static void initConnectionPool() {
-        Properties properties = PropertiesUtil.getProperties("db.properties");
-        String poolNamesStr = properties.getProperty("pool_names");
-        String[] poolNames = poolNamesStr.split(",");
-        int length = poolNames.length;
-        HikariConfig masterConfig = initConfig(properties, poolNames[0]);
-        List<HikariConfig> slaveConfigList = null;
-        if (length > 1) {
-            slaveConfigList = new ArrayList<HikariConfig>(length - 1);
-            for (int i = 1; i < length; i++) {
-                String poolName = poolNames[i];
-                slaveConfigList.add(initConfig(properties, poolName));
+        // 初始化主数据源
+        HikariConfig masterConfig = initConfig("master");
+        masterConfig.setAutoCommit(false);
+        HikariDataSource masterPool = new HikariDataSource(masterConfig);
+        // 初始化从数据源
+        Map<String, DataSource> slavePoolMap = new HashMap<String, DataSource>();
+        String poolNamesStr = PropertiesUtil.DB_PROPERTIES.getProperty("slave_pool_names");
+        if (StringUtils.isNotBlank(poolNamesStr)) {
+            String[] poolNames = poolNamesStr.split(",");
+            for (String poolName : poolNames) {
+                slavePoolMap.put(poolName, new HikariDataSource(initConfig(poolName)));
             }
         }
-        ConnectionPool.init(masterConfig, slaveConfigList);
+        ConnectionPool.init(masterPool, slavePoolMap);
     }
 
-    private static HikariConfig initConfig(Properties properties, String poolName) {
+    private static HikariConfig initConfig(String poolName) {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        config.setMinimumIdle(Integer.parseInt(properties.getProperty("minimumIdle")));
-        config.setMaximumPoolSize(Integer.parseInt(properties.getProperty("maximumPoolSize")));
+        config.setMinimumIdle(Integer.parseInt(PropertiesUtil.DB_PROPERTIES.getProperty("minimumIdle")));
+        config.setMaximumPoolSize(Integer.parseInt(PropertiesUtil.DB_PROPERTIES.getProperty("maximumPoolSize")));
         config.setPoolName(poolName);
-        config.setJdbcUrl(properties.getProperty(poolName + "_jdbcUrl"));
-        config.setUsername(properties.getProperty(poolName + "_username"));
-        config.setPassword(properties.getProperty(poolName + "_password"));
+        config.setJdbcUrl(PropertiesUtil.DB_PROPERTIES.getProperty(poolName + "_jdbcUrl"));
+        config.setUsername(PropertiesUtil.DB_PROPERTIES.getProperty(poolName + "_username"));
+        config.setPassword(PropertiesUtil.DB_PROPERTIES.getProperty(poolName + "_password"));
+        config.setAllowPoolSuspension(true);
         return config;
     }
 

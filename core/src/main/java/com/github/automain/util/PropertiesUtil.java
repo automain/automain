@@ -62,9 +62,8 @@ public class PropertiesUtil {
     public static final boolean OPEN_SCHEDULE = Boolean.parseBoolean(CONFIG_PROPERTIES.getProperty("openSchedule", "false"));
     public static final String PROJECT_HOST = CONFIG_PROPERTIES.getProperty("projectHost");
 
-    private static final Properties DB_PROPERTIES = getProperties("db.properties");
-    public static final String[] POOL_NAMES = DB_PROPERTIES.getProperty("pool_names").split(",");
-    private static final String url = DB_PROPERTIES.getProperty(POOL_NAMES[0] + "_jdbcUrl");
+    public static final Properties DB_PROPERTIES = getProperties("db.properties");
+    private static final String url = DB_PROPERTIES.getProperty("master_jdbcUrl");
     public static final String DATABASE_NAME = url.substring(url.lastIndexOf("/") + 1, url.indexOf("?"));
 
     private static final Properties ZK_PROPERTIES = getProperties("zk.properties");
