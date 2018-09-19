@@ -3,7 +3,6 @@ package com.github.automain.util;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,12 +15,11 @@ public class PropertiesUtil {
 
     public static final String WEB_INFO_PATH = CLASS_PATH.replace("/classes/", "");
 
-    public static Map<String, String> API_KEY_MAP = null;
+    public static final Map<String, String> API_KEY_MAP = new ConcurrentHashMap<String, String>();
 
     static {
         reloadProperties();
         Properties properties = getProperties("apikey.properties");
-        API_KEY_MAP = new HashMap<String, String>();
         for (Map.Entry<Object, Object> entry : properties.entrySet()) {
             API_KEY_MAP.put(entry.getKey().toString(), entry.getValue().toString());
         }

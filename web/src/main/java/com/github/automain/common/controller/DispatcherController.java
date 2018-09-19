@@ -131,7 +131,7 @@ public class DispatcherController extends HttpServlet {
         return requestMap;
     }
 
-    public static void reloadSchedule(ConnectionBean connection, Jedis jedis) throws SQLException {
+    public static synchronized void reloadSchedule(ConnectionBean connection, Jedis jedis) throws SQLException {
         if (PropertiesUtil.OPEN_SCHEDULE) {
             if (SCHEDULE_THREAD_POOL != null) {
                 SCHEDULE_THREAD_POOL.shutdown();

@@ -91,7 +91,7 @@ public class CaptchaUtil {
         char[] chars = captcha.toCharArray();
         for (int i = 0; i < captchaSize; i++) {
             AffineTransform affine = new AffineTransform();
-            affine.setToRotation(Math.PI / 4 * RANDOM.nextDouble() * (RANDOM.nextBoolean() ? 1 : -1), (width / captchaSize) * i + fontSize / 2, height / 2);
+            affine.setToRotation(Math.PI / 4 * RANDOM.nextDouble() * (RANDOM.nextBoolean() ? 1 : -1), Double.parseDouble(Integer.toString((width / captchaSize) * i + fontSize / 2)), Double.parseDouble(Integer.toString(height / 2)));
             g2.setTransform(affine);
             g2.drawChars(chars, i, 1, ((width - 10) / captchaSize) * i + 5, height / 2 + fontSize / 2 - 10);
         }
