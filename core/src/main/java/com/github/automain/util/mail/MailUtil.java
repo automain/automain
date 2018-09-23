@@ -13,7 +13,9 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -48,6 +50,11 @@ public class MailUtil {
         Socket socket = new Socket();
         BufferedReader bufferedReader = null;
         BufferedWriter bufferedWriter = null;
+        InputStream sis = null;
+        BufferedInputStream bis = null;
+        InputStreamReader isr = null;
+        OutputStream sos = null;
+        OutputStreamWriter osw = null;
         try {
             // 查找mx记录
             Record[] mxRecords = new Lookup(host, Type.MX).run();
@@ -59,13 +66,18 @@ public class MailUtil {
             if (mxRecords.length > 1) { // 优先级排序
                 List<Record> arrRecords = new ArrayList<Record>();
                 Collections.addAll(arrRecords, mxRecords);
-                Collections.sort(arrRecords, (o1, o2) -> new CompareToBuilder().append(((MXRecord) o1).getPriority(), ((MXRecord) o2).getPriority()).toComparison());
+                arrRecords.sort((o1, o2) -> new CompareToBuilder().append(((MXRecord) o1).getPriority(), ((MXRecord) o2).getPriority()).toComparison());
                 mxHost = ((MXRecord) arrRecords.get(0)).getTarget().toString();
             }
             // 开始smtp
             socket.connect(new InetSocketAddress(mxHost, 25));
-            bufferedReader = new BufferedReader(new InputStreamReader(new BufferedInputStream(socket.getInputStream()), PropertiesUtil.DEFAULT_CHARSET));
-            bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), PropertiesUtil.DEFAULT_CHARSET));
+            sis = socket.getInputStream();
+            bis = new BufferedInputStream(sis);
+            isr = new InputStreamReader(bis, PropertiesUtil.DEFAULT_CHARSET);
+            bufferedReader = new BufferedReader(isr);
+            sos = socket.getOutputStream();
+            osw = new OutputStreamWriter(sos, PropertiesUtil.DEFAULT_CHARSET);
+            bufferedWriter = new BufferedWriter(osw);
             // 超时时间(毫秒)
             long timeout = 6000;
             // 睡眠时间片段(50毫秒)
@@ -98,11 +110,26 @@ public class MailUtil {
             return true;
         } finally {
             socket.close();
+            if (bufferedWriter != null) {
+                bufferedWriter.close();
+            }
+            if (osw != null) {
+                osw.close();
+            }
+            if (sos != null) {
+                sos.close();
+            }
             if (bufferedReader != null) {
                 bufferedReader.close();
             }
-            if (bufferedWriter != null) {
-                bufferedWriter.close();
+            if (isr != null) {
+                isr.close();
+            }
+            if (bis != null) {
+                bis.close();
+            }
+            if (sis != null) {
+                sis.close();
             }
         }
     }
