@@ -8,11 +8,11 @@ import com.github.automain.common.container.RolePrivilegeContainer;
 import com.github.automain.common.container.ServiceContainer;
 import com.github.automain.common.controller.DispatcherController;
 import com.github.automain.util.PropertiesUtil;
+import com.github.automain.util.SystemUtil;
 import com.github.automain.util.ZKUtil;
 import com.github.fastjdbc.bean.ConnectionBean;
 import com.github.fastjdbc.bean.ConnectionPool;
 import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.recipes.cache.NodeCacheListener;
 import redis.clients.jedis.Jedis;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,25 +23,34 @@ import java.sql.Timestamp;
 @RequestUrl("/reload/cache")
 public class ReloadCacheExecutor extends BaseExecutor {
 
-    static {
-        CuratorFramework client = ZKUtil.getClient(null);
-        if (client != null) {
-            NodeCacheListener listener = () -> {
-                LOGGER.info("reload static version");
-                ConnectionBean connection = null;
-                try {
-                    connection = ConnectionPool.getConnectionBean(null);
-                    DispatcherController.reloadStaticVersion(connection);
-                } finally {
-                    ConnectionPool.closeConnectionBean(connection);
-                }
-            };
-            try {
-                ZKUtil.addListenerByPath(client, "staticVersion", listener);
-            } catch (Exception e) {
-                e.printStackTrace();
+    @Override
+    protected String doAction(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String reloadLabel = getString("reloadLabel", request);
+        if (reloadLabel != null) {
+            switch (reloadLabel) {
+                case "properties": //配置文件
+                    PropertiesUtil.reloadProperties();
+                    break;
+                case "dictionary": // 数据字典
+                    DictionaryContainer.reloadDictionary(jedis, connection);
+                    break;
+                case "role": // 角色权限
+                    RolePrivilegeContainer.reloadRolePrivilege(jedis, connection, DispatcherController.getRequestUrlList());
+                    break;
+                case "staticVersion": // 静态资源
+                    refreshStaticVersion();
+                    try (CuratorFramework client = ZKUtil.getClient(null)) {
+                        if (client != null) {
+                            client.setData().forPath("/staticVersion");
+                        } else {
+                            SystemUtil.reloadStaticVersion(request.getServletContext(), connection);
+                        }
+                    }
+                    break;
             }
         }
+        setJsonResult(request, CODE_SUCCESS, "刷新成功");
+        return null;
     }
 
     private void refreshStaticVersion() throws SQLException {
@@ -69,35 +78,5 @@ public class ReloadCacheExecutor extends BaseExecutor {
         } finally {
             ConnectionPool.closeConnectionBean(connection);
         }
-    }
-
-    @Override
-    protected String doAction(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String reloadLabel = getString("reloadLabel", request);
-        if (reloadLabel != null) {
-            switch (reloadLabel) {
-                case "properties": //配置文件
-                    PropertiesUtil.reloadProperties();
-                    break;
-                case "dictionary": // 数据字典
-                    DictionaryContainer.reloadDictionary(jedis, connection);
-                    break;
-                case "role": // 角色权限
-                    RolePrivilegeContainer.reloadRolePrivilege(jedis, connection, DispatcherController.getRequestUrlList());
-                    break;
-                case "staticVersion": // 静态资源
-                    refreshStaticVersion();
-                    try (CuratorFramework client = ZKUtil.getClient(null)) {
-                        if (client != null) {
-                            client.setData().forPath("/staticVersion");
-                        } else {
-                            DispatcherController.reloadStaticVersion(connection);
-                        }
-                    }
-                    break;
-            }
-        }
-        setJsonResult(request, CODE_SUCCESS, "刷新成功");
-        return null;
     }
 }

@@ -1,5 +1,9 @@
 package com.github.automain.util;
 
+import com.github.automain.common.bean.TbConfig;
+import com.github.automain.common.bean.TbSchedule;
+import com.github.automain.common.container.ServiceContainer;
+import com.github.automain.common.thread.ScheduleThread;
 import com.github.fastjdbc.bean.ConnectionBean;
 import com.github.fastjdbc.bean.ConnectionPool;
 import com.zaxxer.hikari.HikariConfig;
@@ -10,14 +14,19 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
+import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
@@ -27,6 +36,8 @@ import java.util.logging.Logger;
 public class SystemUtil {
 
     private static Map<String, Logger> LOGGER_MAP = new HashMap<String, Logger>();
+
+    private static ScheduledExecutorService SCHEDULE_THREAD_POOL = null;
 
     /**
      * 初始化连接池
@@ -228,4 +239,63 @@ public class SystemUtil {
         }
     }
 
+    /**
+     * 刷新静态资源缓存
+     *
+     * @param servletContext
+     * @param connection
+     * @throws Exception
+     */
+    public static void reloadStaticVersion(ServletContext servletContext, ConnectionBean connection) throws Exception {
+        TbConfig bean = new TbConfig();
+        bean.setConfigKey("staticVersion");
+        TbConfig config = ServiceContainer.TB_CONFIG_SERVICE.selectOneTableByBean(connection, bean);
+        if (config != null) {
+            servletContext.setAttribute("staticVersion", config.getConfigValue());
+        } else {
+            servletContext.setAttribute("staticVersion", "0");
+        }
+    }
+
+    /**
+     * 刷新定时任务
+     *
+     * @param connection
+     * @param jedis
+     * @throws SQLException
+     */
+    public static synchronized void reloadSchedule(ConnectionBean connection, Jedis jedis) throws SQLException {
+        if (PropertiesUtil.OPEN_SCHEDULE) {
+            if (SCHEDULE_THREAD_POOL != null) {
+                SCHEDULE_THREAD_POOL.shutdown();
+                SCHEDULE_THREAD_POOL = null;
+            }
+            TbSchedule bean = new TbSchedule();
+            bean.setIsDelete(0);
+            List<TbSchedule> scheduleList = ServiceContainer.TB_SCHEDULE_SERVICE.selectTableByBean(connection, bean);
+            int size = scheduleList.size();
+            if (size > 0) {
+                SCHEDULE_THREAD_POOL = Executors.newScheduledThreadPool(size);
+                for (TbSchedule schedule : scheduleList) {
+                    startSchedule(schedule, jedis);
+                }
+            }
+        }
+    }
+
+    private static void startSchedule(TbSchedule schedule, Jedis jedis) {
+        long initialDelay = 0L;
+        long jump = schedule.getDelayTime();
+        long now = SystemUtil.getNowSecond();
+        long start = schedule.getStartExecuteTime().getTime() / 1000;
+        long diff = now - start;
+        if (diff > 0) {
+            if (diff > jump) {
+                initialDelay = jump - (diff % jump);
+            } else {
+                initialDelay = jump - diff;
+            }
+            SCHEDULE_THREAD_POOL.scheduleAtFixedRate(new ScheduleThread(schedule.getScheduleUrl(), jedis, jump), initialDelay, jump, TimeUnit.SECONDS);
+        }
+    }
 }

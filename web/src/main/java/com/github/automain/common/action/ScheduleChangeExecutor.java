@@ -3,7 +3,7 @@ package com.github.automain.common.action;
 import com.github.automain.common.BaseExecutor;
 import com.github.automain.common.annotation.RequestUrl;
 import com.github.automain.common.bean.TbSchedule;
-import com.github.automain.common.controller.DispatcherController;
+import com.github.automain.util.SystemUtil;
 import com.github.fastjdbc.bean.ConnectionBean;
 import redis.clients.jedis.Jedis;
 
@@ -32,7 +32,7 @@ public class ScheduleChangeExecutor extends BaseExecutor {
                 bean.setIsDelete(0);
             }
             TB_SCHEDULE_SERVICE.updateTable(connection, bean, false);
-            DispatcherController.reloadSchedule(connection, jedis);
+            SystemUtil.reloadSchedule(connection, jedis);
             setJsonResult(request, CODE_SUCCESS, msg);
         } else {
             setJsonResult(request, CODE_FAIL, "未找到记录");

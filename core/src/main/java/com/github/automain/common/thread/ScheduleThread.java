@@ -1,4 +1,4 @@
-package com.github.automain.schedule;
+package com.github.automain.common.thread;
 
 import com.github.automain.util.PropertiesUtil;
 import com.github.automain.util.RedisUtil;
