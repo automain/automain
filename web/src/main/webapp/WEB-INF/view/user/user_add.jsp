@@ -52,7 +52,7 @@
             , upload = layui.upload;
         upload.render({
             elem: "#file"
-            ,url: '${ctx}/upload?json=1'
+            ,url: '${ctx}/upload'
             ,size: 2048
             ,done: function(res){
                 $("#uploadFileId").val(res.uploadFileId);
