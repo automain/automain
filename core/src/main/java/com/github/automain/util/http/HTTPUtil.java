@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -180,7 +181,7 @@ public class HTTPUtil {
                             dos.flush();
                         }
                     } else {
-                        try (PrintWriter writer = new PrintWriter(connection.getOutputStream())) {
+                        try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(connection.getOutputStream(), PropertiesUtil.DEFAULT_CHARSET))) {
                             writer.print(getDataByParams(requestBean.getParams()));
                             writer.flush();
                         }
@@ -433,6 +434,10 @@ public class HTTPUtil {
             result = token.equals(generateToken);
         }
         return result;
+    }
+
+    public static void setResponseHeader(HttpServletResponse response, String key, String Value) throws Exception {
+        response.setHeader(key, new String(HTTPUtil.urlEncode(Value.getBytes(PropertiesUtil.DEFAULT_CHARSET)), PropertiesUtil.DEFAULT_CHARSET));
     }
 
 }

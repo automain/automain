@@ -318,7 +318,7 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
             accessToken = request.getHeader("accessToken");
         }
         if (accessToken != null) {
-            response.setHeader("accessToken", accessToken);
+            HTTPUtil.setResponseHeader(response, "accessToken", accessToken);
             String decrypt = EncryptUtil.AESDecrypt(accessToken.getBytes(PropertiesUtil.DEFAULT_CHARSET), PropertiesUtil.SECURITY_KEY);
             String[] arr = decrypt.split("_");
             if (arr.length == 2) {
@@ -371,7 +371,7 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
                     String value = userId + "_" + newExpireTime;
                     String newAccessToken = EncryptUtil.AESEncrypt(value.getBytes(PropertiesUtil.DEFAULT_CHARSET), PropertiesUtil.SECURITY_KEY);
                     CookieUtil.addCookie(response, "accessToken", newAccessToken, -1);
-                    response.setHeader("accessToken", newAccessToken);
+                    HTTPUtil.setResponseHeader(response, "accessToken", newAccessToken);
                 }
                 TbUser user = new TbUser();
                 user.setUserName(userMap.get("userName"));
