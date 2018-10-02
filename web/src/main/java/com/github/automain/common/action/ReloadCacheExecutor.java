@@ -6,7 +6,6 @@ import com.github.automain.common.bean.TbConfig;
 import com.github.automain.common.container.DictionaryContainer;
 import com.github.automain.common.container.RolePrivilegeContainer;
 import com.github.automain.common.container.ServiceContainer;
-import com.github.automain.common.controller.DispatcherController;
 import com.github.automain.util.PropertiesUtil;
 import com.github.automain.util.SystemUtil;
 import com.github.automain.util.ZKUtil;
@@ -35,7 +34,7 @@ public class ReloadCacheExecutor extends BaseExecutor {
                     DictionaryContainer.reloadDictionary(jedis, connection);
                     break;
                 case "role": // 角色权限
-                    RolePrivilegeContainer.reloadRolePrivilege(jedis, connection, DispatcherController.getRequestUrlList());
+                    RolePrivilegeContainer.reloadRolePrivilege(jedis, connection);
                     break;
                 case "staticVersion": // 静态资源
                     refreshStaticVersion();

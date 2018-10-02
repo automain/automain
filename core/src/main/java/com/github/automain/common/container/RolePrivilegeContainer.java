@@ -2,7 +2,9 @@ package com.github.automain.common.container;
 
 import com.alibaba.fastjson.JSON;
 import com.github.automain.common.vo.MenuVO;
+import com.github.automain.common.vo.PrivilegeVO;
 import com.github.automain.user.bean.TbMenu;
+import com.github.automain.user.bean.TbPrivilege;
 import com.github.automain.user.bean.TbRole;
 import com.github.automain.util.RedisUtil;
 import com.github.fastjdbc.bean.ConnectionBean;
@@ -18,15 +20,19 @@ import java.util.TreeSet;
 
 public class RolePrivilegeContainer implements ServiceContainer {
 
-    public static void reloadRolePrivilege(Jedis jedis, ConnectionBean connection, List<String> requestUrlList) {
-        // 用户->用户所有角色标识
-        Map<Long, Set<String>> userRoleLabelMap = new HashMap<Long, Set<String>>();
-
+    public static void reloadRolePrivilege(Jedis jedis, ConnectionBean connection) {
+        // 角色ID->角色权限标识
         Map<Long, Set<String>> rolePrivilegeMap = new HashMap<Long, Set<String>>();
+        // 角色ID->角色菜单
         Map<Long, List<TbMenu>> roleMenuMap = new HashMap<Long, List<TbMenu>>();
+        // 角色ID->角色标识
         Map<Long, String> roleLabelMap = new HashMap<Long, String>();
+        // 角色ID->该角色所有用户ID
         Map<Long, Set<Long>> roleUserMap = new HashMap<Long, Set<Long>>();
+        // 用户ID->该用户所有角色ID
         Map<Long, Set<Long>> userRoleMap = new HashMap<Long, Set<Long>>();
+        // 用户ID->该用户所有角色标识
+        Map<Long, Set<String>> userRoleLabelMap = new HashMap<Long, Set<String>>();
         try {
             TbRole roleParam = new TbRole();
             roleParam.setIsDelete(0);
@@ -37,8 +43,8 @@ public class RolePrivilegeContainer implements ServiceContainer {
                 String roleLabel = role.getRoleLabel();
                 roleLabelMap.put(roleId, roleLabel);
 
-                Set<String> requestUrlSet = TB_ROLE_REQUEST_MAPPING_SERVICE.selectRequestUrlByRoleId(connection, roleId, requestUrlList);
-                rolePrivilegeMap.put(roleId, requestUrlSet);
+                Set<String> privilegeLabelSet = TB_ROLE_PRIVILEGE_SERVICE.selectPrivilegeLabelByRoleId(connection, roleId);
+                rolePrivilegeMap.put(roleId, privilegeLabelSet);
 
                 List<TbMenu> menuList = TB_MENU_SERVICE.selectTableByRoleId(connection, roleId);
                 roleMenuMap.put(roleId, menuList);
@@ -65,36 +71,24 @@ public class RolePrivilegeContainer implements ServiceContainer {
                     userRoleLabelMap.put(userId, roleLabelSet);
                 }
             }
-            // 循环用户，匹配该用户所有权限、菜单
-            Set<String> requestUrlSet = null;
+            // 循环用户，匹配该用户所有菜单、权限
             List<TbMenu> menuList = null;
+            Set<String> privilegeSet = null;
             for (Map.Entry<Long, Set<Long>> entry : userRoleMap.entrySet()) {
                 Long userId = entry.getKey();
                 Set<Long> roleSet = entry.getValue();
-                requestUrlSet = new HashSet<String>();
                 menuList = new ArrayList<TbMenu>();
+                privilegeSet = new HashSet<String>();
                 for (Long roleId : roleSet) {
-                    requestUrlSet.addAll(rolePrivilegeMap.get(roleId));
                     menuList.addAll(roleMenuMap.get(roleId));
+                    privilegeSet.addAll(rolePrivilegeMap.get(roleId));
                 }
-                putUserRequestUrlCache(jedis, userId, requestUrlSet);
                 putUserMenuCache(jedis, userId, getMenuVOList(menuList));
+                putUserPrivilegeCache(jedis, userId, privilegeSet);
             }
             putUserRoleLabelCache(jedis, userRoleLabelMap);
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-
-    private static void putUserRequestUrlCache(Jedis jedis, Long userId, Set<String> requestUrlSet) {
-        if (!requestUrlSet.isEmpty()) {
-            String key = "userRequestUrl:" + userId;
-            if (jedis != null) {
-                jedis.sadd(key, requestUrlSet.toArray(new String[0]));
-            } else {
-                RedisUtil.setLocalCache(key, requestUrlSet);
-            }
         }
     }
 
@@ -105,6 +99,18 @@ public class RolePrivilegeContainer implements ServiceContainer {
                 jedis.set(key, JSON.toJSONString(menuVOList));
             } else {
                 RedisUtil.setLocalCache(key, menuVOList);
+            }
+        }
+    }
+
+    private static void putUserPrivilegeCache(Jedis jedis, Long userId, Set<String> privilegeSet) {
+        if (!privilegeSet.isEmpty()) {
+            String key = "userPrivilege:" + userId;
+            if (jedis != null) {
+                jedis.del(key);
+                jedis.sadd(key, privilegeSet.toArray(new String[0]));
+            } else {
+                RedisUtil.setLocalCache(key, privilegeSet);
             }
         }
     }
@@ -120,6 +126,7 @@ public class RolePrivilegeContainer implements ServiceContainer {
                     value[i] = String.valueOf(userId);
                     i++;
                 }
+                jedis.del(key);
                 jedis.sadd(key, value);
             } else {
                 RedisUtil.setLocalCache(key, userSet);
@@ -134,6 +141,7 @@ public class RolePrivilegeContainer implements ServiceContainer {
                     Long userId = entry.getKey();
                     Set<String> roleLabelSet = entry.getValue();
                     String key = "userRoleLabel:" + userId;
+                    jedis.del(key);
                     jedis.sadd(key, roleLabelSet.toArray(new String[0]));
                 }
             } else {
@@ -184,6 +192,43 @@ public class RolePrivilegeContainer implements ServiceContainer {
         return vo;
     }
 
+    public static List<PrivilegeVO> getPrivilegeVOList(List<TbPrivilege> privilegeList) {
+        Map<Long, Set<TbPrivilege>> parentIdMap = new HashMap<Long, Set<TbPrivilege>>();
+        for (TbPrivilege privilege : privilegeList) {
+            Long parentId = privilege.getParentId();
+            Set<TbPrivilege> childrenPrivilegeSet = parentIdMap.get(parentId);
+            if (childrenPrivilegeSet == null) {
+                childrenPrivilegeSet = new TreeSet<TbPrivilege>();
+            }
+            childrenPrivilegeSet.add(privilege);
+            parentIdMap.put(parentId, childrenPrivilegeSet);
+        }
+        PrivilegeVO topVO = new PrivilegeVO();
+        topVO.setId(0L);
+        combinePrivilegeVO(topVO, parentIdMap);
+        return topVO.getChildren() == null ? new ArrayList<PrivilegeVO>(1) : topVO.getChildren();
+    }
+
+    private static void combinePrivilegeVO(PrivilegeVO parentVO, Map<Long, Set<TbPrivilege>> parentIdMap) {
+        Set<TbPrivilege> childrenSet = parentIdMap.get(parentVO.getId());
+        if (childrenSet != null && !childrenSet.isEmpty()) {
+            List<PrivilegeVO> children = new ArrayList<PrivilegeVO>();
+            for (TbPrivilege privilege : childrenSet) {
+                PrivilegeVO childVO = changePrivilegeToPrivilegeVO(privilege);
+                children.add(childVO);
+                combinePrivilegeVO(childVO, parentIdMap);
+            }
+            parentVO.setChildren(children);
+        }
+    }
+
+    private static PrivilegeVO changePrivilegeToPrivilegeVO(TbPrivilege privilege) {
+        PrivilegeVO vo = new PrivilegeVO();
+        vo.setId(privilege.getPrivilegeId());
+        vo.setName(privilege.getPrivilegeName());
+        return vo;
+    }
+
     /**
      * 根据角色标识获取该角色所有用户ID
      *
@@ -228,8 +273,8 @@ public class RolePrivilegeContainer implements ServiceContainer {
      * @param userId
      * @return
      */
-    public static Set<String> getRequestUrlSetByUserId(Jedis jedis, Long userId) {
-        String key = "userRequestUrl:" + userId;
+    public static Set<String> getUrlSetByUserId(Jedis jedis, Long userId) {
+        String key = "userUrl:" + userId;
         if (jedis != null) {
             return jedis.smembers(key);
         } else {
@@ -248,6 +293,22 @@ public class RolePrivilegeContainer implements ServiceContainer {
         String key = "userMenu:" + userId;
         if (jedis != null) {
             return JSON.parseArray(jedis.get(key), MenuVO.class);
+        } else {
+            return RedisUtil.getLocalCache(key);
+        }
+    }
+
+    /**
+     * 根据用户ID获取该用户所有权限标识
+     *
+     * @param jedis
+     * @param userId
+     * @return
+     */
+    public static Set<String> getPrivilegeSetByUserId(Jedis jedis, Long userId) {
+        String key = "userPrivilege:" + userId;
+        if (jedis != null) {
+            return jedis.smembers(key);
         } else {
             return RedisUtil.getLocalCache(key);
         }

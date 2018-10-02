@@ -30,6 +30,7 @@ import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -202,6 +203,15 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
     }
 
     /**
+     * 设置可访问当前接口的权限标识，为空时不限制访问
+     *
+     * @return
+     */
+    protected Set<String> requestPrivilegeLabels() {
+        return new HashSet<String>(1);
+    }
+
+    /**
      * 公用检查用户权限
      *
      * @param jedis
@@ -211,7 +221,6 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
      * @throws Exception
      */
     private boolean checkUserAuthority(Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String uri = HTTPUtil.getRequestUri(request);
         TbUser user = getSessionUser(jedis, request, response);
         if (user == null) {
             return false;
@@ -223,8 +232,19 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
         if (roleLabel.contains("admin")) {
             return true;
         }
-        Set<String> uriSet = RolePrivilegeContainer.getRequestUrlSetByUserId(jedis, user.getUserId());
-        return uriSet != null && uriSet.contains(uri);
+        Set<String> labels = requestPrivilegeLabels();
+        if (labels.isEmpty()) {
+            return true;
+        }
+        Set<String> privileges = RolePrivilegeContainer.getPrivilegeSetByUserId(jedis, user.getUserId());
+        if (privileges != null) {
+            for (String label : labels) {
+                if (privileges.contains(label)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**

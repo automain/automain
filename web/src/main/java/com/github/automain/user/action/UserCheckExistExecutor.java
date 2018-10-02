@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @RequestUrl("/user/check/exist")
-public class CheckUserExistExecutor extends BaseExecutor {
+public class UserCheckExistExecutor extends BaseExecutor {
 
     @Override
     protected String doAction(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {

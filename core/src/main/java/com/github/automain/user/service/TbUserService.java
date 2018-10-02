@@ -54,6 +54,6 @@ public class TbUserService extends BaseService<TbUser, TbUserDao> implements Ser
     public TbUser selectTableByUserName(ConnectionBean connection, String userName) throws SQLException{
         TbUser bean = new TbUser();
         bean.setUserName(userName);
-        return getDao().selectOneTableByBean(connection, bean);
+        return selectOneTableByBean(connection, bean);
     }
 }

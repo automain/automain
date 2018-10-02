@@ -68,7 +68,7 @@
                     });
                     $(".grant-role-btn").click(function () {
                         var roleId = $(this).attr("role-id");
-                        $.post("${ctx}/role/grant/user", {
+                        $.post("${ctx}/user/grant/role", {
                             roleId: roleId
                             , userId: '${userId}'
                         }, function (d) {
@@ -80,7 +80,7 @@
                     });
                     $(".revoke-role-btn").click(function () {
                         var roleId = $(this).attr("role-id");
-                        $.post("${ctx}/role/revoke/user", {
+                        $.post("${ctx}/user/revoke/role", {
                             roleId: roleId
                             , userId: '${userId}'
                         }, function (d) {

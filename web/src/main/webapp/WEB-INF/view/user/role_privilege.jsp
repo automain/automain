@@ -13,10 +13,10 @@
                 <form class="layui-form layui-form-pane" action="">
                     <input type="hidden" id="roleId" value="${roleId}">
                     <div class="layui-form-item">
-                        <ul id="menu-tree" class="ztree"></ul>
+                        <ul id="privilege-tree" class="ztree"></ul>
                     </div>
                     <div class="layui-form-item">
-                        <button class="layui-btn" lay-submit lay-filter="grant_menu_submit">立即提交</button>
+                        <button class="layui-btn" lay-submit lay-filter="grant_privilege_submit">立即提交</button>
                     </div>
                 </form>
             </div>
@@ -40,26 +40,26 @@
     layui.use(['form', 'layer'], function () {
         var form = layui.form
             , layer = layui.layer;
-        var treeObj = $.fn.zTree.init($("#menu-tree"), setting, ${menuVOList});
+        var treeObj = $.fn.zTree.init($("#privilege-tree"), setting, ${privilegeVOList});
         treeObj.expandAll(true);
-        form.on('submit(grant_menu_submit)', function (data) {
+        form.on('submit(grant_privilege_submit)', function (data) {
             var submitBtn = $(this);
             if (!submitBtn.hasClass("layui-btn-disabled")) {
                 submitBtn.addClass("layui-btn-disabled");
                 var index = parent.layer.getFrameIndex(window.name);
-                var menuCheck = new Array();
-                var zTree = $.fn.zTree.getZTreeObj("menu-tree"),
+                var privilegeCheck = new Array();
+                var zTree = $.fn.zTree.getZTreeObj("privilege-tree"),
                     nodes = zTree.getCheckedNodes();
                 for (var i = 0, l = nodes.length; i < l; i++) {
-                    menuCheck.push(nodes[i].id);
+                    privilegeCheck.push(nodes[i].id);
                 }
                 $.ajax({
-                    url: "${ctx}/role/grant/menu",
+                    url: "${ctx}/role/grant/privilege",
                     type: "post",
                     traditional: true,
                     data: {
                         roleId: $("#roleId").val(),
-                        menuCheck: menuCheck
+                        privilegeCheck: privilegeCheck
                     },
                     dataType: "json",
                     success: function (data) {

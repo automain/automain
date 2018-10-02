@@ -24,9 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -60,7 +58,7 @@ public class DispatcherController extends HttpServlet {
             // 初始化字典表缓存
             DictionaryContainer.reloadDictionary(jedis, connection);
             // 初始化人员角色权限缓存
-            RolePrivilegeContainer.reloadRolePrivilege(jedis, connection, getRequestUrlList());
+            RolePrivilegeContainer.reloadRolePrivilege(jedis, connection);
             // 初始化定时任务
             SystemUtil.reloadSchedule(connection, jedis);
             System.err.println("===============================Init Success===============================");
@@ -121,10 +119,6 @@ public class DispatcherController extends HttpServlet {
             }
         }
         return requestMap;
-    }
-
-    public static List<String> getRequestUrlList() {
-        return new ArrayList<String>(REQUEST_MAPPING.keySet());
     }
 
     @Override

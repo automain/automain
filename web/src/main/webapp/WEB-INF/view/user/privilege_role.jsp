@@ -12,26 +12,27 @@
                 <blockquote class="layui-elem-quote">
                     <div class="layui-form">
                         <div class="layui-inline">
-                            <input type="text" class="layui-input" autocomplete="off" id="request-url-search" placeholder="请输入请求相对路径">
+                            <input type="text" class="layui-input" autocomplete="off" id="role-name-search" placeholder="请输入角色名称">
                         </div>
                         <div class="layui-inline">
-                            <button class="layui-btn layui-btn-sm layui-btn-warm" id="request_refresh">
+                            <button class="layui-btn layui-btn-sm layui-btn-warm" id="role_refresh">
                                 <i class="fa fa-search"></i> 搜索
                             </button>
                         </div>
                     </div>
                 </blockquote>
-                <table class="layui-table" lay-skin="line" lay-filter="role_request" lay-data="{id: 'role_request'}">
+                <table class="layui-table" lay-skin="line" lay-filter="privilege_role" lay-data="{id: 'privilege_role'}">
                     <thead>
                     <tr>
-                        <th lay-data="{field:'request_url', width:200}">请求相对路径</th>
+                        <th lay-data="{field:'role_name', width:160}">角色名称</th>
+                        <th lay-data="{field:'role_label', width:160}">角色标识</th>
                         <th lay-data="{field:'operation', width:180, fixed:'right'}">操作</th>
                     </tr>
                     </thead>
-                    <tbody id="request_list_body">
+                    <tbody id="role_list_body">
                     </tbody>
                 </table>
-                <div id="request_page"></div>
+                <div id="role_page"></div>
             </div>
         </div>
     </div>
@@ -45,47 +46,47 @@
         layer = layui.layer;
         laypage = layui.laypage;
         table = layui.table;
-        $("#request_refresh").click(function () {
-            reloadRequestList(1);
+        $("#role_refresh").click(function () {
+            reloadRoleList(1);
         });
-        reloadRequestList(1);
+        reloadRoleList(1);
     });
 
-    function reloadRequestList(page) {
+    function reloadRoleList(page) {
         var index = layer.load();
         setTimeout(function () {
-            $.post("${ctx}/role/request/list", {
-                roleId: '${roleId}',
-                requestUrl: $("#request-url-search").val(),
-                page: page
+            $.post("${ctx}/privilege/role/list", {
+                page: page,
+                privilegeId: '${privilegeId}',
+                roleName: $("#role-name-search").val()
             }, function (data) {
                 if (data.code == code_success) {
-                    $("#request_list_body").html(data.data);
-                    renderPage(laypage, "request_page", data.count, data.curr, reloadRequestList);
-                    table.init('role_request', {
+                    $("#role_list_body").html(data.data);
+                    renderPage(laypage, "role_page", data.count, data.curr, reloadRoleList);
+                    table.init('privilege_role', {
                         height: 'full-190'
                     });
-                    $(".grant-request-btn").click(function () {
-                        var requestUrl = $(this).attr("request-url");
-                        $.post("${ctx}/role/grant/request", {
-                            roleId: '${roleId}'
-                            , requestUrl: requestUrl
+                    $(".grant-role-btn").click(function () {
+                        var roleId = $(this).attr("role-id");
+                        $.post("${ctx}/privilege/grant/role", {
+                            roleId: roleId
+                            , privilegeId: '${privilegeId}'
                         }, function (d) {
                             layer.msg(d.msg);
                             if (d.code == code_success) {
-                                reloadRequestList(data.curr);
+                                reloadRoleList(data.curr);
                             }
                         }, "json");
                     });
-                    $(".revoke-request-btn").click(function () {
-                        var requestUrl = $(this).attr("request-url");
-                        $.post("${ctx}/role/revoke/request", {
-                            roleId: '${roleId}'
-                            , requestUrl: requestUrl
+                    $(".revoke-role-btn").click(function () {
+                        var roleId = $(this).attr("role-id");
+                        $.post("${ctx}/privilege/revoke/role", {
+                            roleId: roleId
+                            , privilegeId: '${privilegeId}'
                         }, function (d) {
                             layer.msg(d.msg);
                             if (d.code == code_success) {
-                                reloadRequestList(data.curr);
+                                reloadRoleList(data.curr);
                             }
                         }, "json");
                     });

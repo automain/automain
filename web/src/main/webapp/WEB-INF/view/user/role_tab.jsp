@@ -96,15 +96,18 @@
                     });
                     $(".grant-menu-btn").click(function () {
                         var roleId = $(this).attr("role-id");
-                        alertByFull(layer, "分配菜单", "${ctx}/role/forward?forwardType=menu&roleId=" + roleId);
+                        var roleName = $(this).attr("role-name");
+                        alertByFull(layer, "分配菜单(" + roleName + ")", "${ctx}/role/forward?forwardType=menu&roleId=" + roleId);
                     });
-                    $(".grant-request-btn").click(function () {
+                    $(".grant-privilege-btn").click(function () {
                         var roleId = $(this).attr("role-id");
-                        alertByFull(layer, "分配权限", "${ctx}/role/forward?forwardType=request&roleId=" + roleId);
+                        var roleName = $(this).attr("role-name");
+                        alertByFull(layer, "分配权限(" + roleName + ")", "${ctx}/role/forward?forwardType=privilege&roleId=" + roleId);
                     });
                     $(".grant-user-btn").click(function () {
                         var roleId = $(this).attr("role-id");
-                        alertByFull(layer, "相关用户", "${ctx}/role/forward?forwardType=user&roleId=" + roleId);
+                        var roleName = $(this).attr("role-name");
+                        alertByFull(layer, "相关用户(" + roleName + ")", "${ctx}/role/forward?forwardType=user&roleId=" + roleId);
                     });
                 }
                 layer.close(index);

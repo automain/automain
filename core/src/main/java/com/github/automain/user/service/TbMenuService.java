@@ -41,9 +41,9 @@ public class TbMenuService extends BaseService<TbMenu, TbMenuDao> {
         return getDao().selectMenuIdByParentId(connection, parentId);
     }
 
-    public List<TbMenu> selectMenuByParentId(ConnectionBean connection, Long parentId) throws SQLException {
+    public int countMenuByParentId(ConnectionBean connection, Long parentId) throws SQLException {
         TbMenu bean = new TbMenu();
         bean.setParentId(parentId);
-        return selectTableByBean(connection, bean);
+        return countTableByBean(connection, bean);
     }
 }

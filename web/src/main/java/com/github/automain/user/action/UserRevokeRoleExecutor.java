@@ -11,8 +11,8 @@ import redis.clients.jedis.Jedis;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@RequestUrl("/role/grant/user")
-public class RoleGrantUserExecutor extends BaseExecutor {
+@RequestUrl("/user/revoke/role")
+public class UserRevokeRoleExecutor extends BaseExecutor {
 
     @Override
     protected String doAction(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -27,17 +27,15 @@ public class RoleGrantUserExecutor extends BaseExecutor {
                 userRoleParam.setRoleId(roleId);
                 TbUserRole userRole = TB_USER_ROLE_SERVICE.selectOneTableByBean(connection, userRoleParam);
                 if (userRole != null) {
-                    if (userRole.getIsDelete().equals(1)){
-                        userRole.setIsDelete(0);
+                    if (userRole.getIsDelete().equals(0)){
+                        userRole.setIsDelete(1);
                         TB_USER_ROLE_SERVICE.updateTable(connection, userRole, false);
-                        setJsonResult(request, CODE_SUCCESS, "分配成功");
+                        setJsonResult(request, CODE_SUCCESS, "取消分配成功");
                     } else {
-                        setJsonResult(request, CODE_FAIL, "已分配该角色");
+                        setJsonResult(request, CODE_FAIL, "已取消分配该角色");
                     }
                 } else {
-                    userRoleParam.setIsDelete(0);
-                    TB_USER_ROLE_SERVICE.insertIntoTable(connection, userRoleParam);
-                    setJsonResult(request, CODE_SUCCESS, "分配成功");
+                    setJsonResult(request, CODE_FAIL, "已取消分配该角色");
                 }
             } else {
                 setJsonResult(request, CODE_FAIL, "未找到角色");

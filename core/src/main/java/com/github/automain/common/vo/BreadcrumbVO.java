@@ -1,6 +1,6 @@
 package com.github.automain.common.vo;
 
-public class MenuBreadcrumbVO {
+public class BreadcrumbVO {
 
     // 父级菜单ID
     private Long parentId;

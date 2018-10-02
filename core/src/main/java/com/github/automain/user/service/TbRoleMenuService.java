@@ -20,16 +20,8 @@ public class TbRoleMenuService extends BaseService<TbRoleMenu, TbRoleMenuDao> {
         return getDao().selectTableForCustomPage(connection, bean,  pageFromRequest(request), limitFromRequest(request));
     }
 
-    public int clearRoleByMenuId(ConnectionBean connection, Long menuId) throws SQLException {
-        return getDao().clearRoleByMenuId(connection, menuId);
-    }
-
     public int clearRoleByRoleId(ConnectionBean connection, Long roleId) throws SQLException {
         return getDao().clearRoleByRoleId(connection, roleId);
-    }
-
-    public boolean checkExistChildByMenuId(ConnectionBean connection, Long menuId) throws SQLException {
-        return getDao().checkExistChildByMenuId(connection, menuId);
     }
 
     public List<Long> selectMenuIdByRoleId(ConnectionBean connection, Long roleId) throws SQLException {

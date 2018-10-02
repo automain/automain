@@ -24,8 +24,8 @@ public class MenuDeleteExecutor extends BaseExecutor {
             if (menu != null) {
                 Long parentId = menu.getParentId();
                 if (!parentId.equals(0L)) {
-                    List<TbMenu> parentChildren = TB_MENU_SERVICE.selectMenuByParentId(connection, parentId);
-                    if (parentChildren.isEmpty()) {
+                    int children = TB_MENU_SERVICE.countMenuByParentId(connection, parentId);
+                    if (children == 0) {
                         TbMenu parent = new TbMenu();
                         parent.setMenuId(parentId);
                         parent.setIsLeaf(1);

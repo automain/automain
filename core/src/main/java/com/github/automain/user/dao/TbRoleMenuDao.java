@@ -47,25 +47,9 @@ public class TbRoleMenuDao extends BaseDao<TbRoleMenu> {
         return sql.toString();
     }
 
-    public int clearRoleByMenuId(ConnectionBean connection, Long menuId) throws SQLException {
-        String sql = "UPDATE tb_role_menu SET is_delete = '1' WHERE menu_id = ?";
-        return executeUpdate(connection, sql, Collections.singletonList(menuId));
-    }
-
     public int clearRoleByRoleId(ConnectionBean connection, Long roleId) throws SQLException {
         String sql = "UPDATE tb_role_menu SET is_delete = '1' WHERE role_id = ?";
         return executeUpdate(connection, sql, Collections.singletonList(roleId));
-    }
-
-    public boolean checkExistChildByMenuId(ConnectionBean connection, Long menuId) throws SQLException {
-        String sql = "SELECT tm.menu_id FROM tb_role_menu trm INNER JOIN tb_menu tm ON trm.menu_id = tm.menu_id WHERE tm.parent_id = ? AND trm.is_delete = 0";
-        ResultSet rs = null;
-        try {
-            rs = executeSelectReturnResultSet(connection, sql, Collections.singletonList(menuId));
-            return rs.next();
-        } finally {
-            ConnectionPool.close(rs);
-        }
     }
 
     public List<Long> selectMenuIdByRoleId(ConnectionBean connection, Long roleId) throws SQLException {

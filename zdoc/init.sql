@@ -73,7 +73,7 @@ CREATE TABLE `tb_menu` (
   PRIMARY KEY (`menu_id`),
   KEY `idx_parent_id` (`parent_id`),
   KEY `idx_menu_name` (`menu_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `tb_menu` */
 
@@ -82,11 +82,32 @@ insert  into `tb_menu`(`menu_id`,`request_url`,`menu_name`,`menu_icon`,`parent_i
 (2,'/dictionary/forward','字典管理','book',1,1,1,0,1,0),
 (3,'/user/forward','用户管理','user',1,1,2,0,1,0),
 (4,'/role/forward','角色管理','user-secret',1,1,3,0,1,0),
-(5,'/menu/forward','菜单管理','navicon',1,1,4,0,1,0),
-(6,'/config/forward','全局配置','cog',1,1,5,0,1,0),
-(7,'/reload/cache/forward','刷新缓存','refresh',1,1,6,0,1,0),
-(8,'/notice/forward','上线公告','arrow-circle-o-up',1,1,7,0,1,0),
-(9,'/schedule/forward','定时任务','tasks',1,1,8,0,1,0);
+(5,'/privilege/forward','权限管理','shield',1,1,4,0,1,0),
+(6,'/menu/forward','菜单管理','navicon',1,1,5,0,1,0),
+(7,'/config/forward','全局配置','cog',1,1,6,0,1,0),
+(8,'/reload/cache/forward','刷新缓存','refresh',1,1,7,0,1,0),
+(9,'/notice/forward','上线公告','arrow-circle-o-up',1,1,8,0,1,0),
+(10,'/schedule/forward','定时任务','tasks',1,1,9,0,1,0);
+
+/*Table structure for table `tb_privilege` */
+
+DROP TABLE IF EXISTS `tb_privilege`;
+
+CREATE TABLE `tb_privilege` (
+  `privilege_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '权限ID',
+  `privilege_label` varchar(128) NOT NULL COMMENT '权限标识',
+  `privilege_name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '权限名称',
+  `parent_id` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '父级ID',
+  `top_id` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '顶级ID',
+  `is_leaf` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '是否是最后一级(0:否,1;是)',
+  `is_delete` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否删除(0:否,1:是)',
+  PRIMARY KEY (`privilege_id`),
+  UNIQUE KEY `uniq_privilege_label` (`privilege_label`),
+  KEY `idx_parent_id` (`parent_id`),
+  KEY `idx_privilege_name` (`privilege_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `tb_privilege` */
 
 /*Table structure for table `tb_role` */
 
@@ -122,21 +143,20 @@ CREATE TABLE `tb_role_menu` (
 
 /*Data for the table `tb_role_menu` */
 
-/*Table structure for table `tb_role_request_mapping` */
+/*Table structure for table `tb_role_privilege` */
 
-DROP TABLE IF EXISTS `tb_role_request_mapping`;
+DROP TABLE IF EXISTS `tb_role_privilege`;
 
-CREATE TABLE `tb_role_request_mapping` (
-  `role_request_mapping_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '角色路径关系ID',
-  `role_id` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '角色ID',
-  `request_url` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '请求路径',
-  `is_delete` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否删除(0:否,1;是)',
-  PRIMARY KEY (`role_request_mapping_id`),
-  KEY `idx_role_id` (`role_id`),
-  KEY `idx_request_url` (`request_url`)
+CREATE TABLE `tb_role_privilege` (
+  `role_privilege_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '角色权限ID',
+  `role_id` bigint(20) unsigned NOT NULL COMMENT '角色ID',
+  `privilege_id` bigint(20) unsigned NOT NULL COMMENT '权限ID',
+  `is_delete` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否删除(0:否,1:是)',
+  PRIMARY KEY (`role_privilege_id`),
+  KEY `idx_role_id` (`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-/*Data for the table `tb_role_request_mapping` */
+/*Data for the table `tb_role_privilege` */
 
 /*Table structure for table `tb_schedule` */
 
@@ -207,14 +227,14 @@ CREATE TABLE `tb_user` (
   `email` varchar(128) DEFAULT NULL COMMENT '邮箱',
   `is_delete` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否删除(0:否,1:是)',
   PRIMARY KEY (`user_id`),
-  UNIQUE KEY `uniq_user_name` (`user_name`),
-  KEY `idx_cellphone` (`cellphone`)
+  KEY `idx_cellphone` (`cellphone`),
+  KEY `uniq_user_name` (`user_name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `tb_user` */
 
 insert  into `tb_user`(`user_id`,`user_name`,`password_md5`,`cellphone`,`create_time`,`email`,`is_delete`) values
-(1,'admin','e10adc3949ba59abbe56e057f20f883e','13111111111','2018-03-07 00:00:00','zhangyu13393@sina.com',0);
+(1,'admin','e10adc3949ba59abbe56e057f20f883e','13111111111','2018-10-01 00:00:00','zhangyu13393@163.com',0);
 
 /*Table structure for table `tb_user_role` */
 

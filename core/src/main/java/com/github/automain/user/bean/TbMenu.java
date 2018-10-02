@@ -218,7 +218,7 @@ public class TbMenu extends RequestUtil implements BaseBean<TbMenu>, Comparable 
 
     @Override
     public int compareTo(Object o) {
-        if (o != null && o instanceof TbMenu){
+        if (o instanceof TbMenu){
             TbMenu target = (TbMenu) o;
             if (this.getParentId().equals(target.getParentId())) {
                 return this.getSequenceNumber().compareTo(target.getSequenceNumber()) >= 0 ? 1 : -1;
