@@ -74,7 +74,7 @@ public class TbDictionaryDao extends BaseDao<TbDictionary> {
         return executeSelectReturnList(connection, sql, null, bean);
     }
 
-    public List<String> selectTableNameList(ConnectionBean connection) throws Exception{
+    public List<String> selectTableNameList(ConnectionBean connection) throws Exception {
         ResultSet rs = null;
         List<String> tableNameList = new ArrayList<String>();
         try {
@@ -89,7 +89,7 @@ public class TbDictionaryDao extends BaseDao<TbDictionary> {
         return tableNameList;
     }
 
-    public List<String> selectColumnNameList(ConnectionBean connection, String tableName) throws Exception{
+    public List<String> selectColumnNameList(ConnectionBean connection, String tableName) throws Exception {
         ResultSet rs = null;
         List<String> columnList = new ArrayList<String>();
         try {
@@ -102,6 +102,10 @@ public class TbDictionaryDao extends BaseDao<TbDictionary> {
             ConnectionPool.close(rs);
         }
         return columnList;
+    }
+
+    public int createSubTable(ConnectionBean connection, String mainTableName, String subTableName) throws Exception {
+        return executeUpdate(connection, "CREATE TABLE " + subTableName + " LIKE " + mainTableName, null);
     }
 
 }

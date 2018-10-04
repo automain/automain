@@ -37,12 +37,16 @@ public class TbDictionaryService extends BaseService<TbDictionary, TbDictionaryD
         return getDao().selectValidTable(connection, getBean());
     }
 
-    public List<String> selectTableNameList(ConnectionBean connection) throws Exception{
+    public List<String> selectTableNameList(ConnectionBean connection) throws Exception {
         return getDao().selectTableNameList(connection);
     }
 
-    public List<String> selectColumnNameList(ConnectionBean connection, String tableName) throws Exception{
+    public List<String> selectColumnNameList(ConnectionBean connection, String tableName) throws Exception {
         return getDao().selectColumnNameList(connection, tableName);
+    }
+
+    public int createSubTable(ConnectionBean connection, String mainTableName, String subTableName) throws Exception {
+        return getDao().createSubTable(connection, mainTableName, subTableName);
     }
 
 }
