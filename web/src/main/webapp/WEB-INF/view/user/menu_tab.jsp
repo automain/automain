@@ -5,14 +5,18 @@
     <title></title>
 </head>
 <body>
-<div class="layui-card layadmin-header">
-    <div class="layui-breadcrumb">
-        <c:forEach items="${parentList}" var="parent">
-            <a href="${ctx}/menu/forward?parentId=${parent.parentId}">${parent.menuName}</a>
-        </c:forEach>
-        <a><cite><c:out value="${cite}"/></cite></a>
+<fieldset class="layui-elem-field">
+    <div class="layui-field-box">
+        <div class="layadmin-header">
+            <span class="layui-breadcrumb">
+                <c:forEach items="${parentList}" var="parent">
+                    <a href="${ctx}/menu/forward?parentId=${parent.parentId}">${parent.menuName}</a>
+                </c:forEach>
+                <a><cite><c:out value="${cite}"/></cite></a>
+            </span>
+        </div>
     </div>
-</div>
+</fieldset>
 <div class="layui-fluid">
     <div class="layui-row">
         <div class="layui-col-md12">
@@ -102,7 +106,7 @@
                     $("#menu_list_body").html(data.data);
                     renderPage(laypage, "menu_page", data.count, data.curr, reloadMenuList);
                     table.init('tb_menu', {
-                        height: 'full-190'
+                        height: 'full-210'
                     });
                     $(".update-btn").click(function () {
                         var updateId = $(this).attr("update-id");

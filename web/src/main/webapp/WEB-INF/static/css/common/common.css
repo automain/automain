@@ -45,3 +45,4 @@ html {
     color:#ccc
 }
 .layui-table-cell .layui-form-checkbox[lay-skin="primary"]{top: 50%;transform: translateY(-50%);}
+.layui-elem-quote {margin-top: 10px}
