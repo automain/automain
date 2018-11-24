@@ -9,13 +9,13 @@
     <div class="layui-form-item">
         <label class="layui-form-label">升级开始时间</label>
         <div class="layui-input-block">
-            <input type="text" class="layui-input" id="noticeStartTime" name="noticeStartTime" lay-verify="notice_start_time">
+            <input type="text" class="layui-input" id="noticeStartTime" autocomplete="off" name="noticeStartTime" lay-verify="notice_start_time">
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label">升级结束时间</label>
         <div class="layui-input-block">
-            <input type="text" class="layui-input" id="noticeEndTime" name="noticeEndTime" lay-verify="notice_end_time">
+            <input type="text" class="layui-input" id="noticeEndTime" autocomplete="off" name="noticeEndTime" lay-verify="notice_end_time">
         </div>
     </div>
     <div class="layui-form-item">

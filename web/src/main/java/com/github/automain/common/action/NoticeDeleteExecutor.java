@@ -17,9 +17,9 @@ public class NoticeDeleteExecutor extends BaseExecutor {
     protected String doAction(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         if (jedis != null) {
-            jedis.del("notice_cache_key");
+            jedis.del(NOTICE_CACHE_KEY);
         } else {
-            RedisUtil.delLocalCache("notice_cache_key");
+            RedisUtil.delLocalCache(NOTICE_CACHE_KEY);
         }
         CookieUtil.deleteCookieByName(response, "hasReadNotice");
         setJsonResult(request, CODE_SUCCESS, "清除成功");

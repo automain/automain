@@ -22,9 +22,9 @@ public class NoticeForwardExecutor extends BaseExecutor {
                 break;
             default:
                 if (jedis != null) {
-                    request.setAttribute("noticeMap", jedis.hgetAll("notice_cache_key"));
+                    request.setAttribute("noticeMap", jedis.hgetAll(NOTICE_CACHE_KEY));
                 } else {
-                    request.setAttribute("noticeMap", RedisUtil.getLocalCache("notice_cache_key"));
+                    request.setAttribute("noticeMap", RedisUtil.getLocalCache(NOTICE_CACHE_KEY));
                 }
                 request.setAttribute("vEnter", "\n");
                 jspPath = "common/notice_tab";

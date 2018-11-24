@@ -21,7 +21,7 @@
     <div class="layui-form-item">
         <label class="layui-form-label">开始执行时间</label>
         <div class="layui-input-block">
-            <input type="text" class="layui-input" id="startExecuteTime" name="startExecuteTime" lay-verify="start_execute_time">
+            <input type="text" class="layui-input" id="startExecuteTime" autocomplete="off" name="startExecuteTime" lay-verify="start_execute_time">
         </div>
     </div>
     <div class="layui-form-item">

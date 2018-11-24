@@ -7,6 +7,7 @@ import com.github.automain.common.container.ServiceContainer;
 import com.github.automain.user.bean.TbUser;
 import com.github.automain.util.CompressUtil;
 import com.github.automain.util.CookieUtil;
+import com.github.automain.util.DateUtil;
 import com.github.automain.util.EncryptUtil;
 import com.github.automain.util.PropertiesUtil;
 import com.github.automain.util.RedisUtil;
@@ -44,6 +45,7 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
     protected static final String CODE_FAIL = "1";// 返回失败
     protected static final String PAGE_BEAN_PARAM = "pageBean";// 分页对象参数名
     protected static final Logger LOGGER = SystemUtil.getLoggerByName("system");
+    protected static final String NOTICE_CACHE_KEY = "notice_cache_key";
 
     private AsyncContext asyncContext;
 
@@ -64,7 +66,7 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
             connection = ConnectionPool.getConnectionBean(setSlavePool());
             String jspPath = getJspPath(jedis, connection, request, response);
             isDownloadRequest = "download_file".equals(jspPath);
-            String content = getContent(jedis, request, response, toJson, isDownloadRequest, jspPath);
+            String content = getContent(request, response, toJson, isDownloadRequest, jspPath);
             flushResponse(request, response, isDownloadRequest, jspPath, content);
         } catch (Exception e) {
             e.printStackTrace();
@@ -133,27 +135,13 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
         }
     }
 
-    private String getContent(Jedis jedis, HttpServletRequest request, HttpServletResponse response, boolean toJson, boolean isDownloadRequest, String jspPath) throws ServletException, IOException {
+    private String getContent(HttpServletRequest request, HttpServletResponse response, boolean toJson, boolean isDownloadRequest, String jspPath) throws ServletException, IOException {
         String content = null;
         if (toJson || jspPath == null) {
-            content = requestToJson(request, response, jspPath);
             response.setContentType(JSON_CONTENT_TYPE);
+            content = requestToJson(request, response, jspPath);
         } else if (!isDownloadRequest) {
             response.setContentType(HTML_CONTENT_TYPE);
-            String hasReadNotice = CookieUtil.getCookieByName(request, "hasReadNotice");
-            if (hasReadNotice == null) {
-                Map<String, String> noticeMap = null;
-                if (jedis != null) {
-                    noticeMap = jedis.hgetAll("notice_cache_key");
-                } else {
-                    noticeMap = RedisUtil.getLocalCache("notice_cache_key");
-                }
-                if (noticeMap != null && !noticeMap.isEmpty()) {
-                    request.setAttribute("notice_cache_key", noticeMap);
-                    request.setAttribute("vEnter", "\n");
-                    CookieUtil.addCookie(response, "hasReadNotice", "1", 1800);
-                }
-            }
             content = getJspOutput(request, response, jspPath);
         }
         return content;
@@ -161,6 +149,42 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
 
     private String getJspPath(Jedis jedis, ConnectionBean connection, HttpServletRequest request, HttpServletResponse response) throws Exception {
         String jspPath = null;
+        Map<String, String> noticeMap = null;
+        if (jedis != null) {
+            noticeMap = jedis.hgetAll(NOTICE_CACHE_KEY);
+        } else {
+            noticeMap = RedisUtil.getLocalCache(NOTICE_CACHE_KEY);
+        }
+        if (noticeMap != null && !noticeMap.isEmpty()) {
+            String startTime = noticeMap.get("noticeStartTime");
+            String noticeEndTime = noticeMap.get("noticeEndTime");
+            long start = DateUtil.convertStringToLong(startTime, DateUtil.SIMPLE_DATE_TIME_PATTERN);
+            long end = DateUtil.convertStringToLong(noticeEndTime, DateUtil.SIMPLE_DATE_TIME_PATTERN);
+            long now = System.currentTimeMillis();
+            String hasReadNotice = CookieUtil.getCookieByName(request, "hasReadNotice");
+            if (now <= end) {// 公告未结束
+                if (hasReadNotice == null || start <= now) {
+                    request.setAttribute(NOTICE_CACHE_KEY, noticeMap);
+                    request.setAttribute("vEnter", "\n");
+                    if (hasReadNotice == null) {
+                        CookieUtil.addCookie(response, "hasReadNotice", "1", 1800);
+                    }
+                    if (start <= now) {
+                        String requestUri = HTTPUtil.getRequestUri(request);
+                        request.setAttribute("fromLogin", "/".equals(requestUri));
+                        setJsonResult(request, "503", "服务器正在维护");
+                        return ERROR_URL;
+                    }
+                }
+            } else {// 公告结束
+                if (jedis != null) {
+                    jedis.del(NOTICE_CACHE_KEY);
+                } else {
+                    RedisUtil.delLocalCache(NOTICE_CACHE_KEY);
+                }
+                CookieUtil.deleteCookieByName(response, "hasReadNotice");
+            }
+        }
         if (checkAuthority(jedis, request, response)) {
             setJsonResult(request, CODE_SUCCESS, "");
             jspPath = doAction(connection, jedis, request, response);

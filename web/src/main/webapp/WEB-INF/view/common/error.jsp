@@ -56,7 +56,7 @@
 </html>
 <script>
     var i;
-    if (${code == 403}) {
+    if (${code == 403 || (code == 503 && !fromLogin)} ) {
         $("#jumpDiv").show();
         i = setInterval(function(){shrink()}, 1000);
     }
