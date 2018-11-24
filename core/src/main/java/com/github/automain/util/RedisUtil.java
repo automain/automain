@@ -50,7 +50,7 @@ public class RedisUtil {
             // 初始化redisson
             Config redissonConfig = new Config();
             SingleServerConfig singleSerververConfig = redissonConfig.useSingleServer();
-            singleSerververConfig.setAddress(host + ":" + port);
+            singleSerververConfig.setAddress("redis://" + host + ":" + port);
             REDISSON = Redisson.create(redissonConfig);
         }
     }
