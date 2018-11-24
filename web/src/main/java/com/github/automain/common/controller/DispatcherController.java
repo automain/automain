@@ -97,8 +97,8 @@ public class DispatcherController extends HttpServlet {
                 } else {
                     String classPath = childClass.getPath();
                     if (classPath.endsWith(".class")) {
-                        classPath = classPath.substring(classPath.indexOf("\\classes") + 9, classPath.lastIndexOf("."));
-                        classPath = classPath.replace("\\", ".");
+                        classPath = classPath.substring(classPath.indexOf(File.separator + "classes") + 9, classPath.lastIndexOf("."));
+                        classPath = classPath.replace(File.separator, ".");
                         if (classPath.endsWith("Executor")) {
                             Class clazz = Class.forName(classPath);
                             if (BaseExecutor.class.isAssignableFrom(clazz) && clazz.isAnnotationPresent(RequestUrl.class)) {

@@ -73,7 +73,7 @@ CREATE TABLE `tb_menu` (
   PRIMARY KEY (`menu_id`),
   KEY `idx_parent_id` (`parent_id`),
   KEY `idx_menu_name` (`menu_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `tb_menu` */
 
@@ -87,8 +87,7 @@ insert  into `tb_menu`(`menu_id`,`request_url`,`menu_name`,`menu_icon`,`parent_i
 (7,'/config/forward','全局配置','cog',1,1,6,0,1,0),
 (8,'/reload/cache/forward','刷新缓存','refresh',1,1,7,0,1,0),
 (9,'/notice/forward','上线公告','arrow-circle-o-up',1,1,8,0,1,0),
-(10,'/schedule/forward','定时任务','tasks',1,1,9,0,1,0),
-(11,'/subtable/forward','创建分表','database',1,1,10,0,1,0);
+(10,'/schedule/forward','定时任务','tasks',1,1,9,0,1,0);
 
 /*Table structure for table `tb_privilege` */
 
