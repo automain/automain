@@ -11,8 +11,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
 
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
@@ -70,32 +68,6 @@ public class SystemUtil {
         config.setPassword(PropertiesUtil.DB_PROPERTIES.getProperty(poolName + "_password"));
         config.setAllowPoolSuspension(true);
         return config;
-    }
-
-    /**
-     * 初始化redis连接池
-     */
-    public static void initJedisPool() {
-        Properties redisConfig = PropertiesUtil.getProperties("redis.properties");
-        boolean openRedis = Boolean.parseBoolean(redisConfig.getProperty("openRedis", "false"));
-        if (openRedis) {
-            JedisPoolConfig config = new JedisPoolConfig();
-            config.setMaxTotal(Integer.parseInt(redisConfig.getProperty("maxTotal", "150")));
-            config.setMaxIdle(Integer.parseInt(redisConfig.getProperty("maxIdle", "30")));
-            config.setMinIdle(Integer.parseInt(redisConfig.getProperty("minIdle", "10")));
-            config.setMaxWaitMillis(Long.parseLong(redisConfig.getProperty("maxWaitMillis", "3000")));
-            config.setTestOnBorrow(Boolean.parseBoolean(redisConfig.getProperty("testOnBorrow", "false")));
-            config.setTestOnReturn(Boolean.parseBoolean(redisConfig.getProperty("testOnReturn", "true")));
-            config.setTestWhileIdle(Boolean.parseBoolean(redisConfig.getProperty("testWhileIdle", "true")));
-            config.setMinEvictableIdleTimeMillis(Long.parseLong(redisConfig.getProperty("minEvictableIdleTimeMillis", "60000")));
-            config.setSoftMinEvictableIdleTimeMillis(Long.parseLong(redisConfig.getProperty("softMinEvictableIdleTimeMillis", "1000")));
-            config.setTimeBetweenEvictionRunsMillis(Long.parseLong(redisConfig.getProperty("setTimeBetweenEvictionRunsMillis", "1000")));
-            config.setNumTestsPerEvictionRun(Integer.parseInt(redisConfig.getProperty("setNumTestsPerEvictionRun", "100")));
-            String host = redisConfig.getProperty("host");
-            int port = Integer.parseInt(redisConfig.getProperty("port", "6379"));
-            int timeout = Integer.parseInt(redisConfig.getProperty("timeout", "5000"));
-            RedisUtil.setPool(new JedisPool(config, host, port, timeout));
-        }
     }
 
     /**
@@ -261,10 +233,9 @@ public class SystemUtil {
      * 刷新定时任务
      *
      * @param connection
-     * @param jedis
      * @throws SQLException
      */
-    public static synchronized void reloadSchedule(ConnectionBean connection, Jedis jedis) throws SQLException {
+    public static synchronized void reloadSchedule(ConnectionBean connection) throws SQLException {
         if (PropertiesUtil.OPEN_SCHEDULE) {
             if (SCHEDULE_THREAD_POOL != null) {
                 SCHEDULE_THREAD_POOL.shutdown();
@@ -277,13 +248,13 @@ public class SystemUtil {
             if (size > 0) {
                 SCHEDULE_THREAD_POOL = Executors.newScheduledThreadPool(size);
                 for (TbSchedule schedule : scheduleList) {
-                    startSchedule(schedule, jedis);
+                    startSchedule(schedule);
                 }
             }
         }
     }
 
-    private static void startSchedule(TbSchedule schedule, Jedis jedis) {
+    private static void startSchedule(TbSchedule schedule) {
         long initialDelay = 0L;
         long jump = schedule.getDelayTime();
         long now = SystemUtil.getNowSecond();
@@ -295,7 +266,7 @@ public class SystemUtil {
             } else {
                 initialDelay = jump - diff;
             }
-            SCHEDULE_THREAD_POOL.scheduleAtFixedRate(new ScheduleThread(schedule.getScheduleUrl(), jedis, jump), initialDelay, jump, TimeUnit.SECONDS);
+            SCHEDULE_THREAD_POOL.scheduleAtFixedRate(new ScheduleThread(schedule.getScheduleUrl(), jump), initialDelay, jump, TimeUnit.SECONDS);
         }
     }
 }

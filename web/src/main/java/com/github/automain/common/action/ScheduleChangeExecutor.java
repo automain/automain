@@ -32,7 +32,7 @@ public class ScheduleChangeExecutor extends BaseExecutor {
                 bean.setIsDelete(0);
             }
             TB_SCHEDULE_SERVICE.updateTable(connection, bean, false);
-            SystemUtil.reloadSchedule(connection, jedis);
+            SystemUtil.reloadSchedule(connection);
             setJsonResult(request, CODE_SUCCESS, msg);
         } else {
             setJsonResult(request, CODE_FAIL, "未找到记录");

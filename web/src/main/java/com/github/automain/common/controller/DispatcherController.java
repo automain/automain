@@ -41,7 +41,7 @@ public class DispatcherController extends HttpServlet {
             // 初始化数据库连接池
             SystemUtil.initConnectionPool();
             // 初始化redis连接池
-            SystemUtil.initJedisPool();
+            RedisUtil.initJedisPool();
             // 初始化日志
             SystemUtil.initLogConfig();
             // 初始化访问路径
@@ -60,7 +60,7 @@ public class DispatcherController extends HttpServlet {
             // 初始化人员角色权限缓存
             RolePrivilegeContainer.reloadRolePrivilege(jedis, connection);
             // 初始化定时任务
-            SystemUtil.reloadSchedule(connection, jedis);
+            SystemUtil.reloadSchedule(connection);
             System.err.println("===============================Init Success===============================");
         } catch (Exception e) {
             e.printStackTrace();
