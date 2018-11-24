@@ -17,11 +17,11 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class RedisUtil {
 
-    private static JedisPool POOL;
+    private static JedisPool POOL = null;
 
-    private static RedissonClient REDISSON;
+    private static RedissonClient REDISSON = null;
 
-    private static ReentrantLock LOCAL_LOCK;
+    private static ReentrantLock LOCAL_LOCK = new ReentrantLock();
 
     /**
      * 初始化redis连接池
