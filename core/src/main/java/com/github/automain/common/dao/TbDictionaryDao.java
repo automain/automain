@@ -1,7 +1,7 @@
 package com.github.automain.common.dao;
 
 import com.github.automain.common.bean.TbDictionary;
-import com.github.automain.util.PropertiesUtil;
+import com.github.automain.util.SystemUtil;
 import com.github.fastjdbc.bean.ConnectionBean;
 import com.github.fastjdbc.bean.ConnectionPool;
 import com.github.fastjdbc.bean.PageBean;
@@ -79,7 +79,7 @@ public class TbDictionaryDao extends BaseDao<TbDictionary> {
         List<String> tableNameList = new ArrayList<String>();
         try {
             String sql = "SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = ?";
-            rs = executeSelectReturnResultSet(connection, sql, Collections.singletonList(PropertiesUtil.DATABASE_NAME));
+            rs = executeSelectReturnResultSet(connection, sql, Collections.singletonList(SystemUtil.DATABASE_NAME));
             while (rs.next()) {
                 tableNameList.add(rs.getString(1));
             }
@@ -94,7 +94,7 @@ public class TbDictionaryDao extends BaseDao<TbDictionary> {
         List<String> columnList = new ArrayList<String>();
         try {
             String sql = "SELECT c.COLUMN_NAME FROM information_schema.COLUMNS c WHERE c.TABLE_SCHEMA = ? AND c.TABLE_NAME = ?";
-            rs = executeSelectReturnResultSet(connection, sql, Arrays.asList(PropertiesUtil.DATABASE_NAME, tableName));
+            rs = executeSelectReturnResultSet(connection, sql, Arrays.asList(SystemUtil.DATABASE_NAME, tableName));
             while (rs.next()) {
                 columnList.add(rs.getString(1));
             }

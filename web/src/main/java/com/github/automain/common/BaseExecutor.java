@@ -13,11 +13,10 @@ import com.github.automain.util.PropertiesUtil;
 import com.github.automain.util.RedisUtil;
 import com.github.automain.util.SystemUtil;
 import com.github.automain.util.http.HTTPUtil;
-import com.github.automain.util.wapper.JspResponseWrapper;
 import com.github.fastjdbc.bean.ConnectionBean;
 import com.github.fastjdbc.bean.ConnectionPool;
-import com.github.fastjdbc.bean.PageBean;
 import com.github.fastjdbc.util.RequestUtil;
+import org.apache.commons.collections4.CollectionUtils;
 import redis.clients.jedis.Jedis;
 
 import javax.servlet.AsyncContext;
@@ -31,21 +30,21 @@ import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
 public abstract class BaseExecutor extends RequestUtil implements ServiceContainer, Runnable {
 
-    private static final String HTML_CONTENT_TYPE = "text/html; charset=" + PropertiesUtil.DEFAULT_CHARSET;
-    private static final String JSON_CONTENT_TYPE = "application/json; charset=" + PropertiesUtil.DEFAULT_CHARSET;
-    private static final String ERROR_URL = "/common/error";// 错误页面
+    protected static final int SESSION_EXPIRE_SECONDS = PropertiesUtil.getIntProperty("app.sessionExpireSeconds", "1800");
+    protected static final int CACHE_EXPIRE_SECONDS = SESSION_EXPIRE_SECONDS + 300;
+    protected static final String AES_PASSWORD = PropertiesUtil.getStringProperty("app.AESPassword");
     protected static final String CODE_SUCCESS = "0";// 返回成功
     protected static final String CODE_FAIL = "1";// 返回失败
     protected static final String PAGE_BEAN_PARAM = "pageBean";// 分页对象参数名
-    protected static final Logger LOGGER = SystemUtil.getLoggerByName("system");
-    protected static final String NOTICE_CACHE_KEY = "notice_cache_key";
+    protected static final Logger LOGGER = SystemUtil.getLogger();
+    private static final List<String> WHITE_LIST_URL = List.of("/test");
 
     private AsyncContext asyncContext;
 
@@ -59,181 +58,74 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
         ConnectionBean connection = null;
         HttpServletRequest request = (HttpServletRequest) asyncContext.getRequest();
         HttpServletResponse response = (HttpServletResponse) asyncContext.getResponse();
-        boolean toJson = "POST".equals(request.getMethod());
-        boolean isDownloadRequest = false;
         try {
             jedis = RedisUtil.getJedis();
-            connection = ConnectionPool.getConnectionBean(setSlavePool());
-            String jspPath = getJspPath(jedis, connection, request, response);
-            isDownloadRequest = "download_file".equals(jspPath);
-            String content = getContent(request, response, toJson, isDownloadRequest, jspPath);
-            flushResponse(request, response, isDownloadRequest, jspPath, content);
+            String uri = HTTPUtil.getRequestUri(request);
+            connection = ConnectionPool.getConnectionBean(DispatcherController.SLAVE_POOL_MAP.get(uri));
+            if (checkUserAuthority(jedis, request, response)) {
+                setJsonResult(request, CODE_SUCCESS, "");
+                execute(connection, jedis, request, response);
+            } else {
+                setJsonResult(request, "403", "无权限访问或登录已过期");
+            }
+            if (!HTTPUtil.FILE_CONTENT_TYPE.equals(response.getContentType())) {
+                response.setContentType(HTTPUtil.JSON_CONTENT_TYPE);
+                String content = requestToJson(request);
+                if (HTTPUtil.HTML_CONTENT_TYPE.equals(response.getContentType()) && HTTPUtil.checkGzip(request, response, content.length())) {
+                    byte[] gzip = CompressUtil.gzipCompress(content);
+                    OutputStream os = response.getOutputStream();
+                    os.write(gzip);
+                    os.flush();
+                } else {
+                    PrintWriter writer = response.getWriter();
+                    writer.write(content == null ? "" : content);
+                    writer.flush();
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            handleException(connection, request, response, toJson, isDownloadRequest, e);
+            try (StringWriter sw = new StringWriter();
+                 PrintWriter pw = new PrintWriter(sw)) {
+                e.printStackTrace(pw);
+                String msg = sw.toString();
+                if (!HTTPUtil.FILE_CONTENT_TYPE.equals(response.getContentType())) {
+                    String content = null;
+                    setJsonResult(request, "500", msg);
+                    response.setContentType(HTTPUtil.JSON_CONTENT_TYPE);
+                    try {
+                        content = requestToJson(request);
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
+                    PrintWriter writer = response.getWriter();
+                    writer.write(content == null ? "" : content);
+                    writer.flush();
+                }
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            } finally {
+                try {
+                    ConnectionPool.rollbackConnectionBean(connection);
+                } catch (SQLException e2) {
+                    e2.printStackTrace();
+                }
+            }
         } finally {
             SystemUtil.closeJedisAndConnectionBean(jedis, connection);
             asyncContext.complete();
         }
     }
 
-    private void handleException(ConnectionBean connection, HttpServletRequest request, HttpServletResponse response, boolean toJson, boolean isDownloadRequest, Exception e) {
-        try (StringWriter sw = new StringWriter();
-             PrintWriter pw = new PrintWriter(sw)) {
-            e.printStackTrace(pw);
-            String msg = sw.toString();
-            if (!isDownloadRequest) {
-                String content = null;
-                setJsonResult(request, "500", msg.substring(0, msg.indexOf(")") + 1));
-                if (toJson) {
-                    response.setContentType(JSON_CONTENT_TYPE);
-                    try {
-                        content = requestToJson(request, response, ERROR_URL);
-                    } catch (Exception e1) {
-                        e1.printStackTrace();
-                    }
-                } else {
-                    response.setContentType(HTML_CONTENT_TYPE);
-                    try {
-                        content = getJspOutput(request, response, ERROR_URL);
-                    } catch (Exception e1) {
-                        e1.printStackTrace();
-                    }
-                }
-                PrintWriter writer = response.getWriter();
-                writer.write(content == null ? "" : content);
-                writer.flush();
-            }
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        } finally {
-            try {
-                ConnectionPool.rollbackConnectionBean(connection);
-                doRollBack();
-            } catch (SQLException e2) {
-                e2.printStackTrace();
-            }
-        }
-    }
-
-    private void flushResponse(HttpServletRequest request, HttpServletResponse response, boolean isDownloadRequest, String jspPath, String content) throws IOException {
-        if (!isDownloadRequest) {
-            byte[] gzip = null;
-            String acceptEncoding = request.getHeader("Accept-Encoding");
-            if (HTML_CONTENT_TYPE.equals(response.getContentType()) && HTTPUtil.checkGzip(acceptEncoding, response, content.length(), jspPath)) {
-                gzip = CompressUtil.gzipCompress(content);
-            }
-            if (gzip != null) {
-                OutputStream os = response.getOutputStream();
-                os.write(gzip);
-                os.flush();
-            } else {
-                PrintWriter writer = response.getWriter();
-                writer.write(content == null ? "" : content);
-                writer.flush();
-            }
-        }
-    }
-
-    private String getContent(HttpServletRequest request, HttpServletResponse response, boolean toJson, boolean isDownloadRequest, String jspPath) throws ServletException, IOException {
-        String content = null;
-        if (toJson || jspPath == null) {
-            response.setContentType(JSON_CONTENT_TYPE);
-            content = requestToJson(request, response, jspPath);
-        } else if (!isDownloadRequest) {
-            response.setContentType(HTML_CONTENT_TYPE);
-            content = getJspOutput(request, response, jspPath);
-        }
-        return content;
-    }
-
-    private String getJspPath(Jedis jedis, ConnectionBean connection, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String jspPath = null;
-        Map<String, String> noticeMap = null;
-        if (jedis != null) {
-            noticeMap = jedis.hgetAll(NOTICE_CACHE_KEY);
-        } else {
-            noticeMap = RedisUtil.getLocalCache(NOTICE_CACHE_KEY);
-        }
-        if (noticeMap != null && !noticeMap.isEmpty()) {
-            String startTime = noticeMap.get("noticeStartTime");
-            String noticeEndTime = noticeMap.get("noticeEndTime");
-            long start = DateUtil.convertStringToLong(startTime, DateUtil.SIMPLE_DATE_TIME_PATTERN);
-            long end = DateUtil.convertStringToLong(noticeEndTime, DateUtil.SIMPLE_DATE_TIME_PATTERN);
-            long now = System.currentTimeMillis();
-            String hasReadNotice = CookieUtil.getCookieByName(request, "hasReadNotice");
-            if (now <= end) {// 公告未结束
-                if (hasReadNotice == null || start <= now) {
-                    request.setAttribute(NOTICE_CACHE_KEY, noticeMap);
-                    request.setAttribute("vEnter", "\n");
-                    if (hasReadNotice == null) {
-                        CookieUtil.addCookie(response, "hasReadNotice", "1", 1800);
-                    }
-                    if (start <= now) {
-                        String requestUri = HTTPUtil.getRequestUri(request);
-                        request.setAttribute("fromLogin", "/".equals(requestUri));
-                        setJsonResult(request, "503", "服务器正在维护");
-                        return ERROR_URL;
-                    }
-                }
-            } else {// 公告结束
-                if (jedis != null) {
-                    jedis.del(NOTICE_CACHE_KEY);
-                } else {
-                    RedisUtil.delLocalCache(NOTICE_CACHE_KEY);
-                }
-                CookieUtil.deleteCookieByName(response, "hasReadNotice");
-            }
-        }
-        if (checkAuthority(jedis, request, response)) {
-            setJsonResult(request, CODE_SUCCESS, "");
-            jspPath = doAction(connection, jedis, request, response);
-        } else {
-            setJsonResult(request, "403", "无权限访问或登录已过期");
-            jspPath = ERROR_URL;
-        }
-        return jspPath;
-    }
-
     /**
-     * 异常时回滚
-     */
-    protected void doRollBack() {
-    }
-
-    /**
-     * 检查权限
+     * 由子类继承，处理请求
      *
-     * @param jedis
-     * @param request
-     * @param response
-     * @return
-     * @throws Exception
-     */
-    protected boolean checkAuthority(Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        return checkUserAuthority(jedis, request, response);
-    }
-
-    /**
-     * 公用检查用户是否登录
-     *
+     * @param connection
      * @param jedis
      * @param request
      * @param response
      * @return
      */
-    protected final boolean checkUserLogin(Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        return getSessionUser(jedis, request, response) != null;
-    }
-
-    /**
-     * 设置可访问当前接口的权限标识，为空时不限制访问
-     *
-     * @return
-     */
-    protected Set<String> requestPrivilegeLabels() {
-        return new HashSet<String>(1);
-    }
+    protected abstract void execute(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception;
 
     /**
      * 公用检查用户权限
@@ -245,6 +137,10 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
      * @throws Exception
      */
     private boolean checkUserAuthority(Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String uri = HTTPUtil.getRequestUri(request);
+        if (WHITE_LIST_URL.contains(uri)) {
+            return true;
+        }
         TbUser user = getSessionUser(jedis, request, response);
         if (user == null) {
             return false;
@@ -256,8 +152,8 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
         if (roleLabel.contains("admin")) {
             return true;
         }
-        Set<String> labels = requestPrivilegeLabels();
-        if (labels.isEmpty()) {
+        Set<String> labels = DispatcherController.PRIVILEGE_LABEL_MAP.get(uri);
+        if (CollectionUtils.isEmpty(labels)) {
             return true;
         }
         Set<String> privileges = RolePrivilegeContainer.getPrivilegeSetByUserId(jedis, user.getUserId());
@@ -271,41 +167,6 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
         return false;
     }
 
-    /**
-     * 定向选择从数据源连接
-     *
-     * @return
-     */
-    protected String setSlavePool() {
-        return null;
-    }
-
-    /**
-     * 由子类继承，返回页面字符串或json字符串
-     *
-     * @param connection
-     * @param jedis
-     * @param request
-     * @param response
-     * @return
-     */
-    protected abstract String doAction(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception;
-
-    /**
-     * 将渲染后的jsp返回(可用模板技术代替)
-     *
-     * @param request
-     * @param response
-     * @param jspPath
-     * @return
-     * @throws ServletException
-     * @throws IOException
-     */
-    private static String getJspOutput(HttpServletRequest request, HttpServletResponse response, String jspPath) throws ServletException, IOException {
-        JspResponseWrapper wrapper = new JspResponseWrapper(response);
-        request.getRequestDispatcher("/WEB-INF/view/" + jspPath + ".jsp").include(request, wrapper);
-        return wrapper.getContent();
-    }
 
     /**
      * 设置json返回状态码和状态信息
@@ -323,27 +184,17 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
      * request中参数封装到json
      *
      * @param request
-     * @param response
-     * @param jspPath
      * @return
      * @throws ServletException
      * @throws IOException
      */
-    private static String requestToJson(HttpServletRequest request, HttpServletResponse response, String jspPath) throws ServletException, IOException {
+    private static String requestToJson(HttpServletRequest request) throws ServletException, IOException {
         JSONObject json = new JSONObject();
         Enumeration<String> attributeNames = request.getAttributeNames();
         while (attributeNames.hasMoreElements()) {
             String key = attributeNames.nextElement();
             Object o = request.getAttribute(key);
-            if (o instanceof PageBean) {
-                PageBean pageBean = (PageBean) o;
-                json.put("count", pageBean.getCount());
-                json.put("curr", pageBean.getCurr());
-                String list = getJspOutput(request, response, jspPath);
-                json.put("data", list.substring(list.indexOf("<table>") + 7, list.indexOf("</table>")));
-            } else {
-                json.put(key, JSON.toJSON(o));
-            }
+            json.put(key, JSON.toJSON(o));
         }
         return json.toJSONString();
     }
@@ -363,15 +214,15 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
         }
         if (accessToken != null) {
             HTTPUtil.setResponseHeader(response, "accessToken", accessToken);
-            String decrypt = EncryptUtil.AESDecrypt(accessToken.getBytes(PropertiesUtil.DEFAULT_CHARSET), PropertiesUtil.SECURITY_KEY);
+            String decrypt = EncryptUtil.AESDecrypt(accessToken.getBytes(PropertiesUtil.DEFAULT_CHARSET), AES_PASSWORD);
             String[] arr = decrypt.split("_");
             if (arr.length == 2) {
                 Long userId = Long.valueOf(arr[0]);
                 String userKey = "user:" + userId;
                 Long expireTime = Long.valueOf(arr[1]);
                 Map<String, String> userMap = null;
-                long newExpireTime = System.currentTimeMillis() + PropertiesUtil.SESSION_EXPIRE_MILLISECOND;
-                long newCacheExpireTime = System.currentTimeMillis() + PropertiesUtil.CACHE_EXPIRE_MILLISECOND;
+                int newExpireTime = DateUtil.getNowSecond() + SESSION_EXPIRE_SECONDS;
+                int newCacheExpireTime = DateUtil.getNowSecond() + CACHE_EXPIRE_SECONDS;
                 if (jedis != null) {
                     userMap = jedis.hgetAll(userKey);
                 } else {
@@ -408,12 +259,12 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
                     userMap.put("expireTime", String.valueOf(newCacheExpireTime));
                     if (jedis != null) {
                         jedis.hmset(userKey, userMap);
-                        jedis.expire(userKey, PropertiesUtil.CACHE_EXPIRE_SECONDS);
+                        jedis.expire(userKey, CACHE_EXPIRE_SECONDS);
                     } else {
                         RedisUtil.setLocalCache(userKey, userMap);
                     }
                     String value = userId + "_" + newExpireTime;
-                    String newAccessToken = EncryptUtil.AESEncrypt(value.getBytes(PropertiesUtil.DEFAULT_CHARSET), PropertiesUtil.SECURITY_KEY);
+                    String newAccessToken = EncryptUtil.AESEncrypt(value.getBytes(PropertiesUtil.DEFAULT_CHARSET), AES_PASSWORD);
                     CookieUtil.addCookie(response, "accessToken", newAccessToken, -1);
                     HTTPUtil.setResponseHeader(response, "accessToken", newAccessToken);
                 }

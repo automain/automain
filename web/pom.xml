@@ -12,15 +12,6 @@
 
     <build>
         <finalName>web</finalName>
-        <resources>
-            <resource>
-                <directory>src/main/resources/${environment}</directory>
-                <filtering>false</filtering>
-                <includes>
-                    <include>*</include>
-                </includes>
-            </resource>
-        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -28,13 +19,6 @@
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                     <warSourceDirectory>${basedir}/src/main/webapp</warSourceDirectory>
-                    <webResources>
-                        <resource>
-                            <directory>${basedir}/src/main/resources/${environment}</directory>
-                            <filtering>true</filtering>
-                            <targetPath>WEB-INF/classes</targetPath>
-                        </resource>
-                    </webResources>
                 </configuration>
             </plugin>
         </plugins>

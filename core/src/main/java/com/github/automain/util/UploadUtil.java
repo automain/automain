@@ -16,13 +16,14 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 public class UploadUtil implements ServiceContainer {
 
-    public static final List<String> IMG_TYPES = Collections.unmodifiableList(Arrays.asList("bmp", "jpg", "jpeg", "png", "gif"));
+    public static final List<String> IMG_TYPES = List.of("bmp", "jpg", "jpeg", "png", "gif");
+    public static final String UPLOADS_PATH = PropertiesUtil.getStringProperty("app.uploadsPath");
+    public static final String CDN_PATH = PropertiesUtil.getStringProperty("app.cdnPath");
 
     /**
      * 保存base64到文件
@@ -34,11 +35,10 @@ public class UploadUtil implements ServiceContainer {
      * @throws SQLException
      */
     public static Long saveFileByBase64(ConnectionBean connection, String base64, String fileExtension) throws Exception {
-        String newFileName = SystemUtil.randomUUID();
         if (fileExtension != null) {
-            newFileName = newFileName + "." + fileExtension;
+            String newFileName = UUID.randomUUID() + "." + fileExtension;
             String filePath = "/" + DateUtil.getNow(DateUtil.SIMPLE_DATE_PATTERN) + "/" + newFileName;
-            String absolutePath = PropertiesUtil.UPLOADS_PATH + filePath;
+            String absolutePath = UPLOADS_PATH + filePath;
             base6ToFile(base64, absolutePath);
             File file = new File(absolutePath);
             String fileMd5 = EncryptUtil.MD5(file);
@@ -101,7 +101,7 @@ public class UploadUtil implements ServiceContainer {
      * @return
      */
     private static String concatPathForFile(HttpServletRequest request, String filePath) {
-        return StringUtils.isNotBlank(PropertiesUtil.CDN_PATH) ? PropertiesUtil.CDN_PATH + filePath : request.getContextPath() + "/uploads" + filePath;
+        return StringUtils.isNotBlank(CDN_PATH) ? CDN_PATH + filePath : request.getContextPath() + "/uploads" + filePath;
     }
 
     /**
@@ -154,7 +154,7 @@ public class UploadUtil implements ServiceContainer {
      * @return
      */
     public static String fileToBase64(String relativeFilePath) throws IOException {
-        String filePath = PropertiesUtil.UPLOADS_PATH + relativeFilePath;
+        String filePath = UPLOADS_PATH + relativeFilePath;
         File file = new File(filePath);
         if (SystemUtil.checkFileAvailable(file)) {
             try (FileInputStream fis = new FileInputStream(file)) {

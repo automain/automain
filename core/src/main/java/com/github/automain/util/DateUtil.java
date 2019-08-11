@@ -1,7 +1,5 @@
 package com.github.automain.util;
 
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -17,7 +15,7 @@ public class DateUtil {
     //==============================Date To String==============================
 
     /**
-     * 日期类型转为字符串
+     * Date类型转为日期字符串
      *
      * @param date
      * @param pattern
@@ -31,7 +29,7 @@ public class DateUtil {
     }
 
     /**
-     * 日期类型转为字符串
+     * Calendar类型转为日期字符串
      *
      * @param date
      * @param pattern
@@ -42,18 +40,7 @@ public class DateUtil {
     }
 
     /**
-     * 日期类型转为字符串
-     *
-     * @param date
-     * @param pattern
-     * @return
-     */
-    public static String convertDateToString(Timestamp date, String pattern) {
-        return convertDateToString(convertToDate(date), pattern);
-    }
-
-    /**
-     * 日期类型转为字符串
+     * 时间戳(毫秒)类型转为日期字符串
      *
      * @param date
      * @param pattern
@@ -63,20 +50,10 @@ public class DateUtil {
         return convertDateToString(convertToDate(date), pattern);
     }
 
-    /**
-     * 日期类型转为字符串
-     *
-     * @param date
-     * @param pattern
-     * @return
-     */
-    public static String convertDateToString(Time date, String pattern) {
-        return convertDateToString(convertToDate(date), pattern);
-    }
     //==============================String To Date==============================
 
     /**
-     * 字符串转日期类型
+     * 字符串转Date日期类型
      *
      * @param date
      * @param pattern
@@ -91,7 +68,7 @@ public class DateUtil {
     }
 
     /**
-     * 字符串转日期类型
+     * 字符串转Calendar日期类型
      *
      * @param date
      * @param pattern
@@ -103,19 +80,7 @@ public class DateUtil {
     }
 
     /**
-     * 字符串转日期类型
-     *
-     * @param date
-     * @param pattern
-     * @return
-     * @throws ParseException
-     */
-    public static Timestamp convertStringToTimestamp(String date, String pattern) throws ParseException {
-        return new Timestamp(convertStringToLong(date, pattern));
-    }
-
-    /**
-     * 字符串转日期类型
+     * 字符串转时间戳日期类型
      *
      * @param date
      * @param pattern
@@ -123,20 +88,10 @@ public class DateUtil {
      * @throws ParseException
      */
     public static Long convertStringToLong(String date, String pattern) throws ParseException {
-        return convertStringToDate(date, pattern).getTime();
+        Date convertDate = convertStringToDate(date, pattern);
+        return convertDate == null ? null : convertDate.getTime();
     }
 
-    /**
-     * 字符串转日期类型
-     *
-     * @param date
-     * @param pattern
-     * @return
-     * @throws ParseException
-     */
-    public static Time convertStringToTime(String date, String pattern) throws ParseException {
-        return new Time(convertStringToLong(date, pattern));
-    }
     //==============================Time To Date==============================
 
     /**
@@ -155,29 +110,10 @@ public class DateUtil {
      * @param date
      * @return
      */
-    public static Date convertToDate(Timestamp date) {
-        return convertToDate(date.getTime());
-    }
-
-    /**
-     * 时间类型转为Date
-     *
-     * @param date
-     * @return
-     */
     public static Date convertToDate(Long date) {
         return date == null ? null : new Date(date);
     }
 
-    /**
-     * 时间类型转为Date
-     *
-     * @param date
-     * @return
-     */
-    public static Date convertToDate(Time date) {
-        return convertToDate(date.getTime());
-    }
     //==============================Time To Calendar==============================
 
     /**
@@ -187,17 +123,7 @@ public class DateUtil {
      * @return
      */
     public static Calendar convertToCalendar(Date date) {
-        return convertToCalendar(date.getTime());
-    }
-
-    /**
-     * 时间类型转为Calendar
-     *
-     * @param date
-     * @return
-     */
-    public static Calendar convertToCalendar(Timestamp date) {
-        return convertToCalendar(date.getTime());
+        return date == null ? null : convertToCalendar(date.getTime());
     }
 
     /**
@@ -214,41 +140,11 @@ public class DateUtil {
         c.setTimeInMillis(date);
         return c;
     }
-    //==============================Time To Timestamp==============================
+
+    //==============================Time To Long==============================
 
     /**
-     * 时间类型转为Timestamp
-     *
-     * @param date
-     * @return
-     */
-    public static Timestamp convertToTimestamp(Date date) {
-        return convertToTimestamp(date.getTime());
-    }
-
-    /**
-     * 时间类型转为Timestamp
-     *
-     * @param date
-     * @return
-     */
-    public static Timestamp convertToTimestamp(Calendar date) {
-        return convertToTimestamp(date.getTimeInMillis());
-    }
-
-    /**
-     * 时间类型转为Timestamp
-     *
-     * @param date
-     * @return
-     */
-    public static Timestamp convertToTimestamp(Long date) {
-        return date == null ? null : new Timestamp(date);
-    }
-    //==============================Time To Timestamp==============================
-
-    /**
-     * 时间类型转为Long
+     * 时间类型转为时间戳
      *
      * @param date
      * @return
@@ -258,7 +154,7 @@ public class DateUtil {
     }
 
     /**
-     * 时间类型转为Long
+     * 时间类型转为时间戳
      *
      * @param date
      * @return
@@ -267,16 +163,7 @@ public class DateUtil {
         return date == null ? null : date.getTimeInMillis();
     }
 
-    /**
-     * 时间类型转为Long
-     *
-     * @param date
-     * @return
-     */
-    public static Long convertToLong(Timestamp date) {
-        return date == null ? null : date.getTime();
-    }
-    //==============================Min Day Timestamp==============================
+    //==============================Min Day Calendar==============================
 
     /**
      * 获取给定日期0点0分0秒
@@ -284,8 +171,8 @@ public class DateUtil {
      * @param date
      * @return
      */
-    public static Timestamp getMinDayTimestamp(Date date) {
-        return getMinDayTimestamp(convertToCalendar(date));
+    public static Calendar getMinDayCalendar(Date date) {
+        return getMinDayCalendar(convertToCalendar(date));
     }
 
     /**
@@ -294,14 +181,14 @@ public class DateUtil {
      * @param date
      * @return
      */
-    public static Timestamp getMinDayTimestamp(Calendar date) {
+    public static Calendar getMinDayCalendar(Calendar date) {
         if (date == null) {
             return null;
         }
         Calendar c = Calendar.getInstance();
         c.set(date.get(Calendar.YEAR), date.get(Calendar.MONTH), date.get(Calendar.DATE), 0, 0, 0);
         c.set(Calendar.MILLISECOND, 0);
-        return convertToTimestamp(c);
+        return c;
     }
 
     /**
@@ -310,20 +197,11 @@ public class DateUtil {
      * @param date
      * @return
      */
-    public static Timestamp getMinDayTimestamp(Timestamp date) {
-        return getMinDayTimestamp(convertToCalendar(date));
+    public static Calendar getMinDayCalendar(Long date) {
+        return getMinDayCalendar(convertToCalendar(date));
     }
 
-    /**
-     * 获取给定日期0点0分0秒
-     *
-     * @param date
-     * @return
-     */
-    public static Timestamp getMinDayTimestamp(Long date) {
-        return getMinDayTimestamp(convertToCalendar(date));
-    }
-    //==============================Next Day Timestamp==============================
+    //==============================Next Day Calendar==============================
 
     /**
      * 获取给定日期后一天0点0分0秒
@@ -331,8 +209,8 @@ public class DateUtil {
      * @param date
      * @return
      */
-    public static Timestamp getNextDayTimestamp(Date date) {
-        return getNextDayTimestamp(convertToCalendar(date));
+    public static Calendar getNextDayCalendar(Date date) {
+        return getNextDayCalendar(convertToCalendar(date));
     }
 
     /**
@@ -341,14 +219,14 @@ public class DateUtil {
      * @param date
      * @return
      */
-    public static Timestamp getNextDayTimestamp(Calendar date) {
+    public static Calendar getNextDayCalendar(Calendar date) {
         if (date == null) {
             return null;
         }
         Calendar c = Calendar.getInstance();
         c.set(date.get(Calendar.YEAR), date.get(Calendar.MONTH), date.get(Calendar.DATE) + 1, 0, 0, 0);
         c.set(Calendar.MILLISECOND, 0);
-        return convertToTimestamp(c);
+        return c;
     }
 
     /**
@@ -357,20 +235,11 @@ public class DateUtil {
      * @param date
      * @return
      */
-    public static Timestamp getNextDayTimestamp(Timestamp date) {
-        return getNextDayTimestamp(convertToCalendar(date));
+    public static Calendar getNextDayCalendar(Long date) {
+        return getNextDayCalendar(convertToCalendar(date));
     }
 
-    /**
-     * 获取给定日期后一天0点0分0秒
-     *
-     * @param date
-     * @return
-     */
-    public static Timestamp getNextDayTimestamp(Long date) {
-        return getNextDayTimestamp(convertToCalendar(date));
-    }
-    //==============================Days Between To Time==============================
+    //==============================Days Between Two Time==============================
 
     /**
      * 获取两个日期相差天数
@@ -401,17 +270,6 @@ public class DateUtil {
      * @param endDate
      * @return
      */
-    public static int getDaysBetween(Timestamp startDate, Timestamp endDate) {
-        return getDaysBetween(convertToLong(startDate), convertToLong(endDate));
-    }
-
-    /**
-     * 获取两个日期相差天数
-     *
-     * @param startDate
-     * @param endDate
-     * @return
-     */
     public static int getDaysBetween(Long startDate, Long endDate) {
         if (startDate == null || endDate == null) {
             return Integer.MAX_VALUE;
@@ -432,6 +290,16 @@ public class DateUtil {
         }
         return convertDateToString(System.currentTimeMillis(), pattern);
     }
+
+    /**
+     * 获取系统当前时间戳(秒)
+     *
+     * @return
+     */
+    public static int getNowSecond() {
+        return (int) (System.currentTimeMillis() / 1000);
+    }
+
     //==============================Common Get Day==============================
 
     /**
@@ -460,8 +328,8 @@ public class DateUtil {
      * @param date
      * @return
      */
-    public static Timestamp getFirstDayOfMonth(Date date) {
-        return convertToTimestamp(getGivenDayOfField(date.getTime(), Calendar.DAY_OF_MONTH, 1));
+    public static Calendar getFirstDayOfMonth(Date date) {
+        return date == null ? null : getFirstDayOfMonth(date.getTime());
     }
 
     /**
@@ -470,8 +338,8 @@ public class DateUtil {
      * @param date
      * @return
      */
-    public static Timestamp getFirstDayOfMonth(Calendar date) {
-        return convertToTimestamp(getGivenDayOfField(date.getTimeInMillis(), Calendar.DAY_OF_MONTH, 1));
+    public static Calendar getFirstDayOfMonth(Calendar date) {
+        return date == null ? null : getFirstDayOfMonth(date.getTimeInMillis());
     }
 
     /**
@@ -480,19 +348,10 @@ public class DateUtil {
      * @param date
      * @return
      */
-    public static Timestamp getFirstDayOfMonth(Timestamp date) {
-        return convertToTimestamp(getGivenDayOfField(date.getTime(), Calendar.DAY_OF_MONTH, 1));
+    public static Calendar getFirstDayOfMonth(Long date) {
+        return getGivenDayOfField(date, Calendar.DAY_OF_MONTH, 1);
     }
 
-    /**
-     * 获取给定时间所在月的第一天
-     *
-     * @param date
-     * @return
-     */
-    public static Timestamp getFirstDayOfMonth(Long date) {
-        return convertToTimestamp(getGivenDayOfField(date, Calendar.DAY_OF_MONTH, 1));
-    }
     //==============================Last Day Of Month==============================
 
     /**
@@ -501,8 +360,8 @@ public class DateUtil {
      * @param date
      * @return
      */
-    public static Timestamp getLastDayOfMonth(Date date) {
-        return convertToTimestamp(getLastDayOfMonth(convertToCalendar(date)));
+    public static Calendar getLastDayOfMonth(Date date) {
+        return getLastDayOfMonth(convertToCalendar(date));
     }
 
     /**
@@ -511,8 +370,8 @@ public class DateUtil {
      * @param date
      * @return
      */
-    public static Timestamp getLastDayOfMonth(Calendar date) {
-        return convertToTimestamp(getGivenDayOfField(date.getTimeInMillis(), Calendar.DAY_OF_MONTH, date.getActualMaximum(Calendar.DAY_OF_MONTH)));
+    public static Calendar getLastDayOfMonth(Calendar date) {
+        return date == null ? null : getGivenDayOfField(date.getTimeInMillis(), Calendar.DAY_OF_MONTH, date.getActualMaximum(Calendar.DAY_OF_MONTH));
     }
 
     /**
@@ -521,19 +380,10 @@ public class DateUtil {
      * @param date
      * @return
      */
-    public static Timestamp getLastDayOfMonth(Timestamp date) {
-        return convertToTimestamp(getLastDayOfMonth(convertToCalendar(date)));
+    public static Calendar getLastDayOfMonth(Long date) {
+        return getLastDayOfMonth(convertToCalendar(date));
     }
 
-    /**
-     * 获取给定时间所在月的最后一天
-     *
-     * @param date
-     * @return
-     */
-    public static Timestamp getLastDayOfMonth(Long date) {
-        return convertToTimestamp(getLastDayOfMonth(convertToCalendar(date)));
-    }
     //==============================First Day Of Week==============================
 
     /**
@@ -542,8 +392,8 @@ public class DateUtil {
      * @param date
      * @return
      */
-    public static Timestamp getFirstDayOfWeek(Date date) {
-        return convertToTimestamp(getGivenDayOfField(date.getTime(), Calendar.DAY_OF_WEEK, Calendar.MONDAY));
+    public static Calendar getFirstDayOfWeek(Date date) {
+        return date == null ? null : getFirstDayOfWeek(date.getTime());
     }
 
     /**
@@ -552,8 +402,8 @@ public class DateUtil {
      * @param date
      * @return
      */
-    public static Timestamp getFirstDayOfWeek(Calendar date) {
-        return convertToTimestamp(getGivenDayOfField(date.getTimeInMillis(), Calendar.DAY_OF_WEEK, Calendar.MONDAY));
+    public static Calendar getFirstDayOfWeek(Calendar date) {
+        return date == null ? null : getFirstDayOfWeek(date.getTimeInMillis());
     }
 
     /**
@@ -562,19 +412,10 @@ public class DateUtil {
      * @param date
      * @return
      */
-    public static Timestamp getFirstDayOfWeek(Timestamp date) {
-        return convertToTimestamp(getGivenDayOfField(date.getTime(), Calendar.DAY_OF_WEEK, Calendar.MONDAY));
+    public static Calendar getFirstDayOfWeek(Long date) {
+        return getGivenDayOfField(date, Calendar.DAY_OF_WEEK, Calendar.MONDAY);
     }
 
-    /**
-     * 获取给定时间所在周的第一天
-     *
-     * @param date
-     * @return
-     */
-    public static Timestamp getFirstDayOfWeek(Long date) {
-        return convertToTimestamp(getGivenDayOfField(date, Calendar.DAY_OF_WEEK, Calendar.MONDAY));
-    }
     //==============================Last Day Of Week==============================
 
     /**
@@ -583,8 +424,8 @@ public class DateUtil {
      * @param date
      * @return
      */
-    public static Timestamp getLastDayOfWeek(Date date) {
-        return convertToTimestamp(getGivenDayOfField(date.getTime(), Calendar.DAY_OF_WEEK, Calendar.SUNDAY));
+    public static Calendar getLastDayOfWeek(Date date) {
+        return date == null ? null : getLastDayOfWeek(date.getTime());
     }
 
     /**
@@ -593,8 +434,8 @@ public class DateUtil {
      * @param date
      * @return
      */
-    public static Timestamp getLastDayOfWeek(Calendar date) {
-        return convertToTimestamp(getGivenDayOfField(date.getTimeInMillis(), Calendar.DAY_OF_WEEK, Calendar.SUNDAY));
+    public static Calendar getLastDayOfWeek(Calendar date) {
+        return date == null ? null : getLastDayOfWeek(date.getTimeInMillis());
     }
 
     /**
@@ -603,19 +444,10 @@ public class DateUtil {
      * @param date
      * @return
      */
-    public static Timestamp getLastDayOfWeek(Timestamp date) {
-        return convertToTimestamp(getGivenDayOfField(date.getTime(), Calendar.DAY_OF_WEEK, Calendar.SUNDAY));
+    public static Calendar getLastDayOfWeek(Long date) {
+        return getGivenDayOfField(date, Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
     }
 
-    /**
-     * 获取给定时间所在周的最后一天
-     *
-     * @param date
-     * @return
-     */
-    public static Timestamp getLastDayOfWeek(Long date) {
-        return convertToTimestamp(getGivenDayOfField(date, Calendar.DAY_OF_WEEK, Calendar.SUNDAY));
-    }
     //==============================Check Intersection Common==============================
 
     /**
@@ -659,19 +491,6 @@ public class DateUtil {
      * @return
      */
     public static boolean checkIntersection(Calendar startDate1, Calendar endDate1, Calendar startDate2, Calendar endDate2) {
-        return checkIntersectionCommon(startDate1, endDate1, startDate2, endDate2);
-    }
-
-    /**
-     * 检查两个时间段是否有交集
-     *
-     * @param startDate1
-     * @param endDate1
-     * @param startDate2
-     * @param endDate2
-     * @return
-     */
-    public static boolean checkIntersection(Timestamp startDate1, Timestamp endDate1, Timestamp startDate2, Timestamp endDate2) {
         return checkIntersectionCommon(startDate1, endDate1, startDate2, endDate2);
     }
 

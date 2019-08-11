@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 
 public class SendMailThread implements Runnable {
 
-    private static Logger LOGGER = SystemUtil.getLoggerByName("system");
+    private static Logger LOGGER = SystemUtil.getLogger();
 
     // 默认邮件发送邮箱用户名
     private static final String DEFAULT_EMAIL_SENDER_USERNAME = "";

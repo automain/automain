@@ -11,7 +11,6 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Drawing;
@@ -304,33 +303,6 @@ public class ExcelUtil {
         return null;
     }
 
-    private static List initListByType(String type, int initialCapacity) {
-        if (initialCapacity <= 0) {
-            initialCapacity = 10;
-        }
-        List retList = null;
-        switch (type) {
-            case TYPE_STRING:
-                retList = new ArrayList<String>(initialCapacity);
-                break;
-            case TYPE_INTEGER:
-                retList = new ArrayList<Integer>(initialCapacity);
-                break;
-            case TYPE_BIG_DECIMAL:
-                retList = new ArrayList<BigDecimal>(initialCapacity);
-                break;
-            case TYPE_LONG:
-                retList = new ArrayList<Long>(initialCapacity);
-                break;
-            case TYPE_DATE:
-                retList = new ArrayList<Date>(initialCapacity);
-                break;
-            default:
-                retList = new ArrayList(initialCapacity);
-        }
-        return retList;
-    }
-
     /**
      * 根据类型获取一行
      *
@@ -353,7 +325,7 @@ public class ExcelUtil {
             } else {
                 lastCol = Integer.MAX_VALUE;
             }
-            List retList = initListByType(type, initialCapacity);
+            List retList = new ArrayList(initialCapacity);
             Row row = getRow(sheet, rowNum);
             for (int i = firstCol; i <= lastCol; i++) {
                 Cell cell = getCell(row, i);
@@ -389,7 +361,7 @@ public class ExcelUtil {
             } else {
                 lastRow = Integer.MAX_VALUE;
             }
-            List retList = initListByType(type, initialCapacity);
+            List retList = new ArrayList(initialCapacity);
             for (int i = firstRow; i <= lastRow; i++) {
                 Cell cell = getCell(sheet, i, colNum);
                 if (!addCellToList(type, notNull, retList, cell)) {
@@ -783,7 +755,6 @@ public class ExcelUtil {
      */
     public static void setCellFormula(Cell cell, String formula) {
         if (cell != null && StringUtils.isNotBlank(formula)) {
-            cell.setCellType(CellType.FORMULA);
             cell.setCellFormula(formula);
         }
     }

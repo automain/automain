@@ -23,7 +23,7 @@ public class CompressUtil {
      * @param filePath
      * @param zipPath
      */
-    public static void zipCompress(String filePath, String zipPath) throws IOException {
+    public static void zipCompress(String filePath, String zipPath) {
         ZipOutputStream zos = null;
         try {
             File file = new File(filePath);
@@ -38,7 +38,7 @@ public class CompressUtil {
             zos = new ZipOutputStream(new FileOutputStream(zipFile));
             zipDirectory(parentPath, file, zos);
         } catch (Exception e) {
-            throw e;
+            e.printStackTrace();
         } finally {
             if (zos != null) {
                 try {

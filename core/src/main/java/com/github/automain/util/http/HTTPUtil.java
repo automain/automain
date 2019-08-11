@@ -1,10 +1,8 @@
 package com.github.automain.util.http;
 
-import com.github.automain.util.CompressUtil;
 import com.github.automain.util.EncryptUtil;
 import com.github.automain.util.PropertiesUtil;
 import com.github.automain.util.SystemUtil;
-import com.github.automain.util.UploadUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.net.ssl.HostnameVerifier;
@@ -19,7 +17,6 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -31,10 +28,8 @@ import java.net.URLEncoder;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -48,7 +43,9 @@ public class HTTPUtil {
     private static final String END = "\r\n";
     private static final int READ_FILE_SIZE = 1024;
     private static final int COMPRESSION_MIN_SIZE = 2048;
-    private static final List<String> CACHE_FILE_TYPE = Arrays.asList(".js", ".css", ".otf", ".eot", ".svg", ".ttf", ".woff", ".woff2", ".ico", ".jpg", ".png", ".gif");
+    public static final String HTML_CONTENT_TYPE = "text/html; charset=" + PropertiesUtil.DEFAULT_CHARSET;
+    public static final String JSON_CONTENT_TYPE = "application/json; charset=" + PropertiesUtil.DEFAULT_CHARSET;
+    public static final String FILE_CONTENT_TYPE = "multipart/form-data";
 
     /**
      * URL编码
@@ -143,7 +140,7 @@ public class HTTPUtil {
                     connection.setDoOutput(true);
                     connection.setUseCaches(false);
                     if (postFile) {
-                        connection.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + BOUNDARY);
+                        connection.setRequestProperty("Content-Type", FILE_CONTENT_TYPE + ";boundary=" + BOUNDARY);
                     } else {
                         connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                     }
@@ -211,7 +208,6 @@ public class HTTPUtil {
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
-                        throw e;
                     }
                 }
                 if (connection != null) {
@@ -256,76 +252,6 @@ public class HTTPUtil {
         return request.getRequestURI().replaceFirst(projectName, "");
     }
 
-    /**
-     * 静态资源文件写入到流
-     *
-     * @param basePath
-     * @param relativePath
-     * @param acceptEncoding
-     * @param response
-     */
-    public static void writeResourceFileToResponse(String basePath, String relativePath, String acceptEncoding, HttpServletResponse response) throws Exception {
-        relativePath = relativePath.toLowerCase();
-        File file = new File(basePath + relativePath);
-        FileOutputStream fos = null;
-        if (SystemUtil.checkFileAvailable(file)) {
-            FileInputStream is = null;
-            OutputStream os = null;
-            try {
-                long length = file.length();
-                os = response.getOutputStream();
-                byte[] content = null;
-                if (PropertiesUtil.OPEN_CACHE && checkGzip(acceptEncoding, response, length, relativePath)) {
-                    String cachePath = PropertiesUtil.CACHE_PATH + relativePath;
-                    File cacheFile = new File(cachePath);
-                    if (SystemUtil.checkFileAvailable(cacheFile)) {
-                        is = new FileInputStream(cacheFile);
-                    } else {
-                        is = new FileInputStream(file);
-                        content = CompressUtil.gzipCompress(is);
-                        if (UploadUtil.mkdirs(cacheFile.getParentFile())) {
-                            fos = new FileOutputStream(cacheFile);
-                            fos.write(content);
-                            fos.flush();
-                        }
-                    }
-                }
-                String fileType = relativePath.substring(relativePath.lastIndexOf("."));
-                if (".js".equals(fileType)) {
-                    response.setContentType("application/x-javascript");
-                } else if (".css".equals(fileType)) {
-                    response.setContentType("text/css");
-                }
-                if (CACHE_FILE_TYPE.contains(fileType)) {
-                    response.addDateHeader("Expires", System.currentTimeMillis() + 2592000000L);//30 * 24 * 60 * 60 * 1000
-                }
-                int len = -1;
-                if (content != null) {
-                    os.write(content);
-                } else {
-                    byte[] buff = new byte[COMPRESSION_MIN_SIZE];
-                    if (is == null) {
-                        is = new FileInputStream(file);
-                    }
-                    while ((len = is.read(buff)) != -1) {
-                        os.write(buff, 0, len);
-                    }
-                }
-                os.flush();
-            } finally {
-                if (fos != null) {
-                    fos.close();
-                }
-                if (is != null) {
-                    is.close();
-                }
-                if (os != null) {
-                    os.close();
-                }
-            }
-        }
-    }
-
 
     /**
      * 文件下载
@@ -349,7 +275,7 @@ public class HTTPUtil {
                 } else {
                     fileName = new String(fileName.getBytes(PropertiesUtil.DEFAULT_CHARSET), "ISO8859-1");
                 }
-                response.setContentType("multipart/form-data");
+                response.setContentType(FILE_CONTENT_TYPE);
                 response.setHeader("Content-Disposition", "attachment;fileName=\"" + fileName + "\"");
                 byte[] b = new byte[COMPRESSION_MIN_SIZE];
                 int len;
@@ -359,21 +285,21 @@ public class HTTPUtil {
                 os.flush();
             }
         }
-        return "download_file";
+        return null;
 
     }
 
     /**
      * 检查是否需要gzip压缩
      *
-     * @param acceptEncoding
+     * @param request
      * @param response
      * @param length
-     * @param path
      * @return
      */
-    public static boolean checkGzip(String acceptEncoding, HttpServletResponse response, long length, String path) {
-        if (acceptEncoding != null && acceptEncoding.contains("gzip") && length > COMPRESSION_MIN_SIZE && (path.endsWith(".js") || path.endsWith(".css") || path.endsWith(".jsp"))) {
+    public static boolean checkGzip(HttpServletRequest request, HttpServletResponse response, long length) {
+        String acceptEncoding = request.getHeader("Accept-Encoding");
+        if (acceptEncoding != null && acceptEncoding.contains("gzip") && length > COMPRESSION_MIN_SIZE) {
             response.addHeader("Content-Encoding", "gzip");
             return true;
         }
@@ -394,21 +320,21 @@ public class HTTPUtil {
     /**
      * 生成api接口签名
      *
-     * @param appKey
+     * @param accessKey
      * @param apiUrl
      * @param params
      * @param expireTime
      * @return
      * @throws Exception
      */
-    public static Map<String, String> generateAPIToken(String appKey, String apiUrl, TreeMap<String, String> params, int expireTime) throws Exception {
+    public static Map<String, String> generateAPIToken(String accessKey, String apiUrl, TreeMap<String, String> params, int expireTime) throws Exception {
         Map<String, String> headers = new HashMap<String, String>();
-        headers.put("token", generateToken(appKey, apiUrl, params, expireTime));
+        headers.put("token", generateToken(accessKey, apiUrl, params, expireTime));
         return headers;
     }
 
     private static String generateToken(String appKey, String apiUrl, TreeMap<String, String> params, int expireTime) throws Exception {
-        return expireTime + "_" + EncryptUtil.MD5((PropertiesUtil.API_KEY_MAP.get(appKey) + "_" + apiUrl + "_" + expireTime + "_" + getDataByParams(params)).getBytes(PropertiesUtil.DEFAULT_CHARSET));
+        return expireTime + "_" + EncryptUtil.MD5((SystemUtil.API_KEY_MAP.get(appKey) + "_" + apiUrl + "_" + expireTime + "_" + getDataByParams(params)).getBytes(PropertiesUtil.DEFAULT_CHARSET));
     }
 
     /**
