@@ -80,37 +80,39 @@ public class DispatcherController extends HttpServlet {
                 if (classPath.endsWith(".class")) {
                     classPath = classPath.substring(classPath.indexOf(File.separator + "classes") + 9, classPath.lastIndexOf(".")).replace(File.separator, ".");
                     Class clazz = Class.forName(classPath);
-                    Method[] methods = clazz.getDeclaredMethods();
-                    Object controller = clazz.getDeclaredConstructor().newInstance();
-                    for (Method method : methods) {
-                        if (method.isAnnotationPresent(RequestUri.class)) {
-                            RequestUri requestUri = method.getAnnotation(RequestUri.class);
-                            String uri = requestUri.value();
-                            if (requestMap.containsKey(uri)) {
-                                throw new RuntimeException("uri conflict---------->" + uri);
-                            }
-                            Parameter[] parameters = method.getParameters();
-                            if (parameters.length != 4 || !parameters[0].getType().isAssignableFrom(ConnectionBean.class)
-                                    || !parameters[1].getType().isAssignableFrom(Jedis.class)
-                                    || !parameters[2].getType().isAssignableFrom(HttpServletRequest.class)
-                                    || !parameters[3].getType().isAssignableFrom(HttpServletResponse.class)) {
-                                throw new RuntimeException("request method param error---------->" + method.getDeclaringClass().getName() + "#" + method.getName());
-                            }
-                            BaseExecutor executor = new BaseExecutor() {
-                                @Override
-                                protected void execute(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-                                    Method method1 = controller.getClass().getMethod(method.getName(), ConnectionBean.class, Jedis.class, HttpServletRequest.class, HttpServletResponse.class);
-                                    method1.invoke(controller, connection, jedis, request, response);
+                    if (clazz.isAssignableFrom(BaseController.class)) {
+                        Method[] methods = clazz.getDeclaredMethods();
+                        Object controller = clazz.getDeclaredConstructor().newInstance();
+                        for (Method method : methods) {
+                            if (method.isAnnotationPresent(RequestUri.class)) {
+                                RequestUri requestUri = method.getAnnotation(RequestUri.class);
+                                String uri = requestUri.value();
+                                if (requestMap.containsKey(uri)) {
+                                    throw new RuntimeException("uri conflict---------->" + uri);
                                 }
-                            };
-                            requestMap.put(uri, executor);
-                            String labels = requestUri.labels();
-                            if (StringUtils.isNotBlank(labels)) {
-                                PRIVILEGE_LABEL_MAP.put(uri, new HashSet<String>(List.of(labels.split(","))));
-                            }
-                            String slavePoolName = requestUri.slave();
-                            if (StringUtils.isNotBlank(slavePoolName)) {
-                                SLAVE_POOL_MAP.put(uri, slavePoolName);
+                                Parameter[] parameters = method.getParameters();
+                                if (parameters.length != 4 || !parameters[0].getType().isAssignableFrom(ConnectionBean.class)
+                                        || !parameters[1].getType().isAssignableFrom(Jedis.class)
+                                        || !parameters[2].getType().isAssignableFrom(HttpServletRequest.class)
+                                        || !parameters[3].getType().isAssignableFrom(HttpServletResponse.class)) {
+                                    throw new RuntimeException("request method param error---------->" + method.getDeclaringClass().getName() + "#" + method.getName());
+                                }
+                                BaseExecutor executor = new BaseExecutor() {
+                                    @Override
+                                    protected void execute(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+                                        Method method1 = controller.getClass().getMethod(method.getName(), ConnectionBean.class, Jedis.class, HttpServletRequest.class, HttpServletResponse.class);
+                                        method1.invoke(controller, connection, jedis, request, response);
+                                    }
+                                };
+                                requestMap.put(uri, executor);
+                                String labels = requestUri.labels();
+                                if (StringUtils.isNotBlank(labels)) {
+                                    PRIVILEGE_LABEL_MAP.put(uri, new HashSet<String>(List.of(labels.split(","))));
+                                }
+                                String slavePoolName = requestUri.slave();
+                                if (StringUtils.isNotBlank(slavePoolName)) {
+                                    SLAVE_POOL_MAP.put(uri, slavePoolName);
+                                }
                             }
                         }
                     }

@@ -15,7 +15,6 @@ import com.github.automain.util.SystemUtil;
 import com.github.automain.util.http.HTTPUtil;
 import com.github.fastjdbc.bean.ConnectionBean;
 import com.github.fastjdbc.bean.ConnectionPool;
-import com.github.fastjdbc.util.RequestUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import redis.clients.jedis.Jedis;
 
@@ -33,17 +32,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
-public abstract class BaseExecutor extends RequestUtil implements ServiceContainer, Runnable {
+public abstract class BaseExecutor extends BaseController implements Runnable {
 
-    protected static final int SESSION_EXPIRE_SECONDS = PropertiesUtil.getIntProperty("app.sessionExpireSeconds", "1800");
-    protected static final int CACHE_EXPIRE_SECONDS = SESSION_EXPIRE_SECONDS + 300;
-    protected static final String AES_PASSWORD = PropertiesUtil.getStringProperty("app.AESPassword");
-    protected static final String CODE_SUCCESS = "0";// 返回成功
-    protected static final String CODE_FAIL = "1";// 返回失败
-    protected static final String PAGE_BEAN_PARAM = "pageBean";// 分页对象参数名
-    protected static final Logger LOGGER = SystemUtil.getLogger();
     private static final List<String> WHITE_LIST_URL = List.of("/test");
 
     private AsyncContext asyncContext;
@@ -63,7 +54,7 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
             String uri = HTTPUtil.getRequestUri(request);
             connection = ConnectionPool.getConnectionBean(DispatcherController.SLAVE_POOL_MAP.get(uri));
             if (checkUserAuthority(jedis, request, response)) {
-                setJsonResult(request, CODE_SUCCESS, "");
+                setSuccessJsonResult(request);
                 execute(connection, jedis, request, response);
             } else {
                 setJsonResult(request, "403", "无权限访问或登录已过期");
@@ -167,19 +158,6 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
         return false;
     }
 
-
-    /**
-     * 设置json返回状态码和状态信息
-     *
-     * @param request
-     * @param code
-     * @param msg
-     */
-    protected static void setJsonResult(HttpServletRequest request, String code, String msg) {
-        request.setAttribute("code", code);
-        request.setAttribute("msg", msg);
-    }
-
     /**
      * request中参数封装到json
      *
@@ -236,7 +214,7 @@ public abstract class BaseExecutor extends RequestUtil implements ServiceContain
                         ConnectionBean connection = null;
                         try {
                             connection = ConnectionPool.getConnectionBean(null);
-                            TbUser user = TB_USER_SERVICE.selectTableById(connection, userId);
+                            TbUser user = ServiceContainer.TB_USER_SERVICE.selectTableById(connection, userId);
                             userMap = new HashMap<String, String>();
                             userMap.put("userName", user.getUserName());
                             userMap.put("cellphone", user.getCellphone());
