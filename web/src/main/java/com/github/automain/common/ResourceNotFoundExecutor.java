@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 public class ResourceNotFoundExecutor extends BaseExecutor {
 
     @Override
-    protected void execute(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        setJsonResult(request, "404", "资源未找到");
+    protected JsonResponse execute(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        return JsonResponse.getJson(404, "资源未找到");
     }
 }

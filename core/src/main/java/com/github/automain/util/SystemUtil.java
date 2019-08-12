@@ -36,6 +36,7 @@ public class SystemUtil {
     private static final String url = PropertiesUtil.getStringProperty("db.master_jdbcUrl");
     public static final String DATABASE_NAME = url.substring(url.lastIndexOf("/") + 1, url.indexOf("?"));
     public static final Map<String, String> API_KEY_MAP = new HashMap<String, String>();
+
     /**
      * 初始化连接池
      */
@@ -96,9 +97,10 @@ public class SystemUtil {
 
         @Override
         public String format(LogRecord record) {
-            return "[" + DateUtil.convertDateToString(record.getMillis(), "yyyy-MM-dd HH:mm:ss.SSS") +
-                    "][" + record.getSourceClassName() + ":" + record.getSourceMethodName() +
-                    "][" + record.getThreadID() + "]" + System.lineSeparator() + "[" + record.getLevel() + "]" + record.getMessage() + System.lineSeparator();
+            return "[" + DateUtil.convertDateToString(record.getMillis(), "yyyy-MM-dd HH:mm:ss,SSS") + "] ["
+                    + record.getLevel() + "] [" + record.getThreadID() + "] ["
+                    + record.getSourceClassName() + "#" + record.getSourceMethodName() + "] "
+                    + record.getMessage() + System.lineSeparator();
         }
     }
 

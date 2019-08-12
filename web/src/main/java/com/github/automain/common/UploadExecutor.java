@@ -21,11 +21,12 @@ import java.util.UUID;
 public class UploadExecutor extends BaseExecutor {
 
     @Override
-    protected void execute(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    protected JsonResponse execute(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        JsonResponse jsonResponse = null;
         try {
             Collection<Part> parts = request.getParts();
             if (parts == null) {
-                setJsonResult(request, CODE_FAIL, "请选择上传文件");
+                jsonResponse = JsonResponse.getFailedJson("请选择上传文件");
             } else {
                 Iterator<Part> iterator = parts.iterator();
                 Part part = null;
@@ -70,17 +71,18 @@ public class UploadExecutor extends BaseExecutor {
                                 request.setAttribute("imagePath", request.getContextPath() + "/uploads" + filePath);
                             }
                         }
-                        setJsonResult(request, CODE_SUCCESS, "上传成功");
+                        jsonResponse = JsonResponse.getFailedJson("上传成功");
                     } else {
-                        setJsonResult(request, CODE_FAIL, "上传失败");
+                        jsonResponse = JsonResponse.getFailedJson("上传失败");
                     }
                 } else {
-                    setJsonResult(request, CODE_FAIL, "请选择上传文件");
+                    jsonResponse = JsonResponse.getFailedJson("请选择上传文件");
                 }
             }
         } catch (IllegalStateException e) {
-            setJsonResult(request, CODE_FAIL, "上传文件过大");
-            throw e;
+            e.printStackTrace();
+            jsonResponse = JsonResponse.getFailedJson("上传文件过大");
         }
+        return jsonResponse;
     }
 }

@@ -59,7 +59,7 @@ public class DispatcherController extends HttpServlet {
             RolePrivilegeContainer.reloadRolePrivilege(jedis, connection);
             // 初始化定时任务
             SystemUtil.reloadSchedule(connection);
-            System.err.println("===============================System Start Success===============================");
+            SystemUtil.getLogger().info("===============================System Start Success===============================");
         } catch (Exception e) {
             e.printStackTrace();
             throw new ServletException(e);
@@ -80,7 +80,7 @@ public class DispatcherController extends HttpServlet {
                 if (classPath.endsWith(".class")) {
                     classPath = classPath.substring(classPath.indexOf(File.separator + "classes") + 9, classPath.lastIndexOf(".")).replace(File.separator, ".");
                     Class clazz = Class.forName(classPath);
-                    if (clazz.isAssignableFrom(BaseController.class)) {
+                    if (BaseController.class.isAssignableFrom(clazz)) {
                         Method[] methods = clazz.getDeclaredMethods();
                         Object controller = clazz.getDeclaredConstructor().newInstance();
                         for (Method method : methods) {
@@ -91,20 +91,25 @@ public class DispatcherController extends HttpServlet {
                                     throw new RuntimeException("uri conflict---------->" + uri);
                                 }
                                 Parameter[] parameters = method.getParameters();
-                                if (parameters.length != 4 || !parameters[0].getType().isAssignableFrom(ConnectionBean.class)
-                                        || !parameters[1].getType().isAssignableFrom(Jedis.class)
-                                        || !parameters[2].getType().isAssignableFrom(HttpServletRequest.class)
-                                        || !parameters[3].getType().isAssignableFrom(HttpServletResponse.class)) {
+                                if (parameters.length != 4 || !ConnectionBean.class.isAssignableFrom(parameters[0].getType())
+                                        || !Jedis.class.isAssignableFrom(parameters[1].getType())
+                                        || !HttpServletRequest.class.isAssignableFrom(parameters[2].getType())
+                                        || !HttpServletResponse.class.isAssignableFrom(parameters[3].getType())) {
                                     throw new RuntimeException("request method param error---------->" + method.getDeclaringClass().getName() + "#" + method.getName());
+                                }
+                                Class<?> returnType = method.getReturnType();
+                                if (!JsonResponse.class.isAssignableFrom(returnType)) {
+                                    throw new RuntimeException("request method return type error---------->" + method.getDeclaringClass().getName() + "#" + method.getName());
                                 }
                                 BaseExecutor executor = new BaseExecutor() {
                                     @Override
-                                    protected void execute(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+                                    protected JsonResponse execute(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
                                         Method method1 = controller.getClass().getMethod(method.getName(), ConnectionBean.class, Jedis.class, HttpServletRequest.class, HttpServletResponse.class);
-                                        method1.invoke(controller, connection, jedis, request, response);
+                                        return (JsonResponse) method1.invoke(controller, connection, jedis, request, response);
                                     }
                                 };
                                 requestMap.put(uri, executor);
+                                SystemUtil.getLogger().info("mapping uri: " + uri);
                                 String labels = requestUri.labels();
                                 if (StringUtils.isNotBlank(labels)) {
                                     PRIVILEGE_LABEL_MAP.put(uri, new HashSet<String>(List.of(labels.split(","))));

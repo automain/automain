@@ -1,7 +1,7 @@
 package com.github.automain.common;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.github.automain.common.container.RolePrivilegeContainer;
 import com.github.automain.common.container.ServiceContainer;
 import com.github.automain.user.bean.TbUser;
@@ -19,7 +19,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import redis.clients.jedis.Jedis;
 
 import javax.servlet.AsyncContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -27,7 +26,6 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +34,9 @@ import java.util.Set;
 public abstract class BaseExecutor extends BaseController implements Runnable {
 
     private static final List<String> WHITE_LIST_URL = List.of("/test");
+    private static final int SESSION_EXPIRE_SECONDS = PropertiesUtil.getIntProperty("app.sessionExpireSeconds", "1800");
+    private static final int CACHE_EXPIRE_SECONDS = SESSION_EXPIRE_SECONDS + 300;
+    private static final String AES_PASSWORD = PropertiesUtil.getStringProperty("app.AESPassword");
 
     private AsyncContext asyncContext;
 
@@ -53,15 +54,15 @@ public abstract class BaseExecutor extends BaseController implements Runnable {
             jedis = RedisUtil.getJedis();
             String uri = HTTPUtil.getRequestUri(request);
             connection = ConnectionPool.getConnectionBean(DispatcherController.SLAVE_POOL_MAP.get(uri));
+            JsonResponse jsonResponse = null;
             if (checkUserAuthority(jedis, request, response)) {
-                setSuccessJsonResult(request);
-                execute(connection, jedis, request, response);
+                jsonResponse = execute(connection, jedis, request, response);
             } else {
-                setJsonResult(request, "403", "无权限访问或登录已过期");
+                jsonResponse = JsonResponse.getJson(403, "无权限访问或登录已过期");
             }
             if (!HTTPUtil.FILE_CONTENT_TYPE.equals(response.getContentType())) {
                 response.setContentType(HTTPUtil.JSON_CONTENT_TYPE);
-                String content = requestToJson(request);
+                String content = JSON.toJSONString(jsonResponse, SerializerFeature.WriteMapNullValue);
                 if (HTTPUtil.HTML_CONTENT_TYPE.equals(response.getContentType()) && HTTPUtil.checkGzip(request, response, content.length())) {
                     byte[] gzip = CompressUtil.gzipCompress(content);
                     OutputStream os = response.getOutputStream();
@@ -69,7 +70,7 @@ public abstract class BaseExecutor extends BaseController implements Runnable {
                     os.flush();
                 } else {
                     PrintWriter writer = response.getWriter();
-                    writer.write(content == null ? "" : content);
+                    writer.write(content);
                     writer.flush();
                 }
             }
@@ -78,18 +79,13 @@ public abstract class BaseExecutor extends BaseController implements Runnable {
             try (StringWriter sw = new StringWriter();
                  PrintWriter pw = new PrintWriter(sw)) {
                 e.printStackTrace(pw);
-                String msg = sw.toString();
+                String message = sw.toString();
                 if (!HTTPUtil.FILE_CONTENT_TYPE.equals(response.getContentType())) {
-                    String content = null;
-                    setJsonResult(request, "500", msg);
+                    JsonResponse jsonResponse = JsonResponse.getJson(500, message);
+                    String content = JSON.toJSONString(jsonResponse, SerializerFeature.WriteMapNullValue);
                     response.setContentType(HTTPUtil.JSON_CONTENT_TYPE);
-                    try {
-                        content = requestToJson(request);
-                    } catch (Exception e1) {
-                        e1.printStackTrace();
-                    }
                     PrintWriter writer = response.getWriter();
-                    writer.write(content == null ? "" : content);
+                    writer.write(content);
                     writer.flush();
                 }
             } catch (IOException e1) {
@@ -116,7 +112,7 @@ public abstract class BaseExecutor extends BaseController implements Runnable {
      * @param response
      * @return
      */
-    protected abstract void execute(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception;
+    protected abstract JsonResponse execute(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception;
 
     /**
      * 公用检查用户权限
@@ -156,25 +152,6 @@ public abstract class BaseExecutor extends BaseController implements Runnable {
             }
         }
         return false;
-    }
-
-    /**
-     * request中参数封装到json
-     *
-     * @param request
-     * @return
-     * @throws ServletException
-     * @throws IOException
-     */
-    private static String requestToJson(HttpServletRequest request) throws ServletException, IOException {
-        JSONObject json = new JSONObject();
-        Enumeration<String> attributeNames = request.getAttributeNames();
-        while (attributeNames.hasMoreElements()) {
-            String key = attributeNames.nextElement();
-            Object o = request.getAttribute(key);
-            json.put(key, JSON.toJSON(o));
-        }
-        return json.toJSONString();
     }
 
     /**
