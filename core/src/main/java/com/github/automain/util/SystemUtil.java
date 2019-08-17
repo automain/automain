@@ -1,6 +1,6 @@
 package com.github.automain.util;
 
-import com.github.automain.common.bean.TbSchedule;
+import com.github.automain.bean.TbSchedule;
 import com.github.automain.common.container.ServiceContainer;
 import com.github.automain.common.thread.ScheduleThread;
 import com.github.fastjdbc.bean.ConnectionBean;
@@ -14,6 +14,10 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +36,7 @@ public class SystemUtil {
     private static Logger LOGGER = null;
     private static ScheduledExecutorService SCHEDULE_THREAD_POOL = null;
     private static final boolean OPEN_SCHEDULE = PropertiesUtil.getBooleanProperty("app.openSchedule");
+    private static final DateTimeFormatter LOG_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss,SSS");
     public static final String PROJECT_HOST = PropertiesUtil.getStringProperty("app.projectHost");
     private static final String url = PropertiesUtil.getStringProperty("db.master_jdbcUrl");
     public static final String DATABASE_NAME = url.substring(url.lastIndexOf("/") + 1, url.indexOf("?"));
@@ -97,7 +102,7 @@ public class SystemUtil {
 
         @Override
         public String format(LogRecord record) {
-            return "[" + DateUtil.convertDateToString(record.getMillis(), "yyyy-MM-dd HH:mm:ss,SSS") + "] ["
+            return "[" + LocalDateTime.ofInstant(Instant.ofEpochMilli(record.getMillis()), ZoneOffset.systemDefault()).format(LOG_DATE_TIME_FORMATTER) + "] ["
                     + record.getLevel() + "] [" + record.getThreadID() + "] ["
                     + record.getSourceClassName() + "#" + record.getSourceMethodName() + "] "
                     + record.getMessage() + System.lineSeparator();
@@ -122,6 +127,16 @@ public class SystemUtil {
     public static boolean checkIsWindows() {
         String osName = System.getProperty("os.name");
         return osName.toLowerCase().startsWith("winbows");
+    }
+
+    /**
+     * 创建目录
+     *
+     * @param file
+     * @return
+     */
+    public static boolean mkdirs(File file) {
+        return file != null && ((file.exists() && file.isDirectory()) || file.mkdirs());
     }
 
     /**
@@ -169,7 +184,7 @@ public class SystemUtil {
     private static void startSchedule(TbSchedule schedule) {
         long initialDelay = 0L;
         long period = schedule.getDelayTime();
-        long now = DateUtil.getNowSecond();
+        long now = DateUtil.getNow();
         long start = schedule.getStartExecuteTime().getTime() / 1000;
         long diff = now - start;
         if (diff > 0) {
@@ -181,4 +196,5 @@ public class SystemUtil {
             SCHEDULE_THREAD_POOL.scheduleAtFixedRate(new ScheduleThread(schedule.getScheduleUrl(), period), initialDelay, period, TimeUnit.SECONDS);
         }
     }
+
 }

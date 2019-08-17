@@ -1,7 +1,7 @@
 package com.github.automain.util;
 
-import com.github.automain.common.bean.TbUploadFile;
-import com.github.automain.common.bean.TbUploadRelation;
+import com.github.automain.bean.TbUploadFile;
+import com.github.automain.bean.TbUploadRelation;
 import com.github.automain.common.container.ServiceContainer;
 import com.github.fastjdbc.bean.ConnectionBean;
 import org.apache.commons.lang3.StringUtils;
@@ -37,7 +37,7 @@ public class UploadUtil implements ServiceContainer {
     public static Long saveFileByBase64(ConnectionBean connection, String base64, String fileExtension) throws Exception {
         if (fileExtension != null) {
             String newFileName = UUID.randomUUID() + "." + fileExtension;
-            String filePath = "/" + DateUtil.getNow(DateUtil.SIMPLE_DATE_PATTERN) + "/" + newFileName;
+            String filePath = "/" + DateUtil.getNow(DateUtil.DATE_FORMATTER) + "/" + newFileName;
             String absolutePath = UPLOADS_PATH + filePath;
             base6ToFile(base64, absolutePath);
             File file = new File(absolutePath);
@@ -175,22 +175,12 @@ public class UploadUtil implements ServiceContainer {
      */
     private static void base6ToFile(String base64, String filePath) throws IOException {
         File file = new File(filePath);
-        if (mkdirs(file.getParentFile())) {
+        if (SystemUtil.mkdirs(file.getParentFile())) {
             try (FileOutputStream fos = new FileOutputStream(file)) {
                 byte[] bytes = EncryptUtil.BASE64Decode(base64);
                 fos.write(bytes);
             }
         }
-    }
-
-    /**
-     * 创建目录
-     *
-     * @param file
-     * @return
-     */
-    public static boolean mkdirs(File file) {
-        return file != null && ((file.exists() && file.isDirectory()) || file.mkdirs());
     }
 
 }

@@ -1,11 +1,11 @@
 package com.github.automain.common.container;
 
 import com.alibaba.fastjson.JSON;
-import com.github.automain.common.vo.MenuVO;
-import com.github.automain.common.vo.PrivilegeVO;
-import com.github.automain.user.bean.TbMenu;
-import com.github.automain.user.bean.TbPrivilege;
-import com.github.automain.user.bean.TbRole;
+import com.github.automain.vo.MenuVO;
+import com.github.automain.vo.PrivilegeVO;
+import com.github.automain.bean.TbMenu;
+import com.github.automain.bean.TbPrivilege;
+import com.github.automain.bean.TbRole;
 import com.github.automain.util.RedisUtil;
 import com.github.fastjdbc.bean.ConnectionBean;
 import redis.clients.jedis.Jedis;

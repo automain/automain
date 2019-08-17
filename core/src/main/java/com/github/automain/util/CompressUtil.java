@@ -98,16 +98,16 @@ public class CompressUtil {
                 unCompressPath += File.separator;
             }
             File unCompressFolder = new File(unCompressPath);
-            if (UploadUtil.mkdirs(unCompressFolder)) {
+            if (SystemUtil.mkdirs(unCompressFolder)) {
                 while ((zipEntry = zis.getNextEntry()) != null) {
                     File file = new File(unCompressPath + zipEntry.getName());
                     if (zipEntry.isDirectory()) {
-                        if (!UploadUtil.mkdirs(file)) {
+                        if (!SystemUtil.mkdirs(file)) {
                             break;
                         }
                     } else {
                         File parent = file.getParentFile();
-                        if (UploadUtil.mkdirs(parent)) {
+                        if (SystemUtil.mkdirs(parent)) {
                             FileOutputStream fos = new FileOutputStream(file);
                             int readBytes = -1;
                             byte[] buf = new byte[BUF_SIZE];
@@ -130,11 +130,11 @@ public class CompressUtil {
      * @param content
      * @return
      */
-    public static byte[] gzipCompress(String content) throws IOException {
+    public static byte[] gzipCompress(byte[] content) throws IOException {
         if (content != null) {
             try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
                  GZIPOutputStream os = new GZIPOutputStream(bos)) {
-                os.write(content.getBytes(PropertiesUtil.DEFAULT_CHARSET));
+                os.write(content);
                 os.finish();
                 os.flush();
                 return bos.toByteArray();

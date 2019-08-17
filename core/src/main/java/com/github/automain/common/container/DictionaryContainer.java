@@ -1,8 +1,8 @@
 package com.github.automain.common.container;
 
 import com.alibaba.fastjson.JSON;
-import com.github.automain.common.bean.TbDictionary;
-import com.github.automain.common.vo.DictionaryVO;
+import com.github.automain.bean.TbDictionary;
+import com.github.automain.vo.DictionaryVO;
 import com.github.automain.util.RedisUtil;
 import com.github.fastjdbc.bean.ConnectionBean;
 import redis.clients.jedis.Jedis;

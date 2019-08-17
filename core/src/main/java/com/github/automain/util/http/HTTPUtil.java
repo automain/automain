@@ -43,7 +43,6 @@ public class HTTPUtil {
     private static final String END = "\r\n";
     private static final int READ_FILE_SIZE = 1024;
     private static final int COMPRESSION_MIN_SIZE = 2048;
-    public static final String HTML_CONTENT_TYPE = "text/html; charset=" + PropertiesUtil.DEFAULT_CHARSET;
     public static final String JSON_CONTENT_TYPE = "application/json; charset=" + PropertiesUtil.DEFAULT_CHARSET;
     public static final String FILE_CONTENT_TYPE = "multipart/form-data";
 

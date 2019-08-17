@@ -103,7 +103,7 @@ public class ExcelUtil {
     public static void writeWorkbook(String path, Workbook wb) throws IOException {
         if (path != null && wb != null) {
             File file = new File(path);
-            if (UploadUtil.mkdirs(file.getParentFile())) {
+            if (SystemUtil.mkdirs(file.getParentFile())) {
                 try (FileOutputStream fos = new FileOutputStream(file)) {
                     wb.write(fos);
                 }
@@ -388,7 +388,7 @@ public class ExcelUtil {
                     if (TYPE_DATE.equals(type)) {
                         retList.add(date);
                     } else if (TYPE_STRING.equals(type)) {
-                        retList.add(DateUtil.convertDateToString(date, DateUtil.SIMPLE_DATE_TIME_PATTERN));
+                        retList.add(DateUtil.convertDateToString((int) (date.getTime() / 1000), DateUtil.DATE_TIME_FORMATTER));
                     }
                 } else {
                     BigDecimal cellValue = BigDecimal.valueOf(cell.getNumericCellValue());

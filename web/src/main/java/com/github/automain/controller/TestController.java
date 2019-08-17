@@ -1,8 +1,8 @@
 package com.github.automain.controller;
 
-import com.github.automain.common.BaseController;
-import com.github.automain.common.JsonResponse;
-import com.github.automain.common.RequestUri;
+import com.github.automain.common.annotation.RequestUri;
+import com.github.automain.common.bean.JsonResponse;
+import com.github.automain.common.controller.BaseController;
 import com.github.fastjdbc.bean.ConnectionBean;
 import redis.clients.jedis.Jedis;
 

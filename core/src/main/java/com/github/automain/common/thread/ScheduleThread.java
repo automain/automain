@@ -26,7 +26,7 @@ public class ScheduleThread implements Runnable {
             if (lock) {
                 HTTPRequestBean bean = new HTTPRequestBean();
                 bean.setUrl(SystemUtil.PROJECT_HOST + scheduleUrl);
-                bean.setHeaders(HTTPUtil.generateAPIToken("test", scheduleUrl, null, DateUtil.getNowSecond() + 1800));
+                bean.setHeaders(HTTPUtil.generateAPIToken("test", scheduleUrl, null, DateUtil.getNow() + 1800));
                 HTTPUtil.sendRequest(bean);
             }
         } catch (Exception e) {
