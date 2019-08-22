@@ -1,6 +1,5 @@
 package com.github.automain.common.generator;
 
-
 import com.github.automain.common.bean.ColumnBean;
 
 import java.util.ArrayList;
@@ -10,14 +9,8 @@ import java.util.Map;
 
 public class DaoGenerator extends CommonGenerator {
 
-    public String generate(String databaseName, String tableName, boolean deleteCheck) {
-        if (databaseName == null || tableName == null) {
-            return null;
-        }
+    public String generate(List<ColumnBean> columns, List<String> keyColumns, String tableName, String upperTableName, boolean hasIsValid) {
         try {
-            String upperTableName = convertToJavaName(tableName, true);
-            List<ColumnBean> columns = selectAllColumnList(null, databaseName, tableName);
-            List<String> keyColumns = selectKeyColumnList(null, databaseName, tableName);
             String resultStr = "";
 
             resultStr += getImportHead();
@@ -26,7 +19,8 @@ public class DaoGenerator extends CommonGenerator {
 
             resultStr += getSelectTableForCustomPage(upperTableName);
 
-            resultStr += getSetSearchCondition(tableName, columns, keyColumns, deleteCheck);
+            resultStr += getSetSearchCondition(tableName, upperTableName, columns, keyColumns, hasIsValid);
+
             resultStr += "\n}";
             return resultStr;
         } catch (Exception e) {
@@ -38,6 +32,7 @@ public class DaoGenerator extends CommonGenerator {
     private String getImportHead() {
         return "import com.github.fastjdbc.bean.ConnectionBean;\n" +
                 "import com.github.fastjdbc.bean.PageBean;\n" +
+                "import com.github.fastjdbc.bean.PageParamBean;\n" +
                 "import com.github.fastjdbc.common.BaseDao;\n\n" +
                 "import java.util.ArrayList;\n" +
                 "import java.util.List;\n\n";
@@ -50,26 +45,25 @@ public class DaoGenerator extends CommonGenerator {
     private String getSelectTableForCustomPage(String upperTableName) {
         return "\n\n    @SuppressWarnings(\"unchecked\")\n" +
                 "    public PageBean<" + upperTableName + "> selectTableForCustomPage(ConnectionBean connection, " +
-                upperTableName + " bean, int page, int limit) throws Exception {\n" +
-                "        List<Object> countParameterList = new ArrayList<Object>();\n" +
-                "        List<Object> parameterList = new ArrayList<Object>();\n" +
-                "        String countSql = setSearchCondition(bean, countParameterList, true);\n" +
-                "        String sql = setSearchCondition(bean, parameterList, false);\n" +
-                "        PageParameterBean<" + upperTableName + "> pageParameterBean = new PageParameterBean<" + upperTableName + ">();\n" +
-                "        pageParameterBean.setConnection(connection);\n" +
-                "        pageParameterBean.setBean(bean);\n" +
-                "        pageParameterBean.setCountSql(countSql);\n" +
-                "        pageParameterBean.setCountParameterList(countParameterList);\n" +
-                "        pageParameterBean.setSql(sql);\n" +
-                "        pageParameterBean.setParameterList(parameterList);\n" +
-                "        pageParameterBean.setPage(page);\n" +
-                "        pageParameterBean.setLimit(limit);\n" +
-                "        return selectTableForPage(pageParameterBean);\n" +
+                upperTableName + " bean, int page, int size) throws Exception {\n" +
+                "        List<Object> countParamList = new ArrayList<Object>();\n" +
+                "        List<Object> paramList = new ArrayList<Object>();\n" +
+                "        String countSql = setSearchCondition(bean, countParamList, true);\n" +
+                "        String sql = setSearchCondition(bean, paramList, false);\n" +
+                "        PageParamBean<" + upperTableName + "> pageParamBean = new PageParamBean<" + upperTableName + ">()\n" +
+                "                .setConnection(connection)\n" +
+                "                .setBean(bean)\n" +
+                "                .setCountSql(countSql)\n" +
+                "                .setCountParamList(countParamList)\n" +
+                "                .setSql(sql)\n" +
+                "                .setParamList(paramList)\n" +
+                "                .setPage(page)\n" +
+                "                .setSize(size)\n" +
+                "        return selectTableForPage(pageParamBean);\n" +
                 "    }";
     }
 
-    private String getSetSearchCondition(String tableName, List<ColumnBean> columns, List<String> keyColumns, boolean deleteCheck) {
-        String upperTableName = convertToJavaName(tableName, true);
+    private String getSetSearchCondition(String tableName, String upperTableName, List<ColumnBean> columns, List<String> keyColumns, boolean deleteCheck) {
         String condition = "";
         List<ColumnBean> keyColumnList = new ArrayList<ColumnBean>();
         List<ColumnBean> generalColumns = new ArrayList<ColumnBean>();
@@ -88,12 +82,10 @@ public class DaoGenerator extends CommonGenerator {
         for (String keyColumn : keyColumns) {
             keyColumnList.add(columnMap.get(keyColumn));
         }
-        if (!keyColumnList.isEmpty()) {
-            condition += getCondition(keyColumnList);
-        }
+        condition += getCondition(keyColumnList);
         condition += getCondition(generalColumns);
-        String firstCondition = deleteCheck ? "is_delete = 0" : "1 = 1";
-        return "\n\n    private String setSearchCondition(" + upperTableName + " bean, List<Object> parameterList, boolean isCountSql) {\n" +
+        String firstCondition = deleteCheck ? DELETE_LABEL_COLUMN_NAME + " = 1" : "1 = 1";
+        return "\n\n    private String setSearchCondition(" + upperTableName + " bean, List<Object> paramList, boolean isCountSql) {\n" +
                 "        StringBuilder sql = new StringBuilder(\"SELECT \");\n" +
                 "        sql.append(isCountSql ? \"COUNT(1)\" : \"*\").append(\" FROM " + tableName + " WHERE " + firstCondition + " \");\n" +
                 condition +
@@ -105,22 +97,27 @@ public class DaoGenerator extends CommonGenerator {
         StringBuilder condition = new StringBuilder();
         for (ColumnBean column : columns) {
             String columnName = column.getColumnName();
-            if ("is_delete".equals(columnName)) {
+            if (DELETE_LABEL_COLUMN_NAME.equals(columnName)) {
                 continue;
             }
             String upperColumnName = convertToJavaName(columnName, true);
             if (checkTimeTypeColumn(column)) {
-                condition.append("        if (bean.get").append(upperColumnName).append("Range() != null) {\n")
-                        .append("            sql.append(\" AND ").append(columnName).append(" >= ? AND ")
-                        .append(columnName).append(" <= ?\");\n").append("            setTimeRange(bean.get")
-                        .append(upperColumnName).append("Range(), parameterList);\n").append("        }\n");
+                condition.append("        if (bean.get").append(upperColumnName).append("() != null ) {\n")
+                        .append("            sql.append(\" AND ").append(columnName).append(" >= ? ")
+                        .append("            paramList.add(bean.get").append(upperColumnName).append("());\n")
+                        .append("        }\n")
+                        .append("        if (bean.get").append(upperColumnName).append("End() != null) {\n")
+                        .append("            sql.append(\" AND ").append(columnName).append(" < ?\");\n")
+                        .append("            paramList.add(bean.get").append(upperColumnName).append("End());\n")
+                        .append("        }\n");
             } else {
                 condition.append("        if (bean.get").append(upperColumnName).append("() != null) {\n")
                         .append("            sql.append(\" AND ").append(columnName).append(" = ?\");\n")
-                        .append("            parameterList.add(bean.get").append(upperColumnName).append("());\n")
+                        .append("            paramList.add(bean.get").append(upperColumnName).append("());\n")
                         .append("        }\n");
             }
         }
         return condition.toString();
     }
+
 }

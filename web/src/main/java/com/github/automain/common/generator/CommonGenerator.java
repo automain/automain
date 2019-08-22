@@ -2,6 +2,7 @@ package com.github.automain.common.generator;
 
 
 import com.github.automain.common.bean.ColumnBean;
+import com.github.automain.util.PropertiesUtil;
 import com.github.fastjdbc.bean.ConnectionBean;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,15 +19,16 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class CommonGenerator {
 
     protected static final String DELETE_LABEL_COLUMN_NAME = "is_valid";
+    protected static final String GLOBAL_ID_COLUMN_NAME = "gid";
+    protected static final String CREATE_TIME_COLUMN_NAME = "create_time";
+    protected static final String UPDATE_TIME_COLUMN_NAME = "update_time";
     public static final String GENERATE_PATH = "/data/";
     private static final List<String> SYSTEM_DATABASE = Arrays.asList("information_schema", "mysql", "performance_schema", "sys");
     private static final List<String> TEXT_AREA_COLUMN = Arrays.asList("longtext", "mediumtext", "text", "tinytext");
@@ -76,7 +78,7 @@ public class CommonGenerator {
         return resultList;
     }
 
-    public String convertToJavaName(String dbName, boolean uppercaseFirst) {
+    public static String convertToJavaName(String dbName, boolean uppercaseFirst) {
         String[] names = dbName.split("_");
         StringBuilder javaName = new StringBuilder();
         for (String name : names) {
@@ -102,29 +104,8 @@ public class CommonGenerator {
                 "<body>\n";
     }
 
-    protected String getTimeTypeImport(List<ColumnBean> columns) {
-        Set<String> timeTypeSet = new HashSet<String>();
-        for (ColumnBean column : columns) {
-            String dataType = column.getDataType();
-            if ("Timestamp".equals(dataType)) {
-                timeTypeSet.add("import java.sql.Timestamp;\n");
-            }
-            if ("Time".equals(dataType)) {
-                timeTypeSet.add("import java.sql.Time;\n");
-            }
-            if ("Date".equals(dataType)) {
-                timeTypeSet.add("import java.util.Date;\n");
-            }
-        }
-        StringBuilder timeTypeImport = new StringBuilder();
-        for (String s : timeTypeSet) {
-            timeTypeImport.append(s);
-        }
-        return timeTypeImport.toString();
-    }
-
     protected boolean checkTimeTypeColumn(ColumnBean column) {
-        return "Integer".equals(column.getDataType()) && column.getColumnName().endsWith("time");
+        return "Integer".equals(column.getDataType()) && column.getColumnName().toLowerCase().endsWith("time");
     }
 
     public static List<ColumnBean> selectNoPriColunmList(ConnectionBean connection, String databaseName, String tableName) {
@@ -203,10 +184,36 @@ public class CommonGenerator {
         return columnList;
     }
 
-    public static boolean hasIsValid(ConnectionBean connection, String databaseName, String tableName) {
-        List<ColumnBean> columns = selectAllColumnList(connection, databaseName, tableName);
+    public static boolean hasIsValid(List<ColumnBean> columns) {
         for (ColumnBean column : columns) {
-            if ("is_valid".equals(column.getColumnName()) && "Integer".equals(column.getDataType())) {
+            if (DELETE_LABEL_COLUMN_NAME.equals(column.getColumnName()) && "Integer".equals(column.getDataType())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean hasGlobalId(List<ColumnBean> columns) {
+        for (ColumnBean column : columns) {
+            if (GLOBAL_ID_COLUMN_NAME.equals(column.getColumnName()) && "String".equals(column.getDataType())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean hasCreateTime(List<ColumnBean> columns) {
+        for (ColumnBean column : columns) {
+            if (CREATE_TIME_COLUMN_NAME.equals(column.getColumnName()) && "Integer".equals(column.getDataType())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean hasUpdateTime(List<ColumnBean> columns) {
+        for (ColumnBean column : columns) {
+            if (UPDATE_TIME_COLUMN_NAME.equals(column.getColumnName()) && "Integer".equals(column.getDataType())) {
                 return true;
             }
         }
@@ -283,7 +290,7 @@ public class CommonGenerator {
             File parentFile = file.getParentFile();
             if ((parentFile.exists() && parentFile.isDirectory()) || parentFile.mkdirs()) {
                 try (OutputStream os = new FileOutputStream(file);
-                     OutputStreamWriter writer = new OutputStreamWriter(os, "UTF-8")) {
+                     OutputStreamWriter writer = new OutputStreamWriter(os, PropertiesUtil.DEFAULT_CHARSET)) {
                     writer.write(fileContent);
                     writer.flush();
                 }

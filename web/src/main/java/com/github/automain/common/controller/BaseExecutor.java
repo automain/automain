@@ -2,21 +2,14 @@ package com.github.automain.common.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.github.automain.bean.TbUser;
 import com.github.automain.common.bean.JsonResponse;
-import com.github.automain.common.container.RolePrivilegeContainer;
-import com.github.automain.common.container.ServiceContainer;
 import com.github.automain.util.CompressUtil;
-import com.github.automain.util.CookieUtil;
-import com.github.automain.util.DateUtil;
-import com.github.automain.util.EncryptUtil;
 import com.github.automain.util.PropertiesUtil;
 import com.github.automain.util.RedisUtil;
 import com.github.automain.util.SystemUtil;
 import com.github.automain.util.http.HTTPUtil;
 import com.github.fastjdbc.bean.ConnectionBean;
 import com.github.fastjdbc.bean.ConnectionPool;
-import org.apache.commons.collections4.CollectionUtils;
 import redis.clients.jedis.Jedis;
 
 import javax.servlet.AsyncContext;
@@ -27,10 +20,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public abstract class BaseExecutor extends BaseController implements Runnable {
 
@@ -124,33 +114,33 @@ public abstract class BaseExecutor extends BaseController implements Runnable {
      * @throws Exception
      */
     private boolean checkUserAuthority(Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String uri = HTTPUtil.getRequestUri(request);
-        if (WHITE_LIST_URL.contains(uri)) {
-            return true;
-        }
-        TbUser user = getSessionUser(jedis, request, response);
-        if (user == null) {
-            return false;
-        }
-        Set<String> roleLabel = RolePrivilegeContainer.getRoleLabelByUserId(jedis, user.getUserId());
-        if (roleLabel == null) {
-            return false;
-        }
-        if (roleLabel.contains("admin")) {
-            return true;
-        }
-        Set<String> labels = DispatcherController.PRIVILEGE_LABEL_MAP.get(uri);
-        if (CollectionUtils.isEmpty(labels)) {
-            return true;
-        }
-        Set<String> privileges = RolePrivilegeContainer.getPrivilegeSetByUserId(jedis, user.getUserId());
-        if (privileges != null) {
-            for (String label : labels) {
-                if (privileges.contains(label)) {
-                    return true;
-                }
-            }
-        }
+//        String uri = HTTPUtil.getRequestUri(request);
+//        if (WHITE_LIST_URL.contains(uri)) {
+//            return true;
+//        }
+//        TbUser user = getSessionUser(jedis, request, response);
+//        if (user == null) {
+//            return false;
+//        }
+//        Set<String> roleLabel = RolePrivilegeContainer.getRoleLabelByUserId(jedis, user.getUserId());
+//        if (roleLabel == null) {
+//            return false;
+//        }
+//        if (roleLabel.contains("admin")) {
+//            return true;
+//        }
+//        Set<String> labels = DispatcherController.PRIVILEGE_LABEL_MAP.get(uri);
+//        if (CollectionUtils.isEmpty(labels)) {
+//            return true;
+//        }
+//        Set<String> privileges = RolePrivilegeContainer.getPrivilegeSetByUserId(jedis, user.getUserId());
+//        if (privileges != null) {
+//            for (String label : labels) {
+//                if (privileges.contains(label)) {
+//                    return true;
+//                }
+//            }
+//        }
         return false;
     }
 
@@ -162,76 +152,76 @@ public abstract class BaseExecutor extends BaseController implements Runnable {
      * @param response
      * @return
      */
-    protected static TbUser getSessionUser(Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String accessToken = CookieUtil.getCookieByName(request, "accessToken");
-        if (accessToken == null) {
-            accessToken = request.getHeader("accessToken");
-        }
-        if (accessToken != null) {
-            HTTPUtil.setResponseHeader(response, "accessToken", accessToken);
-            String decrypt = EncryptUtil.AESDecrypt(accessToken.getBytes(PropertiesUtil.DEFAULT_CHARSET), AES_PASSWORD);
-            String[] arr = decrypt.split("_");
-            if (arr.length == 2) {
-                Long userId = Long.valueOf(arr[0]);
-                String userKey = "user:" + userId;
-                Long expireTime = Long.valueOf(arr[1]);
-                Map<String, String> userMap = null;
-                int newExpireTime = DateUtil.getNow() + SESSION_EXPIRE_SECONDS;
-                int newCacheExpireTime = DateUtil.getNow() + CACHE_EXPIRE_SECONDS;
-                if (jedis != null) {
-                    userMap = jedis.hgetAll(userKey);
-                } else {
-                    userMap = RedisUtil.getLocalCache(userKey);
-                }
-                boolean isRefresh = false;
-                if (userMap == null) {
-                    if (expireTime < System.currentTimeMillis()) {
-                        return null;
-                    } else {
-                        ConnectionBean connection = null;
-                        try {
-                            connection = ConnectionPool.getConnectionBean(null);
-                            TbUser user = ServiceContainer.TB_USER_SERVICE.selectTableById(connection, userId);
-                            userMap = new HashMap<String, String>();
-                            userMap.put("userName", user.getUserName());
-                            userMap.put("cellphone", user.getCellphone());
-                            userMap.put("email", user.getEmail());
-                            isRefresh = true;
-                        } finally {
-                            ConnectionPool.closeConnectionBean(connection);
-                        }
-                    }
-                } else {
-                    long cacheExpire = Long.parseLong(userMap.get("expireTime"));
-                    if (cacheExpire < System.currentTimeMillis()) {
-                        RedisUtil.delLocalCache(userKey);
-                        return null;
-                    } else if (expireTime < System.currentTimeMillis()) {
-                        isRefresh = true;
-                    }
-                }
-                if (isRefresh) {
-                    userMap.put("expireTime", String.valueOf(newCacheExpireTime));
-                    if (jedis != null) {
-                        jedis.hmset(userKey, userMap);
-                        jedis.expire(userKey, CACHE_EXPIRE_SECONDS);
-                    } else {
-                        RedisUtil.setLocalCache(userKey, userMap);
-                    }
-                    String value = userId + "_" + newExpireTime;
-                    String newAccessToken = EncryptUtil.AESEncrypt(value.getBytes(PropertiesUtil.DEFAULT_CHARSET), AES_PASSWORD);
-                    CookieUtil.addCookie(response, "accessToken", newAccessToken, -1);
-                    HTTPUtil.setResponseHeader(response, "accessToken", newAccessToken);
-                }
-                TbUser user = new TbUser();
-                user.setUserName(userMap.get("userName"));
-                user.setCellphone(userMap.get("cellphone"));
-                user.setEmail(userMap.get("email"));
-                user.setUserId(userId);
-                return user;
-            }
-        }
-        return null;
-    }
+//    protected static TbUser getSessionUser(Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+//        String accessToken = CookieUtil.getCookieByName(request, "accessToken");
+//        if (accessToken == null) {
+//            accessToken = request.getHeader("accessToken");
+//        }
+//        if (accessToken != null) {
+//            HTTPUtil.setResponseHeader(response, "accessToken", accessToken);
+//            String decrypt = EncryptUtil.AESDecrypt(accessToken.getBytes(PropertiesUtil.DEFAULT_CHARSET), AES_PASSWORD);
+//            String[] arr = decrypt.split("_");
+//            if (arr.length == 2) {
+//                Long userId = Long.valueOf(arr[0]);
+//                String userKey = "user:" + userId;
+//                Long expireTime = Long.valueOf(arr[1]);
+//                Map<String, String> userMap = null;
+//                int newExpireTime = DateUtil.getNow() + SESSION_EXPIRE_SECONDS;
+//                int newCacheExpireTime = DateUtil.getNow() + CACHE_EXPIRE_SECONDS;
+//                if (jedis != null) {
+//                    userMap = jedis.hgetAll(userKey);
+//                } else {
+//                    userMap = RedisUtil.getLocalCache(userKey);
+//                }
+//                boolean isRefresh = false;
+//                if (userMap == null) {
+//                    if (expireTime < System.currentTimeMillis()) {
+//                        return null;
+//                    } else {
+//                        ConnectionBean connection = null;
+//                        try {
+//                            connection = ConnectionPool.getConnectionBean(null);
+//                            TbUser user = ServiceContainer.TB_USER_SERVICE.selectTableById(connection, userId);
+//                            userMap = new HashMap<String, String>();
+//                            userMap.put("userName", user.getUserName());
+//                            userMap.put("cellphone", user.getCellphone());
+//                            userMap.put("email", user.getEmail());
+//                            isRefresh = true;
+//                        } finally {
+//                            ConnectionPool.closeConnectionBean(connection);
+//                        }
+//                    }
+//                } else {
+//                    long cacheExpire = Long.parseLong(userMap.get("expireTime"));
+//                    if (cacheExpire < System.currentTimeMillis()) {
+//                        RedisUtil.delLocalCache(userKey);
+//                        return null;
+//                    } else if (expireTime < System.currentTimeMillis()) {
+//                        isRefresh = true;
+//                    }
+//                }
+//                if (isRefresh) {
+//                    userMap.put("expireTime", String.valueOf(newCacheExpireTime));
+//                    if (jedis != null) {
+//                        jedis.hmset(userKey, userMap);
+//                        jedis.expire(userKey, CACHE_EXPIRE_SECONDS);
+//                    } else {
+//                        RedisUtil.setLocalCache(userKey, userMap);
+//                    }
+//                    String value = userId + "_" + newExpireTime;
+//                    String newAccessToken = EncryptUtil.AESEncrypt(value.getBytes(PropertiesUtil.DEFAULT_CHARSET), AES_PASSWORD);
+//                    CookieUtil.addCookie(response, "accessToken", newAccessToken, -1);
+//                    HTTPUtil.setResponseHeader(response, "accessToken", newAccessToken);
+//                }
+//                TbUser user = new TbUser();
+//                user.setUserName(userMap.get("userName"));
+//                user.setCellphone(userMap.get("cellphone"));
+//                user.setEmail(userMap.get("email"));
+//                user.setUserId(userId);
+//                return user;
+//            }
+//        }
+//        return null;
+//    }
 
 }

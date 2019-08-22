@@ -1,9 +1,7 @@
 package com.github.automain.common.controller;
 
-import com.github.automain.common.bean.JsonResponse;
 import com.github.automain.common.annotation.RequestUri;
-import com.github.automain.common.container.DictionaryContainer;
-import com.github.automain.common.container.RolePrivilegeContainer;
+import com.github.automain.common.bean.JsonResponse;
 import com.github.automain.util.RedisUtil;
 import com.github.automain.util.SystemUtil;
 import com.github.automain.util.http.HTTPUtil;
@@ -42,12 +40,12 @@ public class DispatcherController extends HttpServlet {
         ConnectionBean connection = null;
         Jedis jedis = null;
         try {
+            // 初始化日志
+            SystemUtil.initLogConfig();
             // 初始化数据库连接池
             SystemUtil.initConnectionPool();
             // 初始化redis连接池
             RedisUtil.initJedisPool();
-            // 初始化日志
-            SystemUtil.initLogConfig();
             // 初始化访问路径
             REQUEST_MAPPING.clear();
             REQUEST_MAPPING.putAll(initRequestMap());
@@ -56,11 +54,11 @@ public class DispatcherController extends HttpServlet {
             // 获取redis连接
             jedis = RedisUtil.getJedis();
             // 初始化字典表缓存
-            DictionaryContainer.reloadDictionary(jedis, connection);
-            // 初始化人员角色权限缓存
-            RolePrivilegeContainer.reloadRolePrivilege(jedis, connection);
+//            DictionaryContainer.reloadDictionary(jedis, connection);
+//            // 初始化人员角色权限缓存
+//            RolePrivilegeContainer.reloadRolePrivilege(jedis, connection);
             // 初始化定时任务
-            SystemUtil.reloadSchedule(connection);
+//            SystemUtil.reloadSchedule(connection);
             SystemUtil.getLogger().info("===============================System Start Success===============================");
         } catch (Exception e) {
             e.printStackTrace();

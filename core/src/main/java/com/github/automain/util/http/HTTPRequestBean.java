@@ -7,19 +7,14 @@ public class HTTPRequestBean {
 
     // 地址
     private String url;
-
     // 请求方法，可选值(POST,GET)
     private String requestMethod;
-
     // 请求参数
     private Map<String, String> params;
-
     // 请求头参数
     private Map<String, String> headers;
-
     // 是否是https请求
     private boolean httpsRequest;
-
     // 请求文件参数名->文件
     private Map<String, File> fileMap;
 
@@ -27,47 +22,65 @@ public class HTTPRequestBean {
         return url;
     }
 
-    public void setUrl(String url) {
+    public HTTPRequestBean setUrl(String url) {
         this.url = url;
+        return this;
     }
 
     public String getRequestMethod() {
         return requestMethod;
     }
 
-    public void setRequestMethod(String requestMethod) {
+    public HTTPRequestBean setRequestMethod(String requestMethod) {
         this.requestMethod = requestMethod;
+        return this;
     }
 
     public Map<String, String> getParams() {
         return params;
     }
 
-    public void setParams(Map<String, String> params) {
+    public HTTPRequestBean setParams(Map<String, String> params) {
         this.params = params;
+        return this;
     }
 
     public Map<String, String> getHeaders() {
         return headers;
     }
 
-    public void setHeaders(Map<String, String> headers) {
+    public HTTPRequestBean setHeaders(Map<String, String> headers) {
         this.headers = headers;
+        return this;
     }
 
     public boolean getHttpsRequest() {
         return httpsRequest;
     }
 
-    public void setHttpsRequest(boolean httpsRequest) {
+    public HTTPRequestBean setHttpsRequest(boolean httpsRequest) {
         this.httpsRequest = httpsRequest;
+        return this;
     }
 
     public Map<String, File> getFileMap() {
         return fileMap;
     }
 
-    public void setFileMap(Map<String, File> fileMap) {
+    public HTTPRequestBean setFileMap(Map<String, File> fileMap) {
         this.fileMap = fileMap;
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return "HTTPRequestBean{" +
+                "url='" + url + '\'' +
+                ", requestMethod='" + requestMethod + '\'' +
+                ", params=" + params +
+                ", headers=" + headers +
+                ", httpsRequest=" + httpsRequest +
+                ", fileMap=" + fileMap +
+                '}';
     }
 }

@@ -3,38 +3,32 @@ package com.github.automain.common.generator;
 
 import com.github.automain.common.bean.ColumnBean;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class BeanGenerator extends CommonGenerator {
 
-    public String generate(String databaseName, String tableName) {
-        if (databaseName == null || tableName == null) {
-            return null;
-        }
+    public String generate(List<ColumnBean> columns, String tableName, String upperTableName) {
         try {
-            List<ColumnBean> columns = selectAllColumnList(null, databaseName, tableName);
-            ColumnBean priColumn = getPrimaryColumn(columns);
             String resultStr = "";
 
-            resultStr += getImportHead(getTimeTypeImport(columns));
+            resultStr += getImportHead(columns);
 
-            resultStr += getClassHead(tableName);
+            resultStr += getClassHead(upperTableName);
 
             resultStr += getProperties(columns);
 
-            resultStr += getGetterSetter(columns);
+            resultStr += getGetterSetter(columns, upperTableName);
 
             resultStr += getTableName(tableName);
 
-            resultStr += getPrimaryKey(priColumn);
+            resultStr += getColumnMap(columns);
 
-            resultStr += getPrimaryValue(priColumn);
+            resultStr += getBeanFromResultSet(columns, upperTableName);
 
-            resultStr += getColumnMap(priColumn, columns);
+            resultStr += getToString(columns, upperTableName);
 
-            resultStr += getBeanFromResultSet(columns, tableName);
-
-            resultStr += getBeanFromRequest(columns, tableName);
             resultStr += "\n}";
             return resultStr;
         } catch (Exception e) {
@@ -43,65 +37,59 @@ public class BeanGenerator extends CommonGenerator {
         return null;
     }
 
-    private String getImportHead(String timeTypeImport) {
-        return "import com.github.fastjdbc.common.BaseBean;\n" +
-                "import com.github.fastjdbc.util.RequestUtil;\n\n" +
-                "import javax.servlet.http.HttpServletRequest;\n" +
+    private String getImportHead(List<ColumnBean> columns) {
+        Set<String> timeTypeSet = new HashSet<String>();
+        for (ColumnBean column : columns) {
+            String dataType = column.getDataType();
+            if ("Timestamp".equals(dataType)) {
+                timeTypeSet.add("import java.sql.Timestamp;\n");
+            }
+            if ("Time".equals(dataType)) {
+                timeTypeSet.add("import java.sql.Time;\n");
+            }
+            if ("Date".equals(dataType)) {
+                timeTypeSet.add("import java.util.Date;\n");
+            }
+        }
+        StringBuilder timeTypeImport = new StringBuilder();
+        for (String s : timeTypeSet) {
+            timeTypeImport.append(s);
+        }
+        return "import com.github.fastjdbc.common.BaseBean;\n\n" +
                 "import java.sql.ResultSet;\n" +
-                "import java.sql.SQLException;\n" + timeTypeImport +
+                "import java.sql.SQLException;\n" + timeTypeImport.toString() +
                 "import java.util.HashMap;\n" +
                 "import java.util.Map;\n\n";
     }
 
-    private String getClassHead(String tableName) {
-        String upperTableName = convertToJavaName(tableName, true);
-        return "public class " + upperTableName
-                + " extends RequestUtil implements BaseBean<" + upperTableName + "> {";
+    private String getClassHead(String upperTableName) {
+        return "public class " + upperTableName + " implements BaseBean<" + upperTableName + "> {";
     }
 
     private String getProperties(List<ColumnBean> columns) {
         StringBuilder resultStr = new StringBuilder();
-        StringBuilder additional = new StringBuilder();
-        StringBuilder additionalGetterSetter = new StringBuilder();
         for (ColumnBean column : columns) {
-            String upperColumnName = convertToJavaName(column.getColumnName(), true);
             String lowerColumnName = convertToJavaName(column.getColumnName(), false);
-            resultStr.append("\n\n    // ").append(column.getColumnComment())
+            resultStr.append("\n    // ").append(column.getColumnComment())
                     .append("\n    private ").append(column.getDataType()).append(" ").append(lowerColumnName).append(";");
-            if (checkTimeTypeColumn(column)) {
-                additional.append("\n    // ").append(column.getColumnComment())
-                        .append("\n    private String ").append(lowerColumnName).append("Range;");
-                additionalGetterSetter.append("\n\n    public String get").append(upperColumnName).append("Range() {\n")
-                        .append("        return ").append(lowerColumnName).append("Range;\n")
-                        .append("    }\n\n")
-                        .append("    public void set").append(upperColumnName).append("Range(String ")
-                        .append(lowerColumnName).append("Range) {\n")
-                        .append("        this.").append(lowerColumnName).append("Range = ")
-                        .append(lowerColumnName).append("Range;\n    }");
-            }
         }
-        resultStr.append("\n\n    // ========== additional column begin ==========\n")
-                .append(additional).append(additionalGetterSetter)
-                .append("\n\n    // ========== additional column end ==========");
         return resultStr.toString();
     }
 
-    private String getGetterSetter(List<ColumnBean> columns) {
+    private String getGetterSetter(List<ColumnBean> columns, String upperTableName) {
         StringBuilder resultStr = new StringBuilder();
         for (ColumnBean column : columns) {
             String upperColumnName = convertToJavaName(column.getColumnName(), true);
             String lowerColumnName = convertToJavaName(column.getColumnName(), false);
             resultStr.append("\n\n    public ").append(column.getDataType())
-                    .append(" get").append(upperColumnName).append("() {\n")
-                    .append("        return ").append(lowerColumnName).append(";\n")
-                    .append("    }\n\n")
-                    .append("    public void set").append(upperColumnName)
+                    .append(" get").append(upperColumnName).append("() {\n        return ")
+                    .append(lowerColumnName).append(";\n    }\n\n    public ")
+                    .append(upperTableName).append(" set").append(upperColumnName)
                     .append("(").append(column.getDataType())
                     .append(" ").append(lowerColumnName)
-                    .append(") {\n")
-                    .append("        this.").append(lowerColumnName)
+                    .append(") {\n        this.").append(lowerColumnName)
                     .append(" = ").append(lowerColumnName)
-                    .append(";\n    }");
+                    .append(";\n        return this;\n    }");
         }
         return resultStr.toString();
     }
@@ -114,43 +102,25 @@ public class BeanGenerator extends CommonGenerator {
                 "    }";
     }
 
-    private String getPrimaryKey(ColumnBean priColumn) {
-        String outPrimaryKey = priColumn == null ? null : "\"" + priColumn.getColumnName() + "\"";
-        return "\n\n    @Override\n" +
-                "    public String primaryKey() {\n" +
-                "        return " + outPrimaryKey + ";\n" +
-                "    }";
-    }
-
-    private String getPrimaryValue(ColumnBean priColumn) {
-        String outPrimaryValue = priColumn == null ? null : "this.get" + convertToJavaName(priColumn.getColumnName(), true) + "()";
-        return "\n\n    @Override\n" +
-                "    public Long primaryValue() {\n" +
-                "        return " + outPrimaryValue + ";\n" +
-                "    }";
-    }
-
-    private String getColumnMap(ColumnBean priColumn, List<ColumnBean> columns) {
+    private String getColumnMap(List<ColumnBean> columns) {
         StringBuilder notNullBody = new StringBuilder();
-        String priColumnName = priColumn == null ? "" : priColumn.getColumnName();
+        int size = 0;
         for (ColumnBean column : columns) {
             String upperColumnName = convertToJavaName(column.getColumnName(), true);
-            if (!priColumnName.equals(column.getColumnName())) {
-                notNullBody.append("\n        if (all || this.get").append(upperColumnName).append("() != null) {\n")
-                        .append("            map.put(\"").append(column.getColumnName()).append("\", this.get")
-                        .append(upperColumnName).append("());\n        }");
-            }
+            notNullBody.append("\n        if (all || this.get").append(upperColumnName).append("() != null) {\n")
+                    .append("            map.put(\"").append(column.getColumnName()).append("\", this.get")
+                    .append(upperColumnName).append("());\n        }");
+            size++;
         }
         return "\n\n    @Override\n" +
                 "    public Map<String, Object> columnMap(boolean all) {\n" +
-                "        Map<String, Object> map = new HashMap<String, Object>();" +
+                "        Map<String, Object> map = new HashMap<String, Object>(" + Math.max(1, size) + ");" +
                 notNullBody.toString() + "\n" +
                 "        return map;\n" +
                 "    }";
     }
 
-    public String getBeanFromResultSet(List<ColumnBean> columns, String tableName) {
-        String upperTableName = convertToJavaName(tableName, true);
+    private String getBeanFromResultSet(List<ColumnBean> columns, String upperTableName) {
         StringBuilder setValueBody = new StringBuilder();
         for (ColumnBean column : columns) {
             String dataType = column.getDataType();
@@ -160,51 +130,43 @@ public class BeanGenerator extends CommonGenerator {
             if ("byte[]".equals(dataType)) {
                 dataType = "Object";
             }
-            setValueBody.append("        bean.set")
+            setValueBody.append("                .set")
                     .append(convertToJavaName(column.getColumnName(), true))
                     .append("(rs.get").append(dataType)
-                    .append("(\"").append(column.getColumnName()).append("\"));\n");
+                    .append("(\"").append(column.getColumnName()).append("\"))\n");
         }
         return "\n\n    @Override\n" +
                 "    public " + upperTableName + " beanFromResultSet(ResultSet rs) throws SQLException {\n" +
-                "        " + upperTableName + " bean = new " + upperTableName + "();\n" +
-                setValueBody + "        return bean;\n    }";
+                "        return new " + upperTableName + "()\n" +
+                setValueBody + ";\n    }";
     }
 
-    public String getBeanFromRequest(List<ColumnBean> columns, String tableName) {
-        String upperTableName = convertToJavaName(tableName, true);
+    private String getToString(List<ColumnBean> columns, String upperTableName) {
         StringBuilder setValueBody = new StringBuilder();
-        StringBuilder additionalBody = new StringBuilder();
+        List<String> numberTypeList = List.of("BigDecimal", "Double", "Float", "Integer");
+        boolean isFirst = true;
         for (ColumnBean column : columns) {
-            String columnName = column.getColumnName();
-            String upperColumnName = convertToJavaName(columnName, true);
-            String lowerColumnName = convertToJavaName(columnName, false);
             String dataType = column.getDataType();
-            if ("byte[]".equals(dataType)) {
-                continue;
-            }
-            if ("Integer".equals(dataType)) {
-                dataType = "Int";
-            }
-            if (DELETE_LABEL_COLUMN_NAME.equals(columnName)) {
-                setValueBody.append("        bean.set").append(upperColumnName)
-                        .append("(get").append(dataType).append("(\"").append(lowerColumnName).append("\", request, 0));\n");
-            } else if ("Timestamp".equals(dataType) || "Time".equals(dataType)){
-                setValueBody.append("        bean.set").append(upperColumnName)
-                        .append("(new Timestamp(getInt").append("(\"").append(lowerColumnName).append("\", request)) * 1000);\n");
+            String columnName = convertToJavaName(column.getColumnName(), false);
+            if (numberTypeList.contains(dataType)) {
+                if (isFirst) {
+                    setValueBody.append("                \"").append(columnName).append("=\" + ").append(columnName).append(" +\n");
+                } else {
+                    setValueBody.append("                \", ").append(columnName).append("=\" + ").append(columnName).append(" +\n");
+                }
             } else {
-                setValueBody.append("        bean.set").append(upperColumnName)
-                        .append("(get").append(dataType).append("(\"").append(lowerColumnName).append("\", request));\n");
+                if (isFirst) {
+                    setValueBody.append("                \"").append(columnName).append("='\" + ").append(columnName).append(" + '\\''").append(" +\n");
+                } else {
+                    setValueBody.append("                \", ").append(columnName).append("='\" + ").append(columnName).append(" + '\\''").append(" +\n");
+                }
             }
-            if (checkTimeTypeColumn(column)) {
-                additionalBody.append("        bean.set").append(upperColumnName)
-                        .append("Range(getString(\"").append(lowerColumnName).append("Range\", request));\n");
-            }
+            isFirst = false;
         }
         return "\n\n    @Override\n" +
-                "    public " + upperTableName + " beanFromRequest(HttpServletRequest request) {\n" +
-                "        " + upperTableName + " bean = new " + upperTableName + "();\n" +
-                setValueBody.toString() + additionalBody.toString() +
-                "        return bean;\n    }";
+                "    public String toString() {\n" +
+                "        return \""+upperTableName+"{\" +\n" +
+                setValueBody.toString() + "\n                '}';";
     }
+
 }

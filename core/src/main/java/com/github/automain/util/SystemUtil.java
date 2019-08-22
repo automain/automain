@@ -1,8 +1,5 @@
 package com.github.automain.util;
 
-import com.github.automain.bean.TbSchedule;
-import com.github.automain.common.container.ServiceContainer;
-import com.github.automain.common.thread.ScheduleThread;
 import com.github.fastjdbc.bean.ConnectionBean;
 import com.github.fastjdbc.bean.ConnectionPool;
 import com.zaxxer.hikari.HikariConfig;
@@ -19,11 +16,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
@@ -59,7 +53,7 @@ public class SystemUtil {
                 slavePoolMap.put(poolName, new HikariDataSource(initConfig(poolName)));
             }
         }
-        ConnectionPool.init(masterPool, slavePoolMap);
+        ConnectionPool.init(masterPool, slavePoolMap, LOGGER);
     }
 
     private static HikariConfig initConfig(String poolName) {
@@ -162,39 +156,39 @@ public class SystemUtil {
      * @param connection
      * @throws SQLException
      */
-    public static synchronized void reloadSchedule(ConnectionBean connection) throws SQLException {
-        if (OPEN_SCHEDULE) {
-            if (SCHEDULE_THREAD_POOL != null) {
-                SCHEDULE_THREAD_POOL.shutdown();
-                SCHEDULE_THREAD_POOL = null;
-            }
-            TbSchedule bean = new TbSchedule();
-            bean.setIsDelete(0);
-            List<TbSchedule> scheduleList = ServiceContainer.TB_SCHEDULE_SERVICE.selectTableByBean(connection, bean);
-            int size = scheduleList.size();
-            if (size > 0) {
-                SCHEDULE_THREAD_POOL = Executors.newScheduledThreadPool(size);
-                for (TbSchedule schedule : scheduleList) {
-                    startSchedule(schedule);
-                }
-            }
-        }
-    }
-
-    private static void startSchedule(TbSchedule schedule) {
-        long initialDelay = 0L;
-        long period = schedule.getDelayTime();
-        long now = DateUtil.getNow();
-        long start = schedule.getStartExecuteTime().getTime() / 1000;
-        long diff = now - start;
-        if (diff > 0) {
-            if (diff > period) {
-                initialDelay = period - (diff % period);
-            } else {
-                initialDelay = period - diff;
-            }
-            SCHEDULE_THREAD_POOL.scheduleAtFixedRate(new ScheduleThread(schedule.getScheduleUrl(), period), initialDelay, period, TimeUnit.SECONDS);
-        }
-    }
+//    public static synchronized void reloadSchedule(ConnectionBean connection) throws SQLException {
+//        if (OPEN_SCHEDULE) {
+//            if (SCHEDULE_THREAD_POOL != null) {
+//                SCHEDULE_THREAD_POOL.shutdown();
+//                SCHEDULE_THREAD_POOL = null;
+//            }
+//            TbSchedule bean = new TbSchedule();
+//            bean.setIsDelete(0);
+//            List<TbSchedule> scheduleList = ServiceContainer.TB_SCHEDULE_SERVICE.selectTableByBean(connection, bean);
+//            int size = scheduleList.size();
+//            if (size > 0) {
+//                SCHEDULE_THREAD_POOL = Executors.newScheduledThreadPool(size);
+//                for (TbSchedule schedule : scheduleList) {
+//                    startSchedule(schedule);
+//                }
+//            }
+//        }
+//    }
+//
+//    private static void startSchedule(TbSchedule schedule) {
+//        long initialDelay = 0L;
+//        long period = schedule.getDelayTime();
+//        long now = DateUtil.getNow();
+//        long start = schedule.getStartExecuteTime().getTime() / 1000;
+//        long diff = now - start;
+//        if (diff > 0) {
+//            if (diff > period) {
+//                initialDelay = period - (diff % period);
+//            } else {
+//                initialDelay = period - diff;
+//            }
+//            SCHEDULE_THREAD_POOL.scheduleAtFixedRate(new ScheduleThread(schedule.getScheduleUrl(), period), initialDelay, period, TimeUnit.SECONDS);
+//        }
+//    }
 
 }
