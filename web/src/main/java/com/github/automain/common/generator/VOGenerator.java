@@ -4,7 +4,7 @@ import com.github.automain.common.bean.ColumnBean;
 
 import java.util.List;
 
-public class VOGenerator extends CommonGenerator {
+public class VOGenerator {
 
     public String generate(List<ColumnBean> columns, String upperTableName, boolean hasGlobalId) {
         try {
@@ -51,9 +51,9 @@ public class VOGenerator extends CommonGenerator {
                     .append("VO setIdList(List<Integer> idList) {\n        this.idList = idList;\n        return this;\n    }");
         }
         for (ColumnBean column : columns) {
-            String upperColumnName = convertToJavaName(column.getColumnName(), true);
-            String lowerColumnName = convertToJavaName(column.getColumnName(), false);
-            if (checkTimeTypeColumn(column)) {
+            String upperColumnName = CommonGenerator.convertToJavaName(column.getColumnName(), true);
+            String lowerColumnName = CommonGenerator.convertToJavaName(column.getColumnName(), false);
+            if (CommonGenerator.checkTimeTypeColumn(column)) {
                 properties.append("\n    // ").append(column.getColumnComment())
                         .append("\n    private Integer ").append(lowerColumnName).append("End;");
                 getterSetter.append("\n\n    public Integer get").append(upperColumnName)

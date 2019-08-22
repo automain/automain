@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DaoGenerator extends CommonGenerator {
+public class DaoGenerator {
 
     public String generate(List<ColumnBean> columns, List<String> keyColumns, String tableName, String upperTableName, boolean hasIsValid) {
         try {
@@ -84,7 +84,7 @@ public class DaoGenerator extends CommonGenerator {
         }
         condition += getCondition(keyColumnList);
         condition += getCondition(generalColumns);
-        String firstCondition = deleteCheck ? DELETE_LABEL_COLUMN_NAME + " = 1" : "1 = 1";
+        String firstCondition = deleteCheck ? "is_valid = 1" : "1 = 1";
         return "\n\n    private String setSearchCondition(" + upperTableName + " bean, List<Object> paramList, boolean isCountSql) {\n" +
                 "        StringBuilder sql = new StringBuilder(\"SELECT \");\n" +
                 "        sql.append(isCountSql ? \"COUNT(1)\" : \"*\").append(\" FROM " + tableName + " WHERE " + firstCondition + " \");\n" +
@@ -97,11 +97,11 @@ public class DaoGenerator extends CommonGenerator {
         StringBuilder condition = new StringBuilder();
         for (ColumnBean column : columns) {
             String columnName = column.getColumnName();
-            if (DELETE_LABEL_COLUMN_NAME.equals(columnName)) {
+            if ("is_valid".equals(columnName)) {
                 continue;
             }
-            String upperColumnName = convertToJavaName(columnName, true);
-            if (checkTimeTypeColumn(column)) {
+            String upperColumnName = CommonGenerator.convertToJavaName(columnName, true);
+            if (CommonGenerator.checkTimeTypeColumn(column)) {
                 condition.append("        if (bean.get").append(upperColumnName).append("() != null ) {\n")
                         .append("            sql.append(\" AND ").append(columnName).append(" >= ? ")
                         .append("            paramList.add(bean.get").append(upperColumnName).append("());\n")

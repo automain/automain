@@ -1,6 +1,6 @@
 package com.github.automain.common.generator;
 
-public class ControllerGenerator extends CommonGenerator {
+public class ControllerGenerator {
 
     public String generate(String prefix, String upperPrefix, String upperTableName, boolean hasIsValid, boolean hasGlobalId, boolean hasCreateTime, boolean hasUpdateTime, String tableName) {
         try {

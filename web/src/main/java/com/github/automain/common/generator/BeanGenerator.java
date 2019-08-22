@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class BeanGenerator extends CommonGenerator {
+public class BeanGenerator {
 
     public String generate(List<ColumnBean> columns, String tableName, String upperTableName) {
         try {
@@ -69,7 +69,7 @@ public class BeanGenerator extends CommonGenerator {
     private String getProperties(List<ColumnBean> columns) {
         StringBuilder resultStr = new StringBuilder();
         for (ColumnBean column : columns) {
-            String lowerColumnName = convertToJavaName(column.getColumnName(), false);
+            String lowerColumnName = CommonGenerator.convertToJavaName(column.getColumnName(), false);
             resultStr.append("\n    // ").append(column.getColumnComment())
                     .append("\n    private ").append(column.getDataType()).append(" ").append(lowerColumnName).append(";");
         }
@@ -79,8 +79,8 @@ public class BeanGenerator extends CommonGenerator {
     private String getGetterSetter(List<ColumnBean> columns, String upperTableName) {
         StringBuilder resultStr = new StringBuilder();
         for (ColumnBean column : columns) {
-            String upperColumnName = convertToJavaName(column.getColumnName(), true);
-            String lowerColumnName = convertToJavaName(column.getColumnName(), false);
+            String upperColumnName = CommonGenerator.convertToJavaName(column.getColumnName(), true);
+            String lowerColumnName = CommonGenerator.convertToJavaName(column.getColumnName(), false);
             resultStr.append("\n\n    public ").append(column.getDataType())
                     .append(" get").append(upperColumnName).append("() {\n        return ")
                     .append(lowerColumnName).append(";\n    }\n\n    public ")
@@ -106,7 +106,7 @@ public class BeanGenerator extends CommonGenerator {
         StringBuilder notNullBody = new StringBuilder();
         int size = 0;
         for (ColumnBean column : columns) {
-            String upperColumnName = convertToJavaName(column.getColumnName(), true);
+            String upperColumnName = CommonGenerator.convertToJavaName(column.getColumnName(), true);
             notNullBody.append("\n        if (all || this.get").append(upperColumnName).append("() != null) {\n")
                     .append("            map.put(\"").append(column.getColumnName()).append("\", this.get")
                     .append(upperColumnName).append("());\n        }");
@@ -131,7 +131,7 @@ public class BeanGenerator extends CommonGenerator {
                 dataType = "Object";
             }
             setValueBody.append("                .set")
-                    .append(convertToJavaName(column.getColumnName(), true))
+                    .append(CommonGenerator.convertToJavaName(column.getColumnName(), true))
                     .append("(rs.get").append(dataType)
                     .append("(\"").append(column.getColumnName()).append("\"))\n");
         }
@@ -147,7 +147,7 @@ public class BeanGenerator extends CommonGenerator {
         boolean isFirst = true;
         for (ColumnBean column : columns) {
             String dataType = column.getDataType();
-            String columnName = convertToJavaName(column.getColumnName(), false);
+            String columnName = CommonGenerator.convertToJavaName(column.getColumnName(), false);
             if (numberTypeList.contains(dataType)) {
                 if (isFirst) {
                     setValueBody.append("                \"").append(columnName).append("=\" + ").append(columnName).append(" +\n");

@@ -1,6 +1,6 @@
 package com.github.automain.common.generator;
 
-public class ServiceGenerator extends CommonGenerator {
+public class ServiceGenerator {
 
     public String generate(String upperTableName) {
         try {
