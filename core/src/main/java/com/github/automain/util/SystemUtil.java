@@ -17,6 +17,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Formatter;
@@ -32,8 +33,9 @@ public class SystemUtil {
     private static final boolean OPEN_SCHEDULE = PropertiesUtil.getBooleanProperty("app.openSchedule");
     private static final DateTimeFormatter LOG_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss,SSS");
     public static final String PROJECT_HOST = PropertiesUtil.getStringProperty("app.projectHost");
-    private static final String url = PropertiesUtil.getStringProperty("db.master_jdbcUrl");
-    public static final String DATABASE_NAME = url.substring(url.lastIndexOf("/") + 1, url.indexOf("?"));
+    public static final Set<String> ALLOW_ORIGIN = Set.of(PropertiesUtil.getStringProperty("app.allowOrigin").split(","));
+    private static final String JDBC_URL = PropertiesUtil.getStringProperty("db.master_jdbcUrl");
+    public static final String DATABASE_NAME = JDBC_URL.substring(JDBC_URL.lastIndexOf("/") + 1, JDBC_URL.indexOf("?"));
     public static final Map<String, String> API_KEY_MAP = new HashMap<String, String>();
 
     /**

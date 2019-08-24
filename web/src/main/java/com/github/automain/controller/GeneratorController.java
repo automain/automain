@@ -35,12 +35,12 @@ import java.util.Map;
 
 public class GeneratorController extends BaseController {
 
-    @RequestUri("/database/list")
+    @RequestUri("/dev/database/list")
     public JsonResponse databaseList(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) {
         return JsonResponse.getSuccessJson("success", selectDatabaseNameList(connection));
     }
 
-    @RequestUri("/table/list")
+    @RequestUri("/dev/table/list")
     public JsonResponse tableList(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) {
         GeneratorVO vo = getRequestParam(request, GeneratorVO.class);
         if (vo != null) {
@@ -51,14 +51,13 @@ public class GeneratorController extends BaseController {
         }
     }
 
-    @RequestUri("/column/list")
+    @RequestUri("/dev/column/list")
     public JsonResponse columnList(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) {
         GeneratorVO vo = getRequestParam(request, GeneratorVO.class);
         if (vo != null) {
             String databaseName = vo.getDatabaseName();
             String tableName = vo.getTableName();
             List<ColumnBean> columnList = selectNoPriColunmList(connection, databaseName, tableName);
-            ServiceGenerator generator = new ServiceGenerator();
             String upperTableName = CommonGenerator.convertToJavaName(tableName, true);
             String serviceName = upperTableName + "Service";
             String paramName = tableName.toUpperCase() + "_SERVICE";
@@ -76,7 +75,7 @@ public class GeneratorController extends BaseController {
         }
     }
 
-    @RequestUri("/generate")
+    @RequestUri("/dev/generate")
     public JsonResponse generate(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         GeneratorVO generatorVO = getRequestParam(request, GeneratorVO.class);
         if (generatorVO != null) {
