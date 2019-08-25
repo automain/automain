@@ -51,7 +51,7 @@ public abstract class BaseExecutor extends BaseController implements Runnable {
             } else {
                 jsonResponse = JsonResponse.getJson(403, "无权限访问或登录已过期");
             }
-            if (!HTTPUtil.FILE_CONTENT_TYPE.equals(response.getContentType())) {
+            if (response.getContentType() == null) {
                 response.setContentType(HTTPUtil.JSON_CONTENT_TYPE);
                 byte[] content = JSON.toJSONBytes(jsonResponse, SerializerFeature.WriteMapNullValue);
                 if (HTTPUtil.checkGzip(request, response, content.length)) {
@@ -70,7 +70,7 @@ public abstract class BaseExecutor extends BaseController implements Runnable {
                  PrintWriter pw = new PrintWriter(sw)) {
                 e.printStackTrace(pw);
                 String message = sw.toString();
-                if (!HTTPUtil.FILE_CONTENT_TYPE.equals(response.getContentType())) {
+                if (response.getContentType() == null) {
                     JsonResponse jsonResponse = JsonResponse.getJson(500, message);
                     String content = JSON.toJSONString(jsonResponse, SerializerFeature.WriteMapNullValue);
                     response.setContentType(HTTPUtil.JSON_CONTENT_TYPE);

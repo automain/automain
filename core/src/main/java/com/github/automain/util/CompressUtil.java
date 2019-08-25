@@ -31,8 +31,8 @@ public class CompressUtil {
             String parentPath = "";
             if (file.exists()) {
                 parentPath = file.getParentFile().getPath();
-                if (!parentPath.endsWith(File.separator)) {
-                    parentPath += File.separator;
+                if (!parentPath.endsWith("/")) {
+                    parentPath += "/";
                 }
             }
             zos = new ZipOutputStream(new FileOutputStream(zipFile));
@@ -94,8 +94,8 @@ public class CompressUtil {
              BufferedInputStream bis = new BufferedInputStream(fis);
              ZipInputStream zis = new ZipInputStream(bis)) {
             ZipEntry zipEntry = null;
-            if (!unCompressPath.endsWith(File.separator)) {
-                unCompressPath += File.separator;
+            if (!unCompressPath.endsWith("/")) {
+                unCompressPath += "/";
             }
             File unCompressFolder = new File(unCompressPath);
             if (SystemUtil.mkdirs(unCompressFolder)) {

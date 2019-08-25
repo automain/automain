@@ -267,8 +267,7 @@ public class HTTPUtil {
             try (InputStream is = new FileInputStream(file);
                  OutputStream os = response.getOutputStream()) {
                 String userAgent = request.getHeader("User-Agent").toUpperCase();
-                String parentPath = file.getParent();
-                String fileName = parentPath == null ? path : file.getPath().replace(parentPath, "");
+                String fileName = path.substring(path.lastIndexOf("/") + 1);
                 if (userAgent.contains("EDGE") || userAgent.contains("MSIE") || userAgent.contains("RV:11")) {
                     fileName = new String(urlEncode(fileName.getBytes(PropertiesUtil.DEFAULT_CHARSET)), PropertiesUtil.DEFAULT_CHARSET);
                 } else {
