@@ -45,7 +45,7 @@ public class DaoGenerator {
     private String getSelectTableForCustomPage(String upperTableName) {
         return "\n\n    @SuppressWarnings(\"unchecked\")\n" +
                 "    public PageBean<" + upperTableName + "> selectTableForCustomPage(ConnectionBean connection, " +
-                upperTableName + " bean, int page, int size) throws Exception {\n" +
+                upperTableName + "VO bean) throws Exception {\n" +
                 "        List<Object> countParamList = new ArrayList<Object>();\n" +
                 "        List<Object> paramList = new ArrayList<Object>();\n" +
                 "        String countSql = setSearchCondition(bean, countParamList, true);\n" +
@@ -57,8 +57,8 @@ public class DaoGenerator {
                 "                .setCountParamList(countParamList)\n" +
                 "                .setSql(sql)\n" +
                 "                .setParamList(paramList)\n" +
-                "                .setPage(page)\n" +
-                "                .setSize(size)\n" +
+                "                .setPage(bean.getPage())\n" +
+                "                .setSize(bean.getSize());\n" +
                 "        return selectTableForPage(pageParamBean);\n" +
                 "    }";
     }
@@ -85,7 +85,7 @@ public class DaoGenerator {
         condition += getCondition(keyColumnList);
         condition += getCondition(generalColumns);
         String firstCondition = deleteCheck ? "is_valid = 1" : "1 = 1";
-        return "\n\n    private String setSearchCondition(" + upperTableName + " bean, List<Object> paramList, boolean isCountSql) {\n" +
+        return "\n\n    private String setSearchCondition(" + upperTableName + "VO bean, List<Object> paramList, boolean isCountSql) {\n" +
                 "        StringBuilder sql = new StringBuilder(\"SELECT \");\n" +
                 "        sql.append(isCountSql ? \"COUNT(1)\" : \"*\").append(\" FROM " + tableName + " WHERE " + firstCondition + " \");\n" +
                 condition +
@@ -103,7 +103,7 @@ public class DaoGenerator {
             String upperColumnName = CommonGenerator.convertToJavaName(columnName, true);
             if (CommonGenerator.checkTimeTypeColumn(column)) {
                 condition.append("        if (bean.get").append(upperColumnName).append("() != null ) {\n")
-                        .append("            sql.append(\" AND ").append(columnName).append(" >= ? ")
+                        .append("            sql.append(\" AND ").append(columnName).append(" >= ? \");\n")
                         .append("            paramList.add(bean.get").append(upperColumnName).append("());\n")
                         .append("        }\n")
                         .append("        if (bean.get").append(upperColumnName).append("End() != null) {\n")

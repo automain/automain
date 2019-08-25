@@ -39,8 +39,8 @@ public class ServiceGenerator {
 
     private String getSelectTableForCustomPage(String upperTableName) {
         return "\n\n    public PageBean<" + upperTableName + "> selectTableForCustomPage(ConnectionBean connection, " +
-                upperTableName + " bean, int page, int size) throws Exception {\n" +
-                "        return getDao().selectTableForCustomPage(connection, bean, page, size);\n" +
+                upperTableName + "VO bean) throws Exception {\n" +
+                "        return getDao().selectTableForCustomPage(connection, bean);\n" +
                 "    }";
     }
 

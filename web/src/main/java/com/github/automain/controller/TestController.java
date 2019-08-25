@@ -75,5 +75,4 @@ public class TestController extends BaseController {
 //        }
         return JsonResponse.getFailedJson("failed");
     }
-    
 }

@@ -61,5 +61,4 @@ public class TestVO extends Test {
         this.updateTimeEnd = updateTimeEnd;
         return this;
     }
-
 }

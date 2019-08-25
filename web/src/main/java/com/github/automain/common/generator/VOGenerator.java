@@ -10,6 +10,8 @@ public class VOGenerator {
         try {
             String resultStr = "";
 
+            resultStr += getImportHead();
+
             resultStr += getClassHead(upperTableName);
 
             resultStr += getProperties(columns, upperTableName, hasGlobalId);
@@ -20,6 +22,10 @@ public class VOGenerator {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private String getImportHead() {
+        return "import java.util.List;\n\n";
     }
 
     private String getClassHead(String upperTableName) {
@@ -55,10 +61,10 @@ public class VOGenerator {
             String lowerColumnName = CommonGenerator.convertToJavaName(column.getColumnName(), false);
             if (CommonGenerator.checkTimeTypeColumn(column)) {
                 properties.append("\n    // ").append(column.getColumnComment())
-                        .append("\n    private Integer ").append(lowerColumnName).append("End;");
+                        .append("结束\n    private Integer ").append(lowerColumnName).append("End;");
                 getterSetter.append("\n\n    public Integer get").append(upperColumnName)
                         .append("End() {\n        return ").append(lowerColumnName).
-                        append("End;\n    }\n\n    public ").append(upperTableName).append(" set")
+                        append("End;\n    }\n\n    public ").append(upperTableName).append("VO set")
                         .append(upperColumnName).append("End(Integer ").append(lowerColumnName)
                         .append("End) {\n        this.").append(lowerColumnName).append("End = ")
                         .append(lowerColumnName).append("End;\n        return this;\n    }");

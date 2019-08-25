@@ -29,31 +29,26 @@ import java.util.List;
 public class TestDao extends BaseDao<Test> {
 
     @SuppressWarnings("unchecked")
-    public PageBean<Test> selectTableForCustomPage(ConnectionBean connection, TestVO bean, int page, int size) throws Exception {
+    public PageBean<Test> selectTableForCustomPage(ConnectionBean connection, TestVO bean) throws Exception {
         List<Object> countParamList = new ArrayList<Object>();
         List<Object> paramList = new ArrayList<Object>();
         String countSql = setSearchCondition(bean, countParamList, true);
         String sql = setSearchCondition(bean, paramList, false);
-        PageParamBean pageParamBean = new PageParamBean()
+        PageParamBean<Test> pageParamBean = new PageParamBean<Test>()
                 .setConnection(connection)
                 .setBean(bean)
                 .setCountSql(countSql)
                 .setCountParamList(countParamList)
                 .setSql(sql)
                 .setParamList(paramList)
-                .setPage(page)
-                .setSize(size);
+                .setPage(bean.getPage())
+                .setSize(bean.getSize());
         return selectTableForPage(pageParamBean);
     }
 
     private String setSearchCondition(TestVO bean, List<Object> paramList, boolean isCountSql) {
         StringBuilder sql = new StringBuilder("SELECT ");
-        if (isCountSql) {
-            sql.append("COUNT(1)");
-        } else {
-            sql.append("*");
-        }
-        sql.append(" FROM test WHERE is_valid = 1 ");
+        sql.append(isCountSql ? "COUNT(1)" : "*").append(" FROM test WHERE is_valid = 1 ");
         if (bean.getGid() != null) {
             sql.append(" AND gid = ?");
             paramList.add(bean.getGid());

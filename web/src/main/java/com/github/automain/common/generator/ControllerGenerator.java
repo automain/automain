@@ -78,9 +78,9 @@ public class ControllerGenerator {
     private String getDetail(String prefix, String upperTableName, boolean hasGlobalId, String serviceName) {
         String detailContent = hasGlobalId
                 ? "        if (bean != null && bean.getGid() != null) {\n            " + upperTableName + " detail = " + serviceName
-                + ".selectTableByGid(connection, bean);\n            return JsonResponse.getSuccessJson(\"success\", detail);\n            }\n"
-                : "        f (bean != null && bean.getId() != null) {\n            " + upperTableName + " detail = " + serviceName
-                + ".selectTableById(connection, bean);\n            return JsonResponse.getSuccessJson(\"success\", detail);\n            }\n";
+                + ".selectTableByGid(connection, bean);\n            return JsonResponse.getSuccessJson(\"success\", detail);\n        }\n"
+                : "        if (bean != null && bean.getId() != null) {\n            " + upperTableName + " detail = " + serviceName
+                + ".selectTableById(connection, bean);\n            return JsonResponse.getSuccessJson(\"success\", detail);\n        }\n";
         return "\n\n    @RequestUri(\"/" + prefix + "/detail\")\n    public JsonResponse " + prefix
                 + "Detail(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {\n        "
                 + upperTableName + " bean = getRequestParam(request, " + upperTableName + ".class);\n" +
@@ -90,9 +90,9 @@ public class ControllerGenerator {
     private String getDelete(String prefix, String upperTableName, boolean hasGlobalId, String serviceName) {
         String deleteContent = hasGlobalId
                 ? "        if (vo != null && CollectionUtils.isNotEmpty(vo.getGidList())) {\n            " + serviceName
-                + ".softDeleteTableByGidList(connection, vo.getGidList());\n            return JsonResponse.getSuccessJson(\"success\");\n            }\n"
+                + ".softDeleteTableByGidList(connection, vo.getGidList());\n            return JsonResponse.getSuccessJson(\"success\");\n        }\n"
                 : "        if (vo != null && CollectionUtils.isNotEmpty(vo.getIdList())) {\n            " + serviceName
-                + ".softDeleteTableByIdList(connection, vo.getIdList());\n            return JsonResponse.getSuccessJson(\"success\");\n            }\n";
+                + ".softDeleteTableByIdList(connection, vo.getIdList());\n            return JsonResponse.getSuccessJson(\"success\");\n        }\n";
         return "\n\n    @RequestUri(\"/" + prefix + "/delete\")\n    public JsonResponse " + prefix
                 + "Delete(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {\n        "
                 + upperTableName + "VO vo = getRequestParam(request, " + upperTableName + "VO.class);\n" +

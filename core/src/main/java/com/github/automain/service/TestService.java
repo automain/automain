@@ -30,7 +30,7 @@ public class TestService extends BaseService<Test, TestDao> {
     }
 
     public PageBean<Test> selectTableForCustomPage(ConnectionBean connection, TestVO bean) throws Exception {
-        return getDao().selectTableForCustomPage(connection, bean, bean.getPage(), bean.getSize());
+        return getDao().selectTableForCustomPage(connection, bean);
     }
 
 }
