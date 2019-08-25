@@ -3,9 +3,7 @@ package com.github.automain.common.generator;
 
 import com.github.automain.common.bean.ColumnBean;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class BeanGenerator {
 
@@ -38,26 +36,17 @@ public class BeanGenerator {
     }
 
     private String getImportHead(List<ColumnBean> columns) {
-        Set<String> timeTypeSet = new HashSet<String>();
+        String bigDecimalType = "";
         for (ColumnBean column : columns) {
             String dataType = column.getDataType();
-            if ("Timestamp".equals(dataType)) {
-                timeTypeSet.add("import java.sql.Timestamp;\n");
-            }
-            if ("Time".equals(dataType)) {
-                timeTypeSet.add("import java.sql.Time;\n");
-            }
-            if ("Date".equals(dataType)) {
-                timeTypeSet.add("import java.util.Date;\n");
+            if ("BigDecimal".equals(dataType)) {
+                bigDecimalType = "import java.math.BigDecimal;\n";
+                break;
             }
         }
-        StringBuilder timeTypeImport = new StringBuilder();
-        for (String s : timeTypeSet) {
-            timeTypeImport.append(s);
-        }
-        return "import com.github.fastjdbc.common.BaseBean;\n\n" +
+        return "import com.github.fastjdbc.common.BaseBean;\n\n" + bigDecimalType +
                 "import java.sql.ResultSet;\n" +
-                "import java.sql.SQLException;\n" + timeTypeImport.toString() +
+                "import java.sql.SQLException;\n" +
                 "import java.util.HashMap;\n" +
                 "import java.util.Map;\n\n";
     }
@@ -130,14 +119,14 @@ public class BeanGenerator {
             if ("byte[]".equals(dataType)) {
                 dataType = "Object";
             }
-            setValueBody.append("                .set")
+            setValueBody.append("\n                .set")
                     .append(CommonGenerator.convertToJavaName(column.getColumnName(), true))
                     .append("(rs.get").append(dataType)
-                    .append("(\"").append(column.getColumnName()).append("\"))\n");
+                    .append("(\"").append(column.getColumnName()).append("\"))");
         }
         return "\n\n    @Override\n" +
                 "    public " + upperTableName + " beanFromResultSet(ResultSet rs) throws SQLException {\n" +
-                "        return new " + upperTableName + "()\n" +
+                "        return new " + upperTableName + "()" +
                 setValueBody + ";\n    }";
     }
 
@@ -166,7 +155,7 @@ public class BeanGenerator {
         return "\n\n    @Override\n" +
                 "    public String toString() {\n" +
                 "        return \""+upperTableName+"{\" +\n" +
-                setValueBody.toString() + "\n                '}';";
+                setValueBody.toString() + "                '}';\n    }";
     }
 
 }

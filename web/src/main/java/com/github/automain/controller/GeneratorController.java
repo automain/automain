@@ -57,17 +57,17 @@ public class GeneratorController extends BaseController {
         if (vo != null) {
             String databaseName = vo.getDatabaseName();
             String tableName = vo.getTableName();
-            List<ColumnBean> columnList = selectNoPriColunmList(connection, databaseName, tableName);
+            List<ColumnBean> columnList = selectAllColumnList(connection, databaseName, tableName);
             String upperTableName = CommonGenerator.convertToJavaName(tableName, true);
             String serviceName = upperTableName + "Service";
             String paramName = tableName.toUpperCase() + "_SERVICE";
-            String serviceContainerStr = serviceName + " " + paramName + " = new "
+            String serviceContainer = serviceName + " " + paramName + " = new "
                     + serviceName + "(new " + upperTableName + "(), new " + upperTableName + "Dao());";
             BeanGenerator beanGenerator = new BeanGenerator();
             String bean = beanGenerator.generate(columnList, tableName, upperTableName);
             Map<String, Object> data = new HashMap<String, Object>();
             data.put("columnList", columnList);
-            data.put("serviceContainerStr", serviceContainerStr);
+            data.put("serviceContainer", serviceContainer);
             data.put("bean", bean);
             return JsonResponse.getSuccessJson("success", data);
         } else {
@@ -152,27 +152,6 @@ public class GeneratorController extends BaseController {
                 }
             }
         }
-    }
-
-
-    private List<ColumnBean> selectNoPriColunmList(ConnectionBean connection, String databaseName, String tableName) {
-        List<ColumnBean> columnList = new ArrayList<ColumnBean>();
-        try (PreparedStatement statement = connection.getReadConnection().prepareStatement("SELECT c.COLUMN_NAME, c.DATA_TYPE, c.COLUMN_COMMENT, c.COLUMN_KEY FROM information_schema.COLUMNS c WHERE c.TABLE_SCHEMA = '" + databaseName + "' AND c.TABLE_NAME = '" + tableName + "'" + " ORDER BY c.ORDINAL_POSITION");
-             ResultSet rs = statement.executeQuery()) {
-            ColumnBean bean = null;
-            while (rs.next()) {
-                if (!"PRI".equalsIgnoreCase(rs.getString("COLUMN_KEY"))) {
-                    bean = new ColumnBean();
-                    bean.setColumnName(rs.getString("COLUMN_NAME"));
-                    bean.setDataType(rs.getString("DATA_TYPE"));
-                    bean.setColumnComment(rs.getString("COLUMN_COMMENT"));
-                    columnList.add(bean);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return columnList;
     }
 
     private List<String> selectDatabaseNameList(ConnectionBean connection) {
