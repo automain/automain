@@ -11,7 +11,7 @@ public class ControllerGenerator {
 
             resultStr += getClassHead(upperPrefix);
 
-            resultStr += getList(prefix, upperTableName);
+            resultStr += getList(prefix, upperTableName, serviceName);
 
             resultStr += getInsertOrUpdate(prefix, upperTableName, hasCreateTime, hasUpdateTime, hasGlobalId, serviceName);
 
@@ -48,12 +48,12 @@ public class ControllerGenerator {
         return "public class " + upperPrefix + "Controller extends BaseController {";
     }
 
-    private String getList(String prefix, String upperTableName) {
+    private String getList(String prefix, String upperTableName, String serviceName) {
         return "\n\n    @RequestUri(\"/" + prefix + "/list\")\n    public JsonResponse " + prefix
                 + "List(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {\n        "
                 + upperTableName + "VO vo = getRequestParam(request, " + upperTableName
-                + "VO.class);\n        if (vo != null) {\n            PageBean<" + upperTableName + "> pageBean = " + upperTableName.toUpperCase()
-                + "_SERVICE.selectTableForCustomPage(connection, vo);\n            return JsonResponse.getSuccessJson(\"success\", pageBean);\n        }\n        return JsonResponse.getFailedJson(\"failed\");\n    }";
+                + "VO.class);\n        if (vo != null) {\n            PageBean<" + upperTableName + "> pageBean = " + serviceName
+                + ".selectTableForCustomPage(connection, vo);\n            return JsonResponse.getSuccessJson(\"success\", pageBean);\n        }\n        return JsonResponse.getFailedJson(\"failed\");\n    }";
     }
 
     private String getInsertOrUpdate(String prefix, String upperTableName, boolean hasCreateTime, boolean hasUpdateTime, boolean hasGlobalId, String serviceName) {

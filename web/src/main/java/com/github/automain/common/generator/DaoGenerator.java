@@ -103,7 +103,7 @@ public class DaoGenerator {
             String upperColumnName = CommonGenerator.convertToJavaName(columnName, true);
             if (CommonGenerator.checkTimeTypeColumn(column)) {
                 condition.append("        if (bean.get").append(upperColumnName).append("() != null ) {\n")
-                        .append("            sql.append(\" AND ").append(columnName).append(" >= ? \");\n")
+                        .append("            sql.append(\" AND ").append(columnName).append(" >= ?\");\n")
                         .append("            paramList.add(bean.get").append(upperColumnName).append("());\n")
                         .append("        }\n")
                         .append("        if (bean.get").append(upperColumnName).append("End() != null) {\n")

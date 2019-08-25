@@ -52,7 +52,7 @@ public class BeanGenerator {
     }
 
     private String getClassHead(String upperTableName) {
-        return "public class " + upperTableName + " implements BaseBean<" + upperTableName + "> {";
+        return "public class " + upperTableName + " implements BaseBean<" + upperTableName + "> {\n";
     }
 
     private String getProperties(List<ColumnBean> columns) {

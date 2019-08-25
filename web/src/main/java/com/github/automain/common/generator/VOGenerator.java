@@ -16,7 +16,7 @@ public class VOGenerator {
 
             resultStr += getProperties(columns, upperTableName, hasGlobalId);
 
-            resultStr += "\n\n}";
+            resultStr += "\n}";
             return resultStr;
         } catch (Exception e) {
             e.printStackTrace();
