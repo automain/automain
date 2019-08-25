@@ -2,7 +2,7 @@ package com.github.automain.common.generator;
 
 public class ControllerGenerator {
 
-    public String generate(String prefix, String upperPrefix, String upperTableName, boolean hasIsValid, boolean hasGlobalId, boolean hasCreateTime, boolean hasUpdateTime, String tableName) {
+    public String generate(String prefix, String upperPrefix, String upperTableName, boolean hasList, boolean hasAdd, boolean hasUpdate, boolean hasDetail, boolean hasIsValid, boolean hasGlobalId, boolean hasCreateTime, boolean hasUpdateTime, String tableName) {
         try {
             String serviceName = tableName.toUpperCase() + "_SERVICE";
             String resultStr = "";
@@ -11,11 +11,17 @@ public class ControllerGenerator {
 
             resultStr += getClassHead(upperPrefix);
 
-            resultStr += getList(prefix, upperTableName, serviceName);
+            if (hasList) {
+                resultStr += getList(prefix, upperTableName, serviceName);
+            }
 
-            resultStr += getInsertOrUpdate(prefix, upperTableName, hasCreateTime, hasUpdateTime, hasGlobalId, serviceName);
+            if (hasAdd || hasUpdate) {
+                resultStr += getInsertOrUpdate(prefix, upperTableName, hasCreateTime, hasUpdateTime, hasGlobalId, serviceName);
+            }
 
-            resultStr += getDetail(prefix, upperTableName, hasGlobalId, serviceName);
+            if (hasDetail) {
+                resultStr += getDetail(prefix, upperTableName, hasGlobalId, serviceName);
+            }
 
             if (hasIsValid) {
                 resultStr += getDelete(prefix, upperTableName, hasGlobalId, serviceName);

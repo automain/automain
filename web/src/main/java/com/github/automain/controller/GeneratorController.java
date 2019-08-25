@@ -96,6 +96,7 @@ public class GeneratorController extends BaseController {
             List<String> updateCheck = generatorVO.getUpdateCheck();
             List<String> detailCheck = generatorVO.getDetailCheck();
             List<String> searchCheck = generatorVO.getSearchCheck();
+            boolean hasList = CollectionUtils.isNotEmpty(listCheck);
             boolean hasAdd = CollectionUtils.isNotEmpty(addCheck);
             boolean hasUpdate = CollectionUtils.isNotEmpty(updateCheck);
             boolean hasDetail = CollectionUtils.isNotEmpty(detailCheck);
@@ -123,7 +124,7 @@ public class GeneratorController extends BaseController {
             generateFile(service, now + "/service/" + upperTableName + "Service" + ".java");
 
             ControllerGenerator controllerGenerator = new ControllerGenerator();
-            String controller = controllerGenerator.generate(prefix, upperPrefix, upperTableName, hasIsValid, hasGlobalId, hasCreateTime, hasUpdateTime, tableName);
+            String controller = controllerGenerator.generate(prefix, upperPrefix, upperTableName, hasList, hasAdd, hasUpdate, hasDetail, hasIsValid, hasGlobalId, hasCreateTime, hasUpdateTime, tableName);
             generateFile(controller, now + "/controller/" + upperPrefix + "Controller" + ".java");
 
             String compressPath = "/data/" + now;
