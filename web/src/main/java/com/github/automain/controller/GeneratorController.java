@@ -37,7 +37,7 @@ public class GeneratorController extends BaseController {
 
     @RequestUri("/dev/database/list")
     public JsonResponse databaseList(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) {
-        return JsonResponse.getSuccessJson("success", selectDatabaseNameList(connection));
+        return JsonResponse.getSuccessJson(selectDatabaseNameList(connection));
     }
 
     @RequestUri("/dev/table/list")
@@ -45,9 +45,9 @@ public class GeneratorController extends BaseController {
         GeneratorVO vo = getRequestParam(request, GeneratorVO.class);
         if (vo != null) {
             List<String> tableNameList = selectTableNameList(connection, vo.getDatabaseName());
-            return JsonResponse.getSuccessJson("success", tableNameList);
+            return JsonResponse.getSuccessJson(tableNameList);
         } else {
-            return JsonResponse.getFailedJson("failed");
+            return JsonResponse.getFailedJson();
         }
     }
 
@@ -69,9 +69,9 @@ public class GeneratorController extends BaseController {
             data.put("columnList", columnList);
             data.put("serviceContainer", serviceContainer);
             data.put("bean", bean);
-            return JsonResponse.getSuccessJson("success", data);
+            return JsonResponse.getSuccessJson(data);
         } else {
-            return JsonResponse.getFailedJson("failed");
+            return JsonResponse.getFailedJson();
         }
     }
 
@@ -83,7 +83,7 @@ public class GeneratorController extends BaseController {
             String tableName = generatorVO.getTableName();
 
             if (databaseName == null || tableName == null) {
-                return JsonResponse.getFailedJson("failed");
+                return JsonResponse.getFailedJson();
             }
             String prefix = generatorVO.getPrefix();
             List<ColumnBean> columns = selectAllColumnList(connection, databaseName, tableName);
@@ -135,9 +135,9 @@ public class GeneratorController extends BaseController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            return JsonResponse.getSuccessJson("success");
+            return JsonResponse.getSuccessJson();
         } else {
-            return JsonResponse.getFailedJson("failed");
+            return JsonResponse.getFailedJson();
         }
     }
 

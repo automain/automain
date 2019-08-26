@@ -21,9 +21,9 @@ public class TestController extends BaseController {
         TestVO vo = getRequestParam(request, TestVO.class);
         if (vo != null) {
             PageBean<Test> pageBean = TEST_SERVICE.selectTableForCustomPage(connection, vo);
-            return JsonResponse.getSuccessJson("success", pageBean);
+            return JsonResponse.getSuccessJson(pageBean);
         }
-        return JsonResponse.getFailedJson("failed");
+        return JsonResponse.getFailedJson();
     }
 
     @RequestUri("/test/insertOrUpdate")
@@ -43,9 +43,9 @@ public class TestController extends BaseController {
 //                bean.setCreateTime(bean.getUpdateTime());
 //                TEST_SERVICE.insertIntoTable(connection, bean);
 //            }
-            return JsonResponse.getSuccessJson("success");
+            return JsonResponse.getSuccessJson();
         }
-        return JsonResponse.getFailedJson("failed");
+        return JsonResponse.getFailedJson();
     }
 
     @RequestUri("/test/detail")
@@ -53,13 +53,13 @@ public class TestController extends BaseController {
         Test bean = getRequestParam(request, Test.class);
         if (bean != null && bean.getGid() != null) {
             Test detail = TEST_SERVICE.selectTableByGid(connection, bean);
-            return JsonResponse.getSuccessJson("success", detail);
+            return JsonResponse.getSuccessJson(detail);
         }
 //        if (bean != null && bean.getId() != null) {
 //            Test detail = TEST_SERVICE.selectTableById(connection, bean);
 //            return JsonResponse.getSuccessJson("success", detail);
 //        }
-        return JsonResponse.getFailedJson("failed");
+        return JsonResponse.getFailedJson();
     }
 
     @RequestUri("/test/delete")
@@ -67,12 +67,12 @@ public class TestController extends BaseController {
         TestVO vo = getRequestParam(request, TestVO.class);
         if (vo != null && CollectionUtils.isNotEmpty(vo.getGidList())) {
             TEST_SERVICE.softDeleteTableByGidList(connection, vo.getGidList());
-            return JsonResponse.getSuccessJson("success");
+            return JsonResponse.getSuccessJson();
         }
 //        if (vo != null && CollectionUtils.isNotEmpty(vo.getIdList())) {
 //            TEST_SERVICE.softDeleteTableByIdList(connection, vo.getIdList());
 //            return JsonResponse.getSuccessJson("success");
 //        }
-        return JsonResponse.getFailedJson("failed");
+        return JsonResponse.getFailedJson();
     }
 }

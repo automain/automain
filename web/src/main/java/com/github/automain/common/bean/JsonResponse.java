@@ -33,12 +33,20 @@ public class JsonResponse {
         this.data = data;
     }
 
-    public static JsonResponse getSuccessJson(String message) {
-        return getSuccessJson(message, null);
+    public static JsonResponse getSuccessJson() {
+        return getSuccessJson(null);
+    }
+
+    public static JsonResponse getSuccessJson(Object data) {
+        return getSuccessJson("success", data);
     }
 
     public static JsonResponse getSuccessJson(String message, Object data) {
         return getJson(0, message, data);
+    }
+
+    public static JsonResponse getFailedJson() {
+        return getFailedJson("failed");
     }
 
     public static JsonResponse getFailedJson(String message) {

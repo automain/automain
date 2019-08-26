@@ -59,7 +59,7 @@ public class ControllerGenerator {
                 + "List(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {\n        "
                 + upperTableName + "VO vo = getRequestParam(request, " + upperTableName
                 + "VO.class);\n        if (vo != null) {\n            PageBean<" + upperTableName + "> pageBean = " + serviceName
-                + ".selectTableForCustomPage(connection, vo);\n            return JsonResponse.getSuccessJson(\"success\", pageBean);\n        }\n        return JsonResponse.getFailedJson(\"failed\");\n    }";
+                + ".selectTableForCustomPage(connection, vo);\n            return JsonResponse.getSuccessJson(pageBean);\n        }\n        return JsonResponse.getFailedJson();\n    }";
     }
 
     private String getInsertOrUpdate(String prefix, String upperTableName, boolean hasCreateTime, boolean hasUpdateTime, boolean hasGlobalId, String serviceName) {
@@ -78,30 +78,30 @@ public class ControllerGenerator {
                 + "InsertOrUpdate(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {\n        "
                 + upperTableName + " bean = getRequestParam(request, " + upperTableName + ".class);\n        if (bean != null) {\n"
                 + updateTimeSet + insertUpdateContent +
-                "            return JsonResponse.getSuccessJson(\"success\");\n        }\n        return JsonResponse.getFailedJson(\"failed\");\n    }";
+                "            return JsonResponse.getSuccessJson();\n        }\n        return JsonResponse.getFailedJson();\n    }";
     }
 
     private String getDetail(String prefix, String upperTableName, boolean hasGlobalId, String serviceName) {
         String detailContent = hasGlobalId
                 ? "        if (bean != null && bean.getGid() != null) {\n            " + upperTableName + " detail = " + serviceName
-                + ".selectTableByGid(connection, bean);\n            return JsonResponse.getSuccessJson(\"success\", detail);\n        }\n"
+                + ".selectTableByGid(connection, bean);\n            return JsonResponse.getSuccessJson(detail);\n        }\n"
                 : "        if (bean != null && bean.getId() != null) {\n            " + upperTableName + " detail = " + serviceName
-                + ".selectTableById(connection, bean);\n            return JsonResponse.getSuccessJson(\"success\", detail);\n        }\n";
+                + ".selectTableById(connection, bean);\n            return JsonResponse.getSuccessJson(detail);\n        }\n";
         return "\n\n    @RequestUri(\"/" + prefix + "/detail\")\n    public JsonResponse " + prefix
                 + "Detail(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {\n        "
                 + upperTableName + " bean = getRequestParam(request, " + upperTableName + ".class);\n" +
-                detailContent + "        return JsonResponse.getFailedJson(\"failed\");\n    }";
+                detailContent + "        return JsonResponse.getFailedJson();\n    }";
     }
 
     private String getDelete(String prefix, String upperTableName, boolean hasGlobalId, String serviceName) {
         String deleteContent = hasGlobalId
                 ? "        if (vo != null && CollectionUtils.isNotEmpty(vo.getGidList())) {\n            " + serviceName
-                + ".softDeleteTableByGidList(connection, vo.getGidList());\n            return JsonResponse.getSuccessJson(\"success\");\n        }\n"
+                + ".softDeleteTableByGidList(connection, vo.getGidList());\n            return JsonResponse.getSuccessJson();\n        }\n"
                 : "        if (vo != null && CollectionUtils.isNotEmpty(vo.getIdList())) {\n            " + serviceName
-                + ".softDeleteTableByIdList(connection, vo.getIdList());\n            return JsonResponse.getSuccessJson(\"success\");\n        }\n";
+                + ".softDeleteTableByIdList(connection, vo.getIdList());\n            return JsonResponse.getSuccessJson();\n        }\n";
         return "\n\n    @RequestUri(\"/" + prefix + "/delete\")\n    public JsonResponse " + prefix
                 + "Delete(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {\n        "
                 + upperTableName + "VO vo = getRequestParam(request, " + upperTableName + "VO.class);\n" +
-                deleteContent + "        return JsonResponse.getFailedJson(\"failed\");\n    }";
+                deleteContent + "        return JsonResponse.getFailedJson();\n    }";
     }
 }
