@@ -13,6 +13,7 @@ import redis.clients.jedis.Jedis;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.UUID;
 
 public class TestController extends BaseController {
 
@@ -26,8 +27,8 @@ public class TestController extends BaseController {
         return JsonResponse.getFailedJson();
     }
 
-    @RequestUri("/test/insertOrUpdate")
-    public JsonResponse testInsertOrUpdate(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    @RequestUri("/test/addOrUpdate")
+    public JsonResponse testAddOrUpdate(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         Test bean = getRequestParam(request, Test.class);
         if (bean != null) {
             bean.setUpdateTime(DateUtil.getNow());
@@ -35,6 +36,7 @@ public class TestController extends BaseController {
                 TEST_SERVICE.updateTableByGid(connection, bean, false);
             } else {
                 bean.setCreateTime(bean.getUpdateTime());
+                bean.setGid(UUID.randomUUID().toString());
                 TEST_SERVICE.insertIntoTable(connection, bean);
             }
 //            if (bean.getId() != null) {

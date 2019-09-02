@@ -16,7 +16,7 @@ public class ControllerGenerator {
             }
 
             if (hasAdd || hasUpdate) {
-                resultStr += getInsertOrUpdate(prefix, upperTableName, hasCreateTime, hasUpdateTime, hasGlobalId, serviceName);
+                resultStr += getAddOrUpdate(prefix, upperTableName, hasCreateTime, hasUpdateTime, hasGlobalId, serviceName);
             }
 
             if (hasDetail) {
@@ -62,20 +62,21 @@ public class ControllerGenerator {
                 + ".selectTableForCustomPage(connection, vo);\n            return JsonResponse.getSuccessJson(pageBean);\n        }\n        return JsonResponse.getFailedJson();\n    }";
     }
 
-    private String getInsertOrUpdate(String prefix, String upperTableName, boolean hasCreateTime, boolean hasUpdateTime, boolean hasGlobalId, String serviceName) {
+    private String getAddOrUpdate(String prefix, String upperTableName, boolean hasCreateTime, boolean hasUpdateTime, boolean hasGlobalId, String serviceName) {
         String updateTimeSet = hasUpdateTime ? "            bean.setUpdateTime(DateUtil.getNow());\n" : "";
         String createTimeSet = hasCreateTime ? hasUpdateTime
                 ? "                bean.setCreateTime(bean.getUpdateTime());\n"
                 : "                bean.setCreateTime(DateUtil.getNow());\n" : "";
         String insertUpdateContent = hasGlobalId
                 ? "            if (bean.getGid() != null) {\n                " + serviceName
-                + ".updateTableByGid(connection, bean, false);\n            } else {\n" + createTimeSet +
-                "                " + serviceName + ".insertIntoTable(connection, bean);\n            }\n"
+                + ".updateTableByGid(connection, bean, false);\n            } else {\n" + createTimeSet
+                + "                bean.setGid(UUID.randomUUID().toString());\n                " + serviceName
+                + ".insertIntoTable(connection, bean);\n            }\n"
                 : "            if (bean.getId() != null) {\n                " + serviceName
                 + ".updateTableById(connection, bean, false);\n            } else {\n" + createTimeSet +
                 "                " + serviceName + ".insertIntoTable(connection, bean);\n            }\n";
-        return "\n\n    @RequestUri(\"/" + prefix + "/insertOrUpdate\")\n    public JsonResponse " + prefix
-                + "InsertOrUpdate(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {\n        "
+        return "\n\n    @RequestUri(\"/" + prefix + "/addOrUpdate\")\n    public JsonResponse " + prefix
+                + "AddOrUpdate(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {\n        "
                 + upperTableName + " bean = getRequestParam(request, " + upperTableName + ".class);\n        if (bean != null) {\n"
                 + updateTimeSet + insertUpdateContent +
                 "            return JsonResponse.getSuccessJson();\n        }\n        return JsonResponse.getFailedJson();\n    }";
