@@ -58,7 +58,7 @@ public class TestDao extends BaseDao<Test> {
             paramList.add(bean.getCreateTime());
         }
         if (bean.getCreateTimeEnd() != null) {
-            sql.append(" AND create_time = ?");
+            sql.append(" AND create_time < ?");
             paramList.add(bean.getCreateTimeEnd());
         }
         if (bean.getTestName() != null) {
