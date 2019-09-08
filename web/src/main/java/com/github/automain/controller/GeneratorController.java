@@ -35,12 +35,12 @@ import java.util.Map;
 
 public class GeneratorController extends BaseController {
 
-    @RequestUri("/dev/database/list")
+    @RequestUri("/dev/databaseList")
     public JsonResponse databaseList(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) {
         return JsonResponse.getSuccessJson(selectDatabaseNameList(connection));
     }
 
-    @RequestUri("/dev/table/list")
+    @RequestUri("/dev/tableList")
     public JsonResponse tableList(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) {
         GeneratorVO vo = getRequestParam(request, GeneratorVO.class);
         if (vo != null) {
@@ -51,7 +51,7 @@ public class GeneratorController extends BaseController {
         }
     }
 
-    @RequestUri("/dev/column/list")
+    @RequestUri("/dev/columnList")
     public JsonResponse columnList(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) {
         GeneratorVO vo = getRequestParam(request, GeneratorVO.class);
         if (vo != null) {

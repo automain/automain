@@ -1,19 +1,3 @@
-/*
- * Copyright 2018 fastjdbc
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.github.automain.bean;
 
 import com.github.fastjdbc.common.BaseBean;
@@ -42,6 +26,8 @@ public class Test implements BaseBean<Test> {
     private String remark;
     // 测试名称
     private String testName;
+    // 测试字典(0:字典0,1:字典1,2:字典2)
+    private Integer testDictionary;
 
     public Integer getId() {
         return id;
@@ -115,6 +101,15 @@ public class Test implements BaseBean<Test> {
         return this;
     }
 
+    public Integer getTestDictionary() {
+        return testDictionary;
+    }
+
+    public Test setTestDictionary(Integer testDictionary) {
+        this.testDictionary = testDictionary;
+        return this;
+    }
+
     @Override
     public String tableName() {
         return "test";
@@ -122,9 +117,9 @@ public class Test implements BaseBean<Test> {
 
     @Override
     public Map<String, Object> columnMap(boolean all) {
-        Map<String, Object> map = new HashMap<String, Object>(8);
+        Map<String, Object> map = new HashMap<String, Object>(9);
         if (all || this.getId() != null) {
-            map.put("gid", this.getId());
+            map.put("id", this.getId());
         }
         if (all || this.getGid() != null) {
             map.put("gid", this.getGid());
@@ -147,6 +142,9 @@ public class Test implements BaseBean<Test> {
         if (all || this.getTestName() != null) {
             map.put("test_name", this.getTestName());
         }
+        if (all || this.getTestDictionary() != null) {
+            map.put("test_dictionary", this.getTestDictionary());
+        }
         return map;
     }
 
@@ -160,7 +158,8 @@ public class Test implements BaseBean<Test> {
                 .setIsValid(rs.getInt("is_valid"))
                 .setMoney(rs.getBigDecimal("money"))
                 .setRemark(rs.getString("remark"))
-                .setTestName(rs.getString("test_name"));
+                .setTestName(rs.getString("test_name"))
+                .setTestDictionary(rs.getInt("test_dictionary"));
     }
 
     @Override
@@ -174,6 +173,7 @@ public class Test implements BaseBean<Test> {
                 ", money=" + money +
                 ", remark='" + remark + '\'' +
                 ", testName='" + testName + '\'' +
+                ", testDictionary=" + testDictionary +
                 '}';
     }
 }

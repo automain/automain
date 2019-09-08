@@ -17,7 +17,7 @@ import java.util.UUID;
 
 public class TestController extends BaseController {
 
-    @RequestUri("/test/list")
+    @RequestUri("/testList")
     public JsonResponse testList(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         TestVO vo = getRequestParam(request, TestVO.class);
         if (vo != null) {
@@ -27,7 +27,7 @@ public class TestController extends BaseController {
         return JsonResponse.getFailedJson();
     }
 
-    @RequestUri("/test/addOrUpdate")
+    @RequestUri("/testAddOrUpdate")
     public JsonResponse testAddOrUpdate(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         Test bean = getRequestParam(request, Test.class);
         if (bean != null) {
@@ -50,7 +50,7 @@ public class TestController extends BaseController {
         return JsonResponse.getFailedJson();
     }
 
-    @RequestUri("/test/detail")
+    @RequestUri("/testDetail")
     public JsonResponse testDetail(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         Test bean = getRequestParam(request, Test.class);
         if (bean != null && bean.getGid() != null) {
@@ -64,7 +64,7 @@ public class TestController extends BaseController {
         return JsonResponse.getFailedJson();
     }
 
-    @RequestUri("/test/delete")
+    @RequestUri("/testDelete")
     public JsonResponse testDelete(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         TestVO vo = getRequestParam(request, TestVO.class);
         if (vo != null && CollectionUtils.isNotEmpty(vo.getGidList())) {
