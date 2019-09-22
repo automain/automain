@@ -96,6 +96,7 @@ public class GeneratorController extends BaseController {
             List<String> updateCheck = generatorVO.getUpdateCheck();
             List<String> detailCheck = generatorVO.getDetailCheck();
             List<String> searchCheck = generatorVO.getSearchCheck();
+            List<String> sortCheck = generatorVO.getSortCheck();
             boolean hasList = CollectionUtils.isNotEmpty(listCheck);
             boolean hasAdd = CollectionUtils.isNotEmpty(addCheck);
             boolean hasUpdate = CollectionUtils.isNotEmpty(updateCheck);

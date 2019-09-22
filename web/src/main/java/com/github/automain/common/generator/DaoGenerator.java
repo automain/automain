@@ -117,6 +117,7 @@ public class DaoGenerator {
                         .append("        }\n");
             }
         }
+        condition.append("        if (!isCountSql && bean.getSortLabel() != null && bean.getSortOrder() != null && bean.columnMap(true).containsKey(bean.getSortLabel())) {\n            sql.append(\" ORDER BY \").append(bean.getSortLabel()).append(\"asc\".equalsIgnoreCase(bean.getSortOrder()) ? \" ASC\" : \" DESC\");\n        }\n");
         return condition.toString();
     }
 

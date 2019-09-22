@@ -35,7 +35,7 @@ public class VOGenerator {
     private String getProperties(List<ColumnBean> columns, String upperTableName, boolean hasGlobalId) {
         StringBuilder properties = new StringBuilder();
         StringBuilder getterSetter = new StringBuilder();
-        properties.append("\n\n    // 页码\n    private int page;\n    // 页大小\n    private int size;");
+        properties.append("\n\n    // 页码\n    private int page;\n    // 页大小\n    private int size;\n    // 排序字段\n    private String sortLabel;\n    // 排序顺序\n    private String sortOrder;");
         if (hasGlobalId) {
             properties.append("\n    // 删除用GID集合\n    private List<String> gidList;");
         } else {

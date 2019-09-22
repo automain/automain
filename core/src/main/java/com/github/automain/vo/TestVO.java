@@ -10,6 +10,10 @@ public class TestVO extends Test {
     private int page;
     // 页大小
     private int size;
+    // 排序字段
+    private String sortLabel;
+    // 排序顺序
+    private String sortOrder;
     // 删除用GID集合
     private List<String> gidList;
     // 创建时间结束
@@ -32,6 +36,24 @@ public class TestVO extends Test {
 
     public TestVO setSize(int size) {
         this.size = size;
+        return this;
+    }
+
+    public String getSortLabel() {
+        return sortLabel;
+    }
+
+    public TestVO setSortLabel(String sortLabel) {
+        this.sortLabel = sortLabel;
+        return this;
+    }
+
+    public String getSortOrder() {
+        return sortOrder;
+    }
+
+    public TestVO setSortOrder(String sortOrder) {
+        this.sortOrder = sortOrder;
         return this;
     }
 

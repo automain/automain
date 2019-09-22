@@ -20,6 +20,8 @@ public class GeneratorVO {
     private List<String> detailCheck;
     // 搜索字段
     private List<String> searchCheck;
+    // 排序字段
+    private List<String> sortCheck;
 
     public String getDatabaseName() {
         return databaseName;
@@ -90,6 +92,15 @@ public class GeneratorVO {
 
     public GeneratorVO setSearchCheck(List<String> searchCheck) {
         this.searchCheck = searchCheck;
+        return this;
+    }
+
+    public List<String> getSortCheck() {
+        return sortCheck;
+    }
+
+    public GeneratorVO setSortCheck(List<String> sortCheck) {
+        this.sortCheck = sortCheck;
         return this;
     }
 }

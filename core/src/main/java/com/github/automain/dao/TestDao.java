@@ -65,6 +65,9 @@ public class TestDao extends BaseDao<Test> {
             sql.append(" AND test_name LIKE ?");
             paramList.add(bean.getTestName() + "%");
         }
+        if (!isCountSql && bean.getSortLabel() != null && bean.getSortOrder() != null && bean.columnMap(true).containsKey(bean.getSortLabel())) {
+            sql.append(" ORDER BY ").append(bean.getSortLabel()).append("asc".equalsIgnoreCase(bean.getSortOrder()) ? " ASC" : " DESC");
+        }
         return sql.toString();
     }
 }
