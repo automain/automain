@@ -7,21 +7,7 @@ import java.util.List;
 public class VOGenerator {
 
     public String generate(List<ColumnBean> columns, String upperTableName, boolean hasGlobalId) {
-        try {
-            String resultStr = "";
-
-            resultStr += getImportHead();
-
-            resultStr += getClassHead(upperTableName);
-
-            resultStr += getProperties(columns, upperTableName, hasGlobalId);
-
-            resultStr += "\n}";
-            return resultStr;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+        return getImportHead() + getClassHead(upperTableName) + getProperties(columns, upperTableName, hasGlobalId) + "\n}";
     }
 
     private String getImportHead() {

@@ -11,6 +11,7 @@ import com.github.automain.common.generator.ControllerGenerator;
 import com.github.automain.common.generator.DaoGenerator;
 import com.github.automain.common.generator.ServiceGenerator;
 import com.github.automain.common.generator.VOGenerator;
+import com.github.automain.common.generator.ViewGenerator;
 import com.github.automain.util.CompressUtil;
 import com.github.automain.util.DateUtil;
 import com.github.automain.util.PropertiesUtil;
@@ -125,8 +126,12 @@ public class GeneratorController extends BaseController {
             generateFile(service, now + "/service/" + upperTableName + "Service" + ".java");
 
             ControllerGenerator controllerGenerator = new ControllerGenerator();
-            String controller = controllerGenerator.generate(prefix, upperPrefix, upperTableName, hasList, hasAdd, hasUpdate, hasDetail, hasIsValid, hasGlobalId, hasCreateTime, hasUpdateTime, tableName);
+            String controller = controllerGenerator.generate(prefix, upperPrefix, tableName, upperTableName, hasList, hasAdd, hasUpdate, hasDetail, hasIsValid, hasGlobalId, hasCreateTime, hasUpdateTime);
             generateFile(controller, now + "/controller/" + upperPrefix + "Controller" + ".java");
+
+            ViewGenerator viewGenerator = new ViewGenerator();
+            String view = viewGenerator.generate(columns, prefix, upperPrefix, tableName, upperTableName, listCheck, addCheck, updateCheck, detailCheck, searchCheck, sortCheck, hasIsValid, hasGlobalId);
+            generateFile(view, now + "/view/" + upperPrefix + ".vue");
 
             String compressPath = "/data/" + now;
             String zipPath = compressPath + ".zip";

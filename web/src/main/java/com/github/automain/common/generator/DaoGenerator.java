@@ -10,23 +10,7 @@ import java.util.Map;
 public class DaoGenerator {
 
     public String generate(List<ColumnBean> columns, List<String> keyColumns, String tableName, String upperTableName, boolean hasIsValid) {
-        try {
-            String resultStr = "";
-
-            resultStr += getImportHead();
-
-            resultStr += getClassHead(upperTableName);
-
-            resultStr += getSelectTableForCustomPage(upperTableName);
-
-            resultStr += getSetSearchCondition(tableName, upperTableName, columns, keyColumns, hasIsValid);
-
-            resultStr += "\n}";
-            return resultStr;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+        return getImportHead() + getClassHead(upperTableName) + getSelectTableForCustomPage(upperTableName) + getSetSearchCondition(tableName, upperTableName, columns, keyColumns, hasIsValid) + "\n}";
     }
 
     private String getImportHead() {

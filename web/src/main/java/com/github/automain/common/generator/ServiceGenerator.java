@@ -3,23 +3,7 @@ package com.github.automain.common.generator;
 public class ServiceGenerator {
 
     public String generate(String upperTableName) {
-        try {
-            String resultStr = "";
-
-            resultStr += getImportHead();
-
-            resultStr += getClassHead(upperTableName);
-
-            resultStr += getConstructor(upperTableName);
-
-            resultStr += getSelectTableForCustomPage(upperTableName);
-
-            resultStr += "\n}";
-            return resultStr;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+        return getImportHead() + getClassHead(upperTableName) + getConstructor(upperTableName) + getSelectTableForCustomPage(upperTableName) + "\n}";
     }
 
     private String getImportHead() {

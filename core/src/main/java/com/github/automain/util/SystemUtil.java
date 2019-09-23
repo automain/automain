@@ -67,7 +67,6 @@ public class SystemUtil {
         config.setJdbcUrl(PropertiesUtil.getStringProperty("db." + poolName + "_jdbcUrl"));
         config.setUsername(PropertiesUtil.getStringProperty("db." + poolName + "_username"));
         config.setPassword(PropertiesUtil.getStringProperty("db." + poolName + "_password"));
-        config.setAllowPoolSuspension(true);
         return config;
     }
 

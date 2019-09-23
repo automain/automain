@@ -2,37 +2,32 @@ package com.github.automain.common.generator;
 
 public class ControllerGenerator {
 
-    public String generate(String prefix, String upperPrefix, String upperTableName, boolean hasList, boolean hasAdd, boolean hasUpdate, boolean hasDetail, boolean hasIsValid, boolean hasGlobalId, boolean hasCreateTime, boolean hasUpdateTime, String tableName) {
-        try {
-            String serviceName = tableName.toUpperCase() + "_SERVICE";
-            String resultStr = "";
+    public String generate(String prefix, String upperPrefix, String tableName, String upperTableName, boolean hasList, boolean hasAdd, boolean hasUpdate, boolean hasDetail, boolean hasIsValid, boolean hasGlobalId, boolean hasCreateTime, boolean hasUpdateTime) {
+        String serviceName = tableName.toUpperCase() + "_SERVICE";
+        String resultStr = "";
 
-            resultStr += getImportHead(hasIsValid, hasCreateTime, hasUpdateTime);
+        resultStr += getImportHead(hasIsValid, hasCreateTime, hasUpdateTime);
 
-            resultStr += getClassHead(upperPrefix);
+        resultStr += getClassHead(upperPrefix);
 
-            if (hasList) {
-                resultStr += getList(prefix, upperTableName, serviceName);
-            }
-
-            if (hasAdd || hasUpdate) {
-                resultStr += getAddOrUpdate(prefix, upperTableName, hasCreateTime, hasUpdateTime, hasGlobalId, serviceName);
-            }
-
-            if (hasDetail) {
-                resultStr += getDetail(prefix, upperTableName, hasGlobalId, serviceName);
-            }
-
-            if (hasIsValid) {
-                resultStr += getDelete(prefix, upperTableName, hasGlobalId, serviceName);
-            }
-
-            resultStr += "\n}";
-            return resultStr;
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (hasList) {
+            resultStr += getList(prefix, upperTableName, serviceName);
         }
-        return null;
+
+        if (hasAdd || hasUpdate) {
+            resultStr += getAddOrUpdate(prefix, upperTableName, hasCreateTime, hasUpdateTime, hasGlobalId, serviceName);
+        }
+
+        if (hasDetail) {
+            resultStr += getDetail(prefix, upperTableName, hasGlobalId, serviceName);
+        }
+
+        if (hasIsValid) {
+            resultStr += getDelete(prefix, upperTableName, hasGlobalId, serviceName);
+        }
+
+        resultStr += "\n}";
+        return resultStr;
     }
 
     private String getImportHead(boolean hasIsValid, boolean hasCreateTime, boolean hasUpdateTime) {

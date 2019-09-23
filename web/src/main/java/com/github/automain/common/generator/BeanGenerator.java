@@ -8,31 +8,10 @@ import java.util.List;
 public class BeanGenerator {
 
     public String generate(List<ColumnBean> columns, String tableName, String upperTableName) {
-        try {
-            String resultStr = "";
-
-            resultStr += getImportHead(columns);
-
-            resultStr += getClassHead(upperTableName);
-
-            resultStr += getProperties(columns);
-
-            resultStr += getGetterSetter(columns, upperTableName);
-
-            resultStr += getTableName(tableName);
-
-            resultStr += getColumnMap(columns);
-
-            resultStr += getBeanFromResultSet(columns, upperTableName);
-
-            resultStr += getToString(columns, upperTableName);
-
-            resultStr += "\n}";
-            return resultStr;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+        return getImportHead(columns) + getClassHead(upperTableName) + getProperties(columns)
+                + getGetterSetter(columns, upperTableName) + getTableName(tableName)
+                + getColumnMap(columns) + getBeanFromResultSet(columns, upperTableName)
+                + getToString(columns, upperTableName) + "\n}";
     }
 
     private String getImportHead(List<ColumnBean> columns) {
