@@ -22,6 +22,7 @@ import com.github.fastjdbc.bean.ConnectionBean;
 import com.github.fastjdbc.bean.PageBean;
 import com.github.fastjdbc.bean.PageParamBean;
 import com.github.fastjdbc.common.BaseDao;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +65,10 @@ public class TestDao extends BaseDao<Test> {
         if (bean.getTestName() != null) {
             sql.append(" AND test_name LIKE ?");
             paramList.add(bean.getTestName() + "%");
+        }
+        if (CollectionUtils.isNotEmpty(bean.getTestDictionaryList())) {
+            sql.append(" AND test_dictionary ").append(makeInStr(bean.getTestDictionaryList()));
+            paramList.addAll(bean.getTestDictionaryList());
         }
         if (!isCountSql && bean.getSortLabel() != null && bean.getSortOrder() != null && bean.columnMap(true).containsKey(bean.getSortLabel())) {
             sql.append(" ORDER BY ").append(bean.getSortLabel()).append("asc".equalsIgnoreCase(bean.getSortOrder()) ? " ASC" : " DESC");

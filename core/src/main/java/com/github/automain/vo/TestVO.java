@@ -20,6 +20,8 @@ public class TestVO extends Test {
     private Integer createTimeEnd;
     // 更新时间结束
     private Integer updateTimeEnd;
+    // 测试字典集合
+    private List<Integer> testDictionaryList;
 
     public int getPage() {
         return page;
@@ -81,6 +83,15 @@ public class TestVO extends Test {
 
     public TestVO setUpdateTimeEnd(Integer updateTimeEnd) {
         this.updateTimeEnd = updateTimeEnd;
+        return this;
+    }
+
+    public List<Integer> getTestDictionaryList() {
+        return testDictionaryList;
+    }
+
+    public TestVO setTestDictionaryList(List<Integer> testDictionaryList) {
+        this.testDictionaryList = testDictionaryList;
         return this;
     }
 }
