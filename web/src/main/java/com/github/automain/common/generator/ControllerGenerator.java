@@ -50,11 +50,11 @@ public class ControllerGenerator {
     }
 
     private String getList(String prefix, String upperTableName, String serviceName) {
-        return "\n\n    @RequestUri(\"/" + prefix + "List\")\n    public JsonResponse " + prefix
-                + "List(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {\n        "
-                + upperTableName + "VO vo = getRequestParam(request, " + upperTableName
-                + "VO.class);\n        if (vo != null) {\n            PageBean<" + upperTableName + "> pageBean = " + serviceName
-                + ".selectTableForCustomPage(connection, vo);\n            return JsonResponse.getSuccessJson(pageBean);\n        }\n        return JsonResponse.getFailedJson();\n    }";
+        return "\n\n    @RequestUri(\"/" + prefix + "List\")\n    public JsonResponse " + prefix +
+                "List(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {\n        " +
+                upperTableName + "VO vo = getRequestParam(request, " + upperTableName +
+                "VO.class);\n        if (vo != null) {\n            PageBean<" + upperTableName + "> pageBean = " + serviceName +
+                ".selectTableForCustomPage(connection, vo);\n            return JsonResponse.getSuccessJson(pageBean);\n        }\n        return JsonResponse.getFailedJson();\n    }";
     }
 
     private String getAddOrUpdate(String prefix, String upperTableName, boolean hasCreateTime, boolean hasUpdateTime, boolean hasGlobalId, String serviceName) {
@@ -63,41 +63,41 @@ public class ControllerGenerator {
                 ? "                bean.setCreateTime(bean.getUpdateTime());\n"
                 : "                bean.setCreateTime(DateUtil.getNow());\n" : "";
         String insertUpdateContent = hasGlobalId
-                ? "            if (bean.getGid() != null) {\n                " + serviceName
-                + ".updateTableByGid(connection, bean, false);\n            } else {\n" + createTimeSet
-                + "                bean.setGid(UUID.randomUUID().toString());\n                " + serviceName
-                + ".insertIntoTable(connection, bean);\n            }\n"
-                : "            if (bean.getId() != null) {\n                " + serviceName
-                + ".updateTableById(connection, bean, false);\n            } else {\n" + createTimeSet +
+                ? "            if (bean.getGid() != null) {\n                " + serviceName +
+                ".updateTableByGid(connection, bean, false);\n            } else {\n" + createTimeSet +
+                "                bean.setGid(UUID.randomUUID().toString());\n                " + serviceName +
+                ".insertIntoTable(connection, bean);\n            }\n"
+                : "            if (bean.getId() != null) {\n                " + serviceName +
+                ".updateTableById(connection, bean, false);\n            } else {\n" + createTimeSet +
                 "                " + serviceName + ".insertIntoTable(connection, bean);\n            }\n";
-        return "\n\n    @RequestUri(\"/" + prefix + "AddOrUpdate\")\n    public JsonResponse " + prefix
-                + "AddOrUpdate(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {\n        "
-                + upperTableName + " bean = getRequestParam(request, " + upperTableName + ".class);\n        if (bean != null) {\n"
-                + updateTimeSet + insertUpdateContent +
+        return "\n\n    @RequestUri(\"/" + prefix + "AddOrUpdate\")\n    public JsonResponse " + prefix +
+                "AddOrUpdate(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {\n        " +
+                upperTableName + " bean = getRequestParam(request, " + upperTableName + ".class);\n        if (bean != null) {\n" +
+                updateTimeSet + insertUpdateContent +
                 "            return JsonResponse.getSuccessJson();\n        }\n        return JsonResponse.getFailedJson();\n    }";
     }
 
     private String getDetail(String prefix, String upperTableName, boolean hasGlobalId, String serviceName) {
         String detailContent = hasGlobalId
-                ? "        if (bean != null && bean.getGid() != null) {\n            " + upperTableName + " detail = " + serviceName
-                + ".selectTableByGid(connection, bean);\n            return JsonResponse.getSuccessJson(detail);\n        }\n"
-                : "        if (bean != null && bean.getId() != null) {\n            " + upperTableName + " detail = " + serviceName
-                + ".selectTableById(connection, bean);\n            return JsonResponse.getSuccessJson(detail);\n        }\n";
-        return "\n\n    @RequestUri(\"/" + prefix + "Detail\")\n    public JsonResponse " + prefix
-                + "Detail(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {\n        "
-                + upperTableName + " bean = getRequestParam(request, " + upperTableName + ".class);\n" +
+                ? "        if (bean != null && bean.getGid() != null) {\n            " + upperTableName + " detail = " + serviceName +
+                ".selectTableByGid(connection, bean);\n            return JsonResponse.getSuccessJson(detail);\n        }\n"
+                : "        if (bean != null && bean.getId() != null) {\n            " + upperTableName + " detail = " + serviceName +
+                ".selectTableById(connection, bean);\n            return JsonResponse.getSuccessJson(detail);\n        }\n";
+        return "\n\n    @RequestUri(\"/" + prefix + "Detail\")\n    public JsonResponse " + prefix +
+                "Detail(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {\n        " +
+                upperTableName + " bean = getRequestParam(request, " + upperTableName + ".class);\n" +
                 detailContent + "        return JsonResponse.getFailedJson();\n    }";
     }
 
     private String getDelete(String prefix, String upperTableName, boolean hasGlobalId, String serviceName) {
         String deleteContent = hasGlobalId
-                ? "        if (vo != null && CollectionUtils.isNotEmpty(vo.getGidList())) {\n            " + serviceName
-                + ".softDeleteTableByGidList(connection, vo.getGidList());\n            return JsonResponse.getSuccessJson();\n        }\n"
-                : "        if (vo != null && CollectionUtils.isNotEmpty(vo.getIdList())) {\n            " + serviceName
-                + ".softDeleteTableByIdList(connection, vo.getIdList());\n            return JsonResponse.getSuccessJson();\n        }\n";
-        return "\n\n    @RequestUri(\"/" + prefix + "Delete\")\n    public JsonResponse " + prefix
-                + "Delete(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {\n        "
-                + upperTableName + "VO vo = getRequestParam(request, " + upperTableName + "VO.class);\n" +
+                ? "        if (vo != null && CollectionUtils.isNotEmpty(vo.getGidList())) {\n            " + serviceName +
+                ".softDeleteTableByGidList(connection, vo.getGidList());\n            return JsonResponse.getSuccessJson();\n        }\n"
+                : "        if (vo != null && CollectionUtils.isNotEmpty(vo.getIdList())) {\n            " + serviceName +
+                ".softDeleteTableByIdList(connection, vo.getIdList());\n            return JsonResponse.getSuccessJson();\n        }\n";
+        return "\n\n    @RequestUri(\"/" + prefix + "Delete\")\n    public JsonResponse " + prefix +
+                "Delete(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {\n        " +
+                upperTableName + "VO vo = getRequestParam(request, " + upperTableName + "VO.class);\n" +
                 deleteContent + "        return JsonResponse.getFailedJson();\n    }";
     }
 }

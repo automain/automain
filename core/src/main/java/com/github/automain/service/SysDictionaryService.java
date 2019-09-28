@@ -23,4 +23,8 @@ public class SysDictionaryService extends BaseService<SysDictionary, SysDictiona
     public List<DictionaryVO> selectAllDictionaryVO(ConnectionBean connection) throws Exception{
         return getDao().selectAllDictionaryVO(connection);
     }
+
+    public List<String> selectDictionaryColumn(ConnectionBean connection, String tableName) throws Exception{
+        return getDao().selectDictionaryColumn(connection, tableName);
+    }
 }

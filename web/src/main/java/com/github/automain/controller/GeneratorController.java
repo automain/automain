@@ -96,7 +96,6 @@ public class GeneratorController extends BaseController {
             List<String> addCheck = generatorVO.getAddCheck();
             List<String> updateCheck = generatorVO.getUpdateCheck();
             List<String> detailCheck = generatorVO.getDetailCheck();
-            List<String> searchCheck = generatorVO.getSearchCheck();
             List<String> sortCheck = generatorVO.getSortCheck();
             boolean hasList = CollectionUtils.isNotEmpty(listCheck);
             boolean hasAdd = CollectionUtils.isNotEmpty(addCheck);
@@ -107,6 +106,8 @@ public class GeneratorController extends BaseController {
             boolean hasCreateTime = hasCreateTime(columns);
             boolean hasUpdateTime = hasUpdateTime(columns);
 
+            List<String> dictionaryColumnList = SYS_DICTIONARY_SERVICE.selectDictionaryColumn(connection, tableName);
+
             String now = DateUtil.getNow("yyyyMMddHHmmss");
 
             BeanGenerator beanGenerator = new BeanGenerator();
@@ -114,11 +115,11 @@ public class GeneratorController extends BaseController {
             generateFile(bean, now + "/bean/" + upperTableName + ".java");
 
             VOGenerator voGenerator = new VOGenerator();
-            String vo = voGenerator.generate(columns, upperTableName, hasGlobalId);
+            String vo = voGenerator.generate(columns, upperTableName, hasGlobalId, dictionaryColumnList);
             generateFile(vo, now + "/vo/" + upperTableName + "VO" + ".java");
 
             DaoGenerator daoGenerator = new DaoGenerator();
-            String dao = daoGenerator.generate(columns, keyColumns, tableName, upperTableName, hasIsValid);
+            String dao = daoGenerator.generate(columns, keyColumns, tableName, upperTableName, hasIsValid, dictionaryColumnList);
             generateFile(dao, now + "/dao/" + upperTableName + "Dao" + ".java");
 
             ServiceGenerator serviceGenerator = new ServiceGenerator();
@@ -130,7 +131,7 @@ public class GeneratorController extends BaseController {
             generateFile(controller, now + "/controller/" + upperPrefix + "Controller" + ".java");
 
             ViewGenerator viewGenerator = new ViewGenerator();
-            String view = viewGenerator.generate(columns, prefix, upperPrefix, tableName, upperTableName, listCheck, addCheck, updateCheck, detailCheck, searchCheck, sortCheck, hasIsValid, hasGlobalId);
+            String view = viewGenerator.generate(columns, prefix, upperPrefix, tableName, upperTableName, listCheck, addCheck, updateCheck, detailCheck, keyColumns, sortCheck, hasIsValid, hasGlobalId, dictionaryColumnList);
             generateFile(view, now + "/view/" + upperPrefix + ".vue");
 
             String compressPath = "/data/" + now;

@@ -3,21 +3,21 @@ package com.github.automain.common.generator;
 import com.github.automain.common.bean.ColumnBean;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class DaoGenerator {
 
-    public String generate(List<ColumnBean> columns, List<String> keyColumns, String tableName, String upperTableName, boolean hasIsValid) {
-        return getImportHead() + getClassHead(upperTableName) + getSelectTableForCustomPage(upperTableName) + getSetSearchCondition(tableName, upperTableName, columns, keyColumns, hasIsValid) + "\n}";
+    public String generate(List<ColumnBean> columns, List<String> keyColumns, String tableName, String upperTableName, boolean hasIsValid, List<String> dictionaryColumnList) {
+        return getImportHead(dictionaryColumnList) + getClassHead(upperTableName) + getSelectTableForCustomPage(upperTableName) + getSetSearchCondition(tableName, upperTableName, columns, keyColumns, hasIsValid, dictionaryColumnList) + "\n}";
     }
 
-    private String getImportHead() {
+    private String getImportHead(List<String> dictionaryColumnList) {
+        String collectionUtilImport = dictionaryColumnList.isEmpty() ? "\n" : "import org.apache.commons.collections4.CollectionUtils;\n\n";
         return "import com.github.fastjdbc.bean.ConnectionBean;\n" +
                 "import com.github.fastjdbc.bean.PageBean;\n" +
                 "import com.github.fastjdbc.bean.PageParamBean;\n" +
-                "import com.github.fastjdbc.common.BaseDao;\n\n" +
+                "import com.github.fastjdbc.common.BaseDao;\n" +
+                collectionUtilImport +
                 "import java.util.ArrayList;\n" +
                 "import java.util.List;\n\n";
     }
@@ -47,39 +47,33 @@ public class DaoGenerator {
                 "    }";
     }
 
-    private String getSetSearchCondition(String tableName, String upperTableName, List<ColumnBean> columns, List<String> keyColumns, boolean deleteCheck) {
+    private String getSetSearchCondition(String tableName, String upperTableName, List<ColumnBean> columns, List<String> keyColumns, boolean deleteCheck, List<String> dictionaryColumnList) {
         String condition = "";
         List<ColumnBean> keyColumnList = new ArrayList<ColumnBean>();
-        List<ColumnBean> generalColumns = new ArrayList<ColumnBean>();
-        Map<String, ColumnBean> columnMap = new HashMap<String, ColumnBean>();
+        List<ColumnBean> dictionaryColumns = new ArrayList<ColumnBean>();
         for (ColumnBean column : columns) {
             String columnName = column.getColumnName();
             if ("PRI".equals(column.getColumnKey())) {
                 continue;
             }
-            if (!keyColumns.contains(columnName)) {
-                generalColumns.add(column);
-            } else {
-                columnMap.put(columnName, column);
+            if (keyColumns.contains(columnName)) {
+                keyColumnList.add(column);
+            } else if (dictionaryColumnList.contains(columnName)) {
+                dictionaryColumns.add(column);
             }
         }
-        for (String keyColumn : keyColumns) {
-            keyColumnList.add(columnMap.get(keyColumn));
-        }
         condition += getCondition(keyColumnList);
-        condition += getCondition(generalColumns);
+        condition += getDictionaryCondition(dictionaryColumns);
         String firstCondition = deleteCheck ? "is_valid = 1" : "1 = 1";
-        return "\n\n    private String setSearchCondition(" + upperTableName + "VO bean, List<Object> paramList, boolean isCountSql) {\n" +
-                "        StringBuilder sql = new StringBuilder(\"SELECT \");\n" +
-                "        sql.append(isCountSql ? \"COUNT(1)\" : \"*\").append(\" FROM " + tableName + " WHERE " + firstCondition + " \");\n" +
-                condition +
-                "        return sql.toString();\n" +
-                "    }";
+        return "\n\n    private String setSearchCondition(" + upperTableName +
+                "VO bean, List<Object> paramList, boolean isCountSql) {\n        StringBuilder sql = new StringBuilder(\"SELECT \");\n        sql.append(isCountSql ? \"COUNT(1)\" : \"*\").append(\" FROM " +
+                tableName + " WHERE " + firstCondition + " \");\n" + condition +
+                "        if (!isCountSql && bean.getSortLabel() != null && bean.getSortOrder() != null && bean.columnMap(true).containsKey(bean.getSortLabel())) {\n            sql.append(\" ORDER BY \").append(bean.getSortLabel()).append(\"asc\".equalsIgnoreCase(bean.getSortOrder()) ? \" ASC\" : \" DESC\");\n        }\n        return sql.toString();\n    }";
     }
 
-    private String getCondition(List<ColumnBean> columns) {
+    private String getCondition(List<ColumnBean> columnList) {
         StringBuilder condition = new StringBuilder();
-        for (ColumnBean column : columns) {
+        for (ColumnBean column : columnList) {
             String columnName = column.getColumnName();
             if ("is_valid".equals(columnName)) {
                 continue;
@@ -101,7 +95,20 @@ public class DaoGenerator {
                         .append("        }\n");
             }
         }
-        condition.append("        if (!isCountSql && bean.getSortLabel() != null && bean.getSortOrder() != null && bean.columnMap(true).containsKey(bean.getSortLabel())) {\n            sql.append(\" ORDER BY \").append(bean.getSortLabel()).append(\"asc\".equalsIgnoreCase(bean.getSortOrder()) ? \" ASC\" : \" DESC\");\n        }\n");
+        return condition.toString();
+    }
+
+    private String getDictionaryCondition(List<ColumnBean> columnList) {
+        StringBuilder condition = new StringBuilder();
+        for (ColumnBean column : columnList) {
+            String columnName = column.getColumnName();
+            String upperColumnName = CommonGenerator.convertToJavaName(columnName, true);
+            condition.append("        if (CollectionUtils.isNotEmpty(bean.get").append(upperColumnName)
+                    .append("List())) {\n            sql.append(\" AND ").append(columnName)
+                    .append(" \").append(makeInStr(bean.get").append(upperColumnName)
+                    .append("List()));\n            paramList.addAll(bean.get")
+                    .append(upperColumnName).append("List());\n        }\n");
+        }
         return condition.toString();
     }
 

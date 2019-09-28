@@ -18,8 +18,6 @@ public class GeneratorVO {
     private List<String> updateCheck;
     // 详情展示字段
     private List<String> detailCheck;
-    // 搜索字段
-    private List<String> searchCheck;
     // 排序字段
     private List<String> sortCheck;
 
@@ -83,15 +81,6 @@ public class GeneratorVO {
 
     public GeneratorVO setDetailCheck(List<String> detailCheck) {
         this.detailCheck = detailCheck;
-        return this;
-    }
-
-    public List<String> getSearchCheck() {
-        return searchCheck;
-    }
-
-    public GeneratorVO setSearchCheck(List<String> searchCheck) {
-        this.searchCheck = searchCheck;
         return this;
     }
 

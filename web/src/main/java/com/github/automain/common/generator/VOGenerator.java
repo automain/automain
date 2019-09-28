@@ -6,8 +6,8 @@ import java.util.List;
 
 public class VOGenerator {
 
-    public String generate(List<ColumnBean> columns, String upperTableName, boolean hasGlobalId) {
-        return getImportHead() + getClassHead(upperTableName) + getProperties(columns, upperTableName, hasGlobalId) + "\n}";
+    public String generate(List<ColumnBean> columns, String upperTableName, boolean hasGlobalId, List<String> dictionaryColumnList) {
+        return getImportHead() + getClassHead(upperTableName) + getProperties(columns, upperTableName, hasGlobalId, dictionaryColumnList) + "\n}";
     }
 
     private String getImportHead() {
@@ -18,7 +18,7 @@ public class VOGenerator {
         return "public class " + upperTableName + "VO extends " + upperTableName + " {";
     }
 
-    private String getProperties(List<ColumnBean> columns, String upperTableName, boolean hasGlobalId) {
+    private String getProperties(List<ColumnBean> columns, String upperTableName, boolean hasGlobalId, List<String> dictionaryColumnList) {
         StringBuilder properties = new StringBuilder();
         StringBuilder getterSetter = new StringBuilder();
         properties.append("\n\n    // 页码\n    private int page;\n    // 页大小\n    private int size;\n    // 排序字段\n    private String sortLabel;\n    // 排序顺序\n    private String sortOrder;");
@@ -43,8 +43,9 @@ public class VOGenerator {
                     .append("VO setIdList(List<Integer> idList) {\n        this.idList = idList;\n        return this;\n    }");
         }
         for (ColumnBean column : columns) {
-            String upperColumnName = CommonGenerator.convertToJavaName(column.getColumnName(), true);
-            String lowerColumnName = CommonGenerator.convertToJavaName(column.getColumnName(), false);
+            String columnName = column.getColumnName();
+            String upperColumnName = CommonGenerator.convertToJavaName(columnName, true);
+            String lowerColumnName = CommonGenerator.convertToJavaName(columnName, false);
             if (CommonGenerator.checkTimeTypeColumn(column)) {
                 properties.append("\n    // ").append(column.getColumnComment())
                         .append("结束\n    private Integer ").append(lowerColumnName).append("End;");
@@ -54,6 +55,16 @@ public class VOGenerator {
                         .append(upperColumnName).append("End(Integer ").append(lowerColumnName)
                         .append("End) {\n        this.").append(lowerColumnName).append("End = ")
                         .append(lowerColumnName).append("End;\n        return this;\n    }");
+            }
+            if (dictionaryColumnList.contains(columnName)) {
+                properties.append("\n    // ").append(column.getColumnComment())
+                        .append("集合\n    private List<Integer> ").append(lowerColumnName).append("List;");
+                getterSetter.append("\n\n    public List<Integer> get").append(upperColumnName)
+                        .append("List() {\n        return ").append(lowerColumnName).
+                        append("List;\n    }\n\n    public ").append(upperTableName).append("VO set")
+                        .append(upperColumnName).append("List(List<Integer> ").append(lowerColumnName)
+                        .append("List) {\n        this.").append(lowerColumnName).append("List = ")
+                        .append(lowerColumnName).append("List;\n        return this;\n    }");
             }
         }
         return properties.append(getterSetter).toString();
