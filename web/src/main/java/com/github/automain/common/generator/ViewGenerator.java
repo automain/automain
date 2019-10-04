@@ -23,6 +23,9 @@ public class ViewGenerator {
         if (hasList) {
             resultStr += getList(columns, hasIsValid, tableName, listCheck, dictionaryColumnList, sortCheck, hasUpdate,hasDetail);
         }
+        if (hasAdd) {
+            resultStr += addDialog(columns, tableName, addCheck, dictionaryColumnList);
+        }
         return resultStr;
     }
 
@@ -66,6 +69,7 @@ public class ViewGenerator {
             String columnName = column.getColumnName();
             String lowerColumnName = CommonGenerator.convertToJavaName(columnName, false);
             String columnComment = column.getColumnComment();
+            String overflowTip = column.getIsTextArea() ? " show-overflow-tooltip" : "";
             if (listCheck.contains(columnName)) {
                 if (CommonGenerator.checkTimeTypeColumn(column)) {
                     listBlock.append("            <el-table-column prop=\"").append(lowerColumnName)
@@ -86,7 +90,7 @@ public class ViewGenerator {
                 } else {
                     listBlock.append("            <el-table-column prop=\"").append(lowerColumnName)
                             .append("\" label=\"").append(columnComment)
-                            .append("\" show-overflow-tooltip></el-table-column>\n");
+                            .append("\"").append(overflowTip).append("></el-table-column>\n");
                 }
             }
         }
@@ -106,5 +110,9 @@ public class ViewGenerator {
                 deleteSelect + listBlock + operation +
                 "        </el-table>\n        <el-pagination @size-change=\"handleSizeChange\" @current-change=\"handlePageChange\" :page-sizes=\"[10, 20, 50, 100]\" :page-size=\"" +
                 table + "VO.size\" layout=\"->, total, prev, pager, next, jumper, sizes\" :total=\"pageBean.total\"></el-pagination>\n";
+    }
+
+    private String addDialog(List<ColumnBean> columns, String tableName, List<String> addCheck, List<String> dictionaryColumnList) {
+        return null;
     }
 }

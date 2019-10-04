@@ -27,24 +27,30 @@ public class TestController extends BaseController {
         return JsonResponse.getFailedJson();
     }
 
-    @RequestUri("/testAddOrUpdate")
-    public JsonResponse testAddOrUpdate(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    @RequestUri("/testAdd")
+    public JsonResponse testAdd(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         Test bean = getRequestParam(request, Test.class);
-        if (bean != null) {
+        if (checkValid(bean, false)) {
             bean.setUpdateTime(DateUtil.getNow());
-            if (bean.getGid() != null) {
-                TEST_SERVICE.updateTableByGid(connection, bean, false);
-            } else {
-                bean.setCreateTime(bean.getUpdateTime());
-                bean.setGid(UUID.randomUUID().toString());
-                TEST_SERVICE.insertIntoTable(connection, bean);
-            }
-//            if (bean.getId() != null) {
-//                TEST_SERVICE.updateTableById(connection, bean, false);
-//            } else {
-//                bean.setCreateTime(bean.getUpdateTime());
-//                TEST_SERVICE.insertIntoTable(connection, bean);
-//            }
+            bean.setCreateTime(bean.getUpdateTime());
+//            bean.setGid(UUID.randomUUID().toString());
+            TEST_SERVICE.insertIntoTable(connection, bean);
+            return JsonResponse.getSuccessJson();
+        }
+        return JsonResponse.getFailedJson();
+    }
+
+    private boolean checkValid(Test bean, boolean isUpdate) {
+        return bean != null && (!isUpdate || bean.getId() != null) && bean.getMoney() != null && bean.getRemark() != null && bean.getTestDictionary() != null && bean.getTestName() != null;
+    }
+
+    @RequestUri("/testUpdate")
+    public JsonResponse testUpdate(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Test bean = getRequestParam(request, Test.class);
+        if (checkValid(bean, true)) {
+            bean.setUpdateTime(DateUtil.getNow());
+//            TEST_SERVICE.updateTableByGid(connection, bean, false);
+            TEST_SERVICE.updateTableById(connection, bean, false);
             return JsonResponse.getSuccessJson();
         }
         return JsonResponse.getFailedJson();
