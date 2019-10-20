@@ -1,34 +1,27 @@
 package com.github.automain.util;
 
-import com.github.fastjdbc.bean.ConnectionBean;
+import com.alibaba.fastjson.JSONObject;
 import com.github.fastjdbc.bean.ConnectionPool;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang3.StringUtils;
 import redis.clients.jedis.Jedis;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
+import java.io.InputStreamReader;
+import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Formatter;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
 
 public class SystemUtil {
 
-    private static Logger LOGGER = null;
     private static ScheduledExecutorService SCHEDULE_THREAD_POOL = null;
     private static final boolean OPEN_SCHEDULE = PropertiesUtil.getBooleanProperty("app.openSchedule");
     private static final DateTimeFormatter LOG_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss,SSS");
@@ -55,7 +48,7 @@ public class SystemUtil {
                 slavePoolMap.put(poolName, new HikariDataSource(initConfig(poolName)));
             }
         }
-        ConnectionPool.init(masterPool, slavePoolMap, LOGGER);
+        ConnectionPool.init(masterPool, slavePoolMap);
     }
 
     private static HikariConfig initConfig(String poolName) {
@@ -68,40 +61,6 @@ public class SystemUtil {
         config.setUsername(PropertiesUtil.getStringProperty("db." + poolName + "_username"));
         config.setPassword(PropertiesUtil.getStringProperty("db." + poolName + "_password"));
         return config;
-    }
-
-    /**
-     * 初始化log配置
-     */
-    public static void initLogConfig() {
-        try {
-            Logger logger = Logger.getLogger("system");
-            Handler handler = new ConsoleHandler();
-            handler.setLevel(Level.ALL);//从高到低->OFF\SEVERE\WARNING\INFO\CONFIG\FINE\FINER\FINEST\ALL
-            handler.setEncoding(PropertiesUtil.DEFAULT_CHARSET);
-            handler.setFormatter(new LogFormatter());
-            logger.addHandler(handler);
-            logger.setLevel(Level.ALL);//从高到低->OFF\SEVERE\WARNING\INFO\CONFIG\FINE\FINER\FINEST\ALL
-            logger.setUseParentHandlers(false);
-            LOGGER = logger;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static Logger getLogger() {
-        return LOGGER;
-    }
-
-    private static class LogFormatter extends Formatter {
-
-        @Override
-        public String format(LogRecord record) {
-            return "[" + LocalDateTime.ofInstant(Instant.ofEpochMilli(record.getMillis()), ZoneOffset.systemDefault()).format(LOG_DATE_TIME_FORMATTER) + "] ["
-                    + record.getLevel() + "] [" + record.getThreadID() + "] ["
-                    + record.getSourceClassName() + "#" + record.getSourceMethodName() + "] "
-                    + record.getMessage() + System.lineSeparator();
-        }
     }
 
     /**
@@ -140,15 +99,38 @@ public class SystemUtil {
      * @param jedis
      * @param connection
      */
-    public static void closeJedisAndConnectionBean(Jedis jedis, ConnectionBean connection) {
+    public static void closeJedisAndConnection(Jedis jedis, Connection connection) {
         try {
             if (jedis != null) {
                 jedis.close();
             }
-            ConnectionPool.closeConnectionBean(connection);
+            ConnectionPool.close(connection);
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 获取请求参数
+     *
+     * @param request
+     * @param clazz
+     * @param <T>
+     * @return
+     */
+    public static <T> T getRequestParam(HttpServletRequest request, Class<T> clazz) {
+        try (InputStreamReader isr = new InputStreamReader(request.getInputStream(), PropertiesUtil.DEFAULT_CHARSET);
+             BufferedReader br = new BufferedReader(isr)) {
+            StringBuilder sb = new StringBuilder();
+            String temp = null;
+            while ((temp = br.readLine()) != null) {
+                sb.append(temp);
+            }
+            return JSONObject.parseObject(sb.toString(), clazz);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**

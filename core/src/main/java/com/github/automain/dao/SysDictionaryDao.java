@@ -3,12 +3,12 @@ package com.github.automain.dao;
 import com.github.automain.bean.SysDictionary;
 import com.github.automain.vo.DictionaryVO;
 import com.github.automain.vo.SysDictionaryVO;
-import com.github.fastjdbc.bean.ConnectionBean;
 import com.github.fastjdbc.bean.ConnectionPool;
 import com.github.fastjdbc.bean.PageBean;
 import com.github.fastjdbc.bean.PageParamBean;
 import com.github.fastjdbc.common.BaseDao;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
 public class SysDictionaryDao extends BaseDao<SysDictionary> {
 
     @SuppressWarnings("unchecked")
-    public PageBean<SysDictionary> selectTableForCustomPage(ConnectionBean connection, SysDictionaryVO bean) throws Exception {
+    public PageBean<SysDictionary> selectTableForCustomPage(Connection connection, SysDictionaryVO bean) throws Exception {
         List<Object> countParamList = new ArrayList<Object>();
         List<Object> paramList = new ArrayList<Object>();
         String countSql = setSearchCondition(bean, countParamList, true);
@@ -71,11 +71,11 @@ public class SysDictionaryDao extends BaseDao<SysDictionary> {
         return sql.toString();
     }
 
-    public List<DictionaryVO> selectAllDictionaryVO(ConnectionBean connection) throws Exception{
+    public List<DictionaryVO> selectAllDictionaryVO(Connection connection) throws Exception{
         return executeSelectReturnList(connection, "SELECT sd.table_name, sd.column_name, sd.dictionary_key, sd.dictionary_value FROM sys_dictionary sd WHERE sd.is_valid = 1", null, new DictionaryVO());
     }
 
-    public List<String> selectDictionaryColumn(ConnectionBean connection, String tableName) throws Exception{
+    public List<String> selectDictionaryColumn(Connection connection, String tableName) throws Exception{
         ResultSet rs = null;
         List<String> result = new ArrayList<String>();
         try {

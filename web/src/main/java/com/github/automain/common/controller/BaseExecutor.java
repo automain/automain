@@ -8,7 +8,6 @@ import com.github.automain.util.PropertiesUtil;
 import com.github.automain.util.RedisUtil;
 import com.github.automain.util.SystemUtil;
 import com.github.automain.util.http.HTTPUtil;
-import com.github.fastjdbc.bean.ConnectionBean;
 import com.github.fastjdbc.bean.ConnectionPool;
 import redis.clients.jedis.Jedis;
 
@@ -19,10 +18,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-public abstract class BaseExecutor extends BaseController implements Runnable {
+public abstract class BaseExecutor implements Runnable {
 
     private static final List<String> WHITE_LIST_URL = List.of("/test");
     private static final int SESSION_EXPIRE_SECONDS = PropertiesUtil.getIntProperty("app.sessionExpireSeconds", "1800");
@@ -38,13 +38,13 @@ public abstract class BaseExecutor extends BaseController implements Runnable {
     @Override
     public void run() {
         Jedis jedis = null;
-        ConnectionBean connection = null;
+        Connection connection = null;
         HttpServletRequest request = (HttpServletRequest) asyncContext.getRequest();
         HttpServletResponse response = (HttpServletResponse) asyncContext.getResponse();
         try {
             jedis = RedisUtil.getJedis();
             String uri = HTTPUtil.getRequestUri(request);
-            connection = ConnectionPool.getConnectionBean(DispatcherController.SLAVE_POOL_MAP.get(uri));
+            connection = ConnectionPool.getConnection(DispatcherController.SLAVE_POOL_MAP.get(uri));
             JsonResponse jsonResponse = null;
             if (checkUserAuthority(jedis, request, response)) {
                 jsonResponse = execute(connection, jedis, request, response);
@@ -82,13 +82,13 @@ public abstract class BaseExecutor extends BaseController implements Runnable {
                 e1.printStackTrace();
             } finally {
                 try {
-                    ConnectionPool.rollbackConnectionBean(connection);
+                    ConnectionPool.rollback(connection);
                 } catch (SQLException e2) {
                     e2.printStackTrace();
                 }
             }
         } finally {
-            SystemUtil.closeJedisAndConnectionBean(jedis, connection);
+            SystemUtil.closeJedisAndConnection(jedis, connection);
             asyncContext.complete();
         }
     }
@@ -102,7 +102,7 @@ public abstract class BaseExecutor extends BaseController implements Runnable {
      * @param response
      * @return
      */
-    protected abstract JsonResponse execute(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception;
+    protected abstract JsonResponse execute(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception;
 
     /**
      * 公用检查用户权限

@@ -1,16 +1,16 @@
 package com.github.automain.common.controller;
 
 import com.github.automain.common.bean.JsonResponse;
-import com.github.fastjdbc.bean.ConnectionBean;
 import redis.clients.jedis.Jedis;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.sql.Connection;
 
 public class UploadExecutor extends BaseExecutor {
 
     @Override
-    protected JsonResponse execute(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    protected JsonResponse execute(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         JsonResponse jsonResponse = null;
 //        try {
 //            Collection<Part> parts = request.getParts();

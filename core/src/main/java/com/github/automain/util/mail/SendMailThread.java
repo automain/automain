@@ -1,7 +1,8 @@
 package com.github.automain.util.mail;
 
 import com.github.automain.util.PropertiesUtil;
-import com.github.automain.util.SystemUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.mail.Address;
 import javax.mail.Authenticator;
@@ -17,11 +18,10 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 public class SendMailThread implements Runnable {
 
-    private static Logger LOGGER = SystemUtil.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(SendMailThread.class);
 
     // 默认邮件发送邮箱用户名
     private static final String DEFAULT_EMAIL_SENDER_USERNAME = "";
@@ -99,7 +99,7 @@ public class SendMailThread implements Runnable {
                 if (mail.getBccAddressList() != null) {
                     setReceivers(message, mail.getBccAddressList(), Message.RecipientType.BCC);
                 }
-                LOGGER.info("subject:" + mail.getSubject() + ", to:" + toAddress.toString());
+                LOGGER.info("send mail to address = {}, subject = {}", toAddress, mail.getSubject());
                 Transport transport = session.getTransport();
                 transport.sendMessage(message, message.getAllRecipients());
                 transport.close();

@@ -13,11 +13,11 @@ public class DaoGenerator {
 
     private String getImportHead(List<String> dictionaryColumnList) {
         String collectionUtilImport = dictionaryColumnList.isEmpty() ? "\n" : "import org.apache.commons.collections4.CollectionUtils;\n\n";
-        return "import com.github.fastjdbc.bean.ConnectionBean;\n" +
-                "import com.github.fastjdbc.bean.PageBean;\n" +
+        return "import com.github.fastjdbc.bean.PageBean;\n" +
                 "import com.github.fastjdbc.bean.PageParamBean;\n" +
                 "import com.github.fastjdbc.common.BaseDao;\n" +
                 collectionUtilImport +
+                "import java.sql.Connection;\n" +
                 "import java.util.ArrayList;\n" +
                 "import java.util.List;\n\n";
     }
@@ -28,7 +28,7 @@ public class DaoGenerator {
 
     private String getSelectTableForCustomPage(String upperTableName) {
         return "\n\n    @SuppressWarnings(\"unchecked\")\n" +
-                "    public PageBean<" + upperTableName + "> selectTableForCustomPage(ConnectionBean connection, " +
+                "    public PageBean<" + upperTableName + "> selectTableForCustomPage(Connection connection, " +
                 upperTableName + "VO bean) throws Exception {\n" +
                 "        List<Object> countParamList = new ArrayList<Object>();\n" +
                 "        List<Object> paramList = new ArrayList<Object>();\n" +
@@ -67,7 +67,7 @@ public class DaoGenerator {
         String firstCondition = deleteCheck ? "is_valid = 1" : "1 = 1";
         return "\n\n    private String setSearchCondition(" + upperTableName +
                 "VO bean, List<Object> paramList, boolean isCountSql) {\n        StringBuilder sql = new StringBuilder(\"SELECT \");\n        sql.append(isCountSql ? \"COUNT(1)\" : \"*\").append(\" FROM " +
-                tableName + " WHERE " + firstCondition + " \");\n" + condition +
+                tableName + " WHERE " + firstCondition + "\");\n" + condition +
                 "        if (!isCountSql && bean.getSortLabel() != null && bean.getSortOrder() != null && bean.columnMap(true).containsKey(bean.getSortLabel())) {\n            sql.append(\" ORDER BY \").append(bean.getSortLabel()).append(\"asc\".equalsIgnoreCase(bean.getSortOrder()) ? \" ASC\" : \" DESC\");\n        }\n        return sql.toString();\n    }";
     }
 
@@ -105,7 +105,7 @@ public class DaoGenerator {
             String upperColumnName = CommonGenerator.convertToJavaName(columnName, true);
             condition.append("        if (CollectionUtils.isNotEmpty(bean.get").append(upperColumnName)
                     .append("List())) {\n            sql.append(\" AND ").append(columnName)
-                    .append(" \").append(makeInStr(bean.get").append(upperColumnName)
+                    .append("\").append(makeInStr(bean.get").append(upperColumnName)
                     .append("List()));\n            paramList.addAll(bean.get")
                     .append(upperColumnName).append("List());\n        }\n");
         }

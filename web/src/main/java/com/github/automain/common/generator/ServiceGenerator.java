@@ -7,9 +7,9 @@ public class ServiceGenerator {
     }
 
     private String getImportHead() {
-        return "import com.github.fastjdbc.bean.ConnectionBean;\n" +
-                "import com.github.fastjdbc.bean.PageBean;\n" +
-                "import com.github.fastjdbc.common.BaseService;\n\n";
+        return "import com.github.fastjdbc.bean.PageBean;\n" +
+                "import com.github.fastjdbc.common.BaseService;\n\n" +
+                "import java.sql.Connection;\n\n";
     }
 
     private String getClassHead(String upperTableName) {
@@ -22,7 +22,7 @@ public class ServiceGenerator {
     }
 
     private String getSelectTableForCustomPage(String upperTableName) {
-        return "\n\n    public PageBean<" + upperTableName + "> selectTableForCustomPage(ConnectionBean connection, " +
+        return "\n\n    public PageBean<" + upperTableName + "> selectTableForCustomPage(Connection connection, " +
                 upperTableName + "VO bean) throws Exception {\n" +
                 "        return getDao().selectTableForCustomPage(connection, bean);\n" +
                 "    }";

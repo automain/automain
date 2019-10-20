@@ -17,18 +17,25 @@ public class PropertiesUtil {
         reloadProperties();
     }
 
-    public static void reloadProperties() {
+    private static void reloadProperties() {
         Map<String, String> propertiesMap = new HashMap<String, String>();
-        File propertiesFile = new File(PropertiesUtil.class.getResource("/").getPath().replace("test-classes", "classes") + File.separator + "application.properties");
-        if (SystemUtil.checkFileAvailable(propertiesFile)) {
-            try (InputStream is = new FileInputStream(propertiesFile)) {
-                Properties properties = new Properties();
-                properties.load(is);
-                for (Map.Entry<Object, Object> entry : properties.entrySet()) {
-                    propertiesMap.put(entry.getKey().toString(), entry.getValue().toString());
+        File parentDirectory = new File(PropertiesUtil.class.getResource("/").getPath().replace("test-classes", "classes"));
+        if (parentDirectory.exists() && parentDirectory.isDirectory()) {
+            File[] files = parentDirectory.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    if (SystemUtil.checkFileAvailable(file)) {
+                        try (InputStream is = new FileInputStream(file)) {
+                            Properties properties = new Properties();
+                            properties.load(is);
+                            for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+                                propertiesMap.put(entry.getKey().toString(), entry.getValue().toString());
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
             PROPERTIES_MAP = propertiesMap;
         }

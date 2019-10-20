@@ -2,12 +2,14 @@ package com.github.automain.common.controller;
 
 import com.github.automain.common.annotation.RequestUri;
 import com.github.automain.common.bean.JsonResponse;
+import com.github.automain.common.container.ServiceContainer;
 import com.github.automain.util.RedisUtil;
 import com.github.automain.util.SystemUtil;
 import com.github.automain.util.http.HTTPUtil;
-import com.github.fastjdbc.bean.ConnectionBean;
 import com.github.fastjdbc.bean.ConnectionPool;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 
 import javax.servlet.AsyncContext;
@@ -20,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.sql.Connection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,6 +32,8 @@ import java.util.Set;
 @WebServlet(urlPatterns = "/", asyncSupported = true, loadOnStartup = 2)
 public class DispatcherController extends HttpServlet {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DispatcherController.class);
+
     private static final Map<String, BaseExecutor> REQUEST_MAPPING = new HashMap<String, BaseExecutor>();
 
     static final Map<String, Set<String>> PRIVILEGE_LABEL_MAP = new HashMap<String, Set<String>>();
@@ -37,11 +42,9 @@ public class DispatcherController extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        ConnectionBean connection = null;
+        Connection connection = null;
         Jedis jedis = null;
         try {
-            // 初始化日志
-            SystemUtil.initLogConfig();
             // 初始化数据库连接池
             SystemUtil.initConnectionPool();
             // 初始化redis连接池
@@ -50,7 +53,7 @@ public class DispatcherController extends HttpServlet {
             REQUEST_MAPPING.clear();
             REQUEST_MAPPING.putAll(initRequestMap());
             // 获取数据库连接
-            connection = ConnectionPool.getConnectionBean(null);
+            connection = ConnectionPool.getConnection(null);
             // 获取redis连接
             jedis = RedisUtil.getJedis();
             // 初始化字典表缓存
@@ -59,12 +62,12 @@ public class DispatcherController extends HttpServlet {
 //            RolePrivilegeContainer.reloadRolePrivilege(jedis, connection);
             // 初始化定时任务
 //            SystemUtil.reloadSchedule(connection);
-            SystemUtil.getLogger().info("===============================System Start Success===============================");
+            LOGGER.info("===============================System Start Success===============================");
         } catch (Exception e) {
             e.printStackTrace();
             throw new ServletException(e);
         } finally {
-            SystemUtil.closeJedisAndConnectionBean(jedis, connection);
+            SystemUtil.closeJedisAndConnection(jedis, connection);
         }
     }
 
@@ -80,7 +83,7 @@ public class DispatcherController extends HttpServlet {
                 if (classPath.endsWith(".class")) {
                     classPath = classPath.substring(classPath.indexOf(File.separator + "classes") + 9, classPath.lastIndexOf(".")).replace(File.separator, ".");
                     Class clazz = Class.forName(classPath);
-                    if (BaseController.class.isAssignableFrom(clazz)) {
+                    if (ServiceContainer.class.isAssignableFrom(clazz)) {
                         Method[] methods = clazz.getDeclaredMethods();
                         Object controller = clazz.getDeclaredConstructor().newInstance();
                         for (Method method : methods) {
@@ -91,7 +94,7 @@ public class DispatcherController extends HttpServlet {
                                     throw new RuntimeException("uri conflict---------->" + uri);
                                 }
                                 Parameter[] parameters = method.getParameters();
-                                if (parameters.length != 4 || !ConnectionBean.class.isAssignableFrom(parameters[0].getType())
+                                if (parameters.length != 4 || !Connection.class.isAssignableFrom(parameters[0].getType())
                                         || !Jedis.class.isAssignableFrom(parameters[1].getType())
                                         || !HttpServletRequest.class.isAssignableFrom(parameters[2].getType())
                                         || !HttpServletResponse.class.isAssignableFrom(parameters[3].getType())) {
@@ -103,13 +106,13 @@ public class DispatcherController extends HttpServlet {
                                 }
                                 BaseExecutor executor = new BaseExecutor() {
                                     @Override
-                                    protected JsonResponse execute(ConnectionBean connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-                                        Method method1 = controller.getClass().getMethod(method.getName(), ConnectionBean.class, Jedis.class, HttpServletRequest.class, HttpServletResponse.class);
+                                    protected JsonResponse execute(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+                                        Method method1 = controller.getClass().getMethod(method.getName(), Connection.class, Jedis.class, HttpServletRequest.class, HttpServletResponse.class);
                                         return (JsonResponse) method1.invoke(controller, connection, jedis, request, response);
                                     }
                                 };
                                 requestMap.put(uri, executor);
-                                SystemUtil.getLogger().info("mapping uri: " + uri);
+                                LOGGER.info("mapping uri: " + uri);
                                 String labels = requestUri.labels();
                                 if (StringUtils.isNotBlank(labels)) {
                                     PRIVILEGE_LABEL_MAP.put(uri, new HashSet<String>(List.of(labels.split(","))));
