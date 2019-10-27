@@ -104,7 +104,7 @@ public class ControllerGenerator {
                 ".selectTableByGid(connection, bean);\n            return JsonResponse.getSuccessJson(detail);\n        }\n"
                 : "        if (bean != null && bean.getId() != null) {\n            " + upperTableName + " detail = " + serviceName +
                 ".selectTableById(connection, bean);\n            return JsonResponse.getSuccessJson(detail);\n        }\n";
-        return "\n\n    @RequestUri(value = \"/" + prefix + " Detail\", slave = \"slave1\")\n    public JsonResponse " + prefix +
+        return "\n\n    @RequestUri(value = \"/" + prefix + "Detail\", slave = \"slave1\")\n    public JsonResponse " + prefix +
                 "Detail(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {\n        " +
                 upperTableName + " bean = SystemUtil.getRequestParam(request, " + upperTableName + ".class);\n" +
                 detailContent + "        return JsonResponse.getFailedJson();\n    }";
