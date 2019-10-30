@@ -248,6 +248,10 @@ public class ViewGenerator {
         StringBuilder timeSearchBlock = new StringBuilder();
         StringBuilder dictionarySearchBlock = new StringBuilder();
         StringBuilder searchBlock = new StringBuilder();
+        StringBuilder beanBlock = new StringBuilder();
+        beanBlock.append(hasIsValid ? "                    gid: null,\n" : "                    id: null,\n");
+        StringBuilder dictionaryMapBlock = new StringBuilder();
+        StringBuilder handleTimeRangeBlock = new StringBuilder();
         for (ColumnBean column : columns) {
             String columnName = column.getColumnName();
             String lowerColumnName = CommonGenerator.convertToJavaName(columnName, false);
@@ -256,6 +260,15 @@ public class ViewGenerator {
                     timeRangeBlock.append("                ").append(lowerColumnName).append("Range: [],\n");
                     timeSearchBlock.append("                    ").append(lowerColumnName)
                             .append(": null,\n                    ").append(lowerColumnName).append("End: null,\n");
+                    handleTimeRangeBlock.append("            handle").append(lowerColumnName)
+                            .append("Range() {\n                if (this.").append(lowerColumnName)
+                            .append("Range) {\n                    this.").append(lowerTableName)
+                            .append("VO.").append(lowerColumnName).append(" = this.").append(lowerColumnName)
+                            .append("Range[0] / 1000;\n                    this.").append(lowerTableName)
+                            .append("VO.").append(lowerColumnName).append("End = this.").append(lowerColumnName)
+                            .append("Range[1] / 1000;\n                } else {\n                    this.").append(lowerTableName)
+                            .append("VO.").append(lowerColumnName).append(" = null;\n                    this.").append(lowerTableName)
+                            .append("VO.").append(lowerColumnName).append("End = null;\n                }\n            },\n");
                 }
                 if (addCheck.contains(columnName) || updateCheck.contains(columnName)) {
                     timePickerBlock.append("                ").append(lowerColumnName).append("Picker: null,\n");
@@ -267,6 +280,14 @@ public class ViewGenerator {
                     searchBlock.append("                    ").append(lowerColumnName).append(": null,\n");
                 }
             }
+            if (addCheck.contains(columnName) || updateCheck.contains(columnName)) {
+                beanBlock.append("                    ").append(lowerColumnName).append(": null,\n");
+            }
+            if (dictionaryColumnList.contains(columnName)) {
+                dictionaryMapBlock.append("                ").append(lowerColumnName)
+                        .append("Key: \"").append(tableName).append("_").append(columnName).append("\",\n                ")
+                        .append(lowerColumnName).append("Map: this.getDictionaryMap(\"").append(tableName).append("_").append(columnName).append("\"),\n");
+            }
         }
         return "\n<script>\n    export default {\n        data() {\n            return {\n" +
                 addVisible + updateVisible + detailVisible + timeRangeBlock.toString() + timePickerBlock.toString() +
@@ -274,44 +295,13 @@ public class ViewGenerator {
                 "VO: {\n                    page: 1,\n                    size: 10,\n" + sortParam + deleteParam +
                 timeSearchBlock.toString() + dictionarySearchBlock.toString() + searchBlock.toString() +
                 "                },\n                pageBean: {\n                    page: 1,\n                    total: 0,\n                    data: [],\n                },\n                " +
-                lowerTableName + ": {\n" +
-                "                    gid: null,\n" +
-                "                    money: null,\n" +
-                "                    remark: null,\n" +
-                "                    testName: null,\n" +
-                "                    createTime: null,\n" +
-                "                    testDictionary: null,\n" +
-                "                },\n" +
-                "                testDictionaryKey: \"test_test_dictionary\",\n" +
-                "                testDictionaryMap: this.getDictionaryMap(\"test_test_dictionary\"),\n" +
-                "            }\n" +
-                "        },\n" +
-                "        methods: {\n" +
-                "            handleSizeChange(val) {\n" +
-                "                this.testVO.size = val;\n" +
-                "                this.handleSearch();\n" +
-                "            },\n" +
-                "            handlePageChange(val) {\n" +
-                "                this.testVO.page = val;\n" +
-                "                this.handleSearch();\n" +
-                "            },\n" +
-                "            handleSearch() {\n" +
-                "                this.$axios.post(\"/testList\", this.testVO).then(response => {\n" +
-                "                    let data = response.data;\n" +
-                "                    if (data.status === 0) {\n" +
-                "                        this.pageBean = data.data;\n" +
-                "                    }\n" +
-                "                });\n" +
-                "            },\n" +
-                "            handleCreateTimeRange() {\n" +
-                "                if (this.createTimeRange) {\n" +
-                "                    this.testVO.createTime = this.createTimeRange[0] / 1000;\n" +
-                "                    this.testVO.createTimeEnd = this.createTimeRange[1] / 1000;\n" +
-                "                } else {\n" +
-                "                    this.testVO.createTime = null;\n" +
-                "                    this.testVO.createTimeEnd = null;\n" +
-                "                }\n" +
-                "            },\n" +
+                lowerTableName + ": {\n" + beanBlock.toString() + "                },\n" + dictionaryMapBlock.toString() +
+                "            }\n        },\n        methods: {\n            handleSizeChange(val) {\n                this." + lowerTableName +
+                "VO.size = val;\n                this.handleSearch();\n            },\n            handlePageChange(val) {\n                this." + lowerTableName +
+                "VO.page = val;\n                this.handleSearch();\n            },\n            handleSearch() {\n                this.$axios.post(\"/" +
+                lowerTableName + "List\", this." + lowerTableName +
+                "VO).then(response => {\n                    let data = response.data;\n                    if (data.status === 0) {\n                        this.pageBean = data.data;\n                    }\n                });\n            },\n" +
+                handleTimeRangeBlock.toString() +
                 "            handleSort(data) {\n" +
                 "                switch (data.prop) {\n" +
                 "                    case \"createTime\":\n" +
