@@ -1,13 +1,13 @@
 package com.github.automain.common.generator;
 
 import com.github.automain.common.bean.ColumnBean;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
 
 public class ViewGenerator {
 
-    public String generate(List<ColumnBean> columns, String prefix, String upperPrefix, String tableName, String upperTableName,
-                           List<String> listCheck, List<String> addCheck, List<String> updateCheck, List<String> detailCheck,
+    public String generate(List<ColumnBean> columns, String tableName, List<String> listCheck, List<String> addCheck, List<String> updateCheck, List<String> detailCheck,
                            List<String> keyColumns, List<String> sortCheck, boolean hasIsValid, boolean hasGlobalId, List<String> dictionaryColumnList) {
         String resultStr = "<template>\n    <div>";
 
@@ -252,6 +252,56 @@ public class ViewGenerator {
         beanBlock.append(hasIsValid ? "                    gid: null,\n" : "                    id: null,\n");
         StringBuilder dictionaryMapBlock = new StringBuilder();
         StringBuilder handleTimeRangeBlock = new StringBuilder();
+        StringBuilder sortBlock = new StringBuilder();
+        StringBuilder dictionaryFilterBlock = new StringBuilder();
+        StringBuilder handlePropertyBlock = new StringBuilder();
+        StringBuilder handleUpdateBlock = new StringBuilder();
+        StringBuilder handleDetailBlock = new StringBuilder();
+        StringBuilder addShowBlock = new StringBuilder();
+        StringBuilder handleAddUpdateBlock = new StringBuilder();
+        StringBuilder handleDeleteBlock = new StringBuilder();
+        if (hasIsValid) {
+            handleDeleteBlock.append("            selectToDelete(val) {\n");
+            handleDeleteBlock.append(hasGlobalId ? "                let gidList = [];\n" : "                let idList = [];\n");
+            handleDeleteBlock.append("                for (let i = 0, size = val.length; i < size; i++) {\n");
+            handleDeleteBlock.append(hasGlobalId ? "                    gidList.push(val[i].gid);\n" : "                    idList.push(val[i].id);\n");
+            handleDeleteBlock.append("                }\n                this.").append(lowerTableName).append("VO.");
+            handleDeleteBlock.append(hasGlobalId ? "gidList = gidList;\n" : "idList = idList;\n");
+            handleDeleteBlock.append("            },\n            handleDelete() {\n                if (this.").append(lowerTableName).append("VO.");
+            handleDeleteBlock.append(hasGlobalId ? "gidList" : "idList");
+            handleDeleteBlock.append(".length > 0) {\n                    this.$confirm(\"确定删除选中的数据?\", \"提示\", {type: \"warning\"}).then(() => {\n                        this.$axios.post(\"/")
+                    .append(lowerTableName).append("Delete\", this.").append(lowerTableName)
+                    .append("VO).then(response => {\n                            let data = response.data;\n                            if (data.status === 0) {\n                                this.$message.success(\"操作成功\");\n                                this.handleSearch();\n                            } else {\n                                this.$message.error(\"操作失败\");\n                            }\n                        });\n                    }).catch(() => {\n                        this.$message.info(\"取消删除\");\n                    });\n                } else {\n                    this.$message.warning(\"请选择要删除的数据\");\n                }\n            }\n        },\n");
+        }
+        if (hasAdd || hasUpdate) {
+            handleAddUpdateBlock.append("            handleAddUpdate(uri) {\n                this.$axios.post(uri, this.").append(lowerTableName)
+                    .append(").then(response => {\n                    let data = response.data;\n                    if (data.status === 0) {\n                        this.$message.success(\"操作成功\");\n                        this.handleClear();\n                        this.handleSearch();\n");
+            if (hasAdd) {
+                addShowBlock.append("            handleAddShow() {\n                this.handleClear();\n");
+                handleAddUpdateBlock.append("                        this.addVisible = false;\n");
+            }
+            if (hasUpdate) {
+                handleAddUpdateBlock.append("                        this.updateVisible = false;\n");
+            }
+            handleAddUpdateBlock.append("                    } else {\n                        this.$message.error(\"操作失败\");\n                    }\n                });\n            },\n");
+        }
+        if (hasDetail || hasUpdate) {
+            handlePropertyBlock.append("            handleSetProperties(row) {\n                this.").append(lowerTableName);
+            handlePropertyBlock.append(hasGlobalId ? ".gid = row.gid;\n" : ".id = row.id;\n");
+            handlePropertyBlock.append("                this.$axios.post(\"/").append(lowerTableName)
+                    .append("Detail\", this.").append(lowerTableName)
+                    .append(").then(response => {\n                    let data = response.data;\n                    if (data.status === 0) {\n                        this.")
+                    .append(lowerTableName).append(" = data.data;\n                    } else {\n                        this.$message.error(\"操作失败\");\n                    }\n                });\n            },\n");
+            if (hasUpdate) {
+                handleUpdateBlock.append("            handleUpdateShow(row) {\n                this.handleSetProperties(row);\n");
+            }
+            if (hasDetail) {
+                handleDetailBlock.append("            handleDetail(row) {\n                this.handleSetProperties(row);\n                this.detailVisible = true;\n            },\n");
+            }
+        }
+        if (CollectionUtils.isNotEmpty(sortCheck)) {
+            sortBlock.append("            handleSort(data) {\n                switch (data.prop) {\n");
+        }
         for (ColumnBean column : columns) {
             String columnName = column.getColumnName();
             String lowerColumnName = CommonGenerator.convertToJavaName(columnName, false);
@@ -272,22 +322,43 @@ public class ViewGenerator {
                 }
                 if (addCheck.contains(columnName) || updateCheck.contains(columnName)) {
                     timePickerBlock.append("                ").append(lowerColumnName).append("Picker: null,\n");
+                    if (updateCheck.contains(columnName)) {
+                        handleUpdateBlock.append("                this.").append(lowerColumnName).append("Picker = row.").append(lowerColumnName).append(" * 1000;\n");
+                    }
+                    if (addCheck.contains(columnName)) {
+                        addShowBlock.append("                this.").append(lowerColumnName).append("Picker = null;\n");
+                    }
                 }
-            } else if (dictionaryColumnList.contains(columnName)) {
+            }
+            if (dictionaryColumnList.contains(columnName)) {
                 dictionarySearchBlock.append("                    ").append(lowerColumnName).append("List: []\n");
-            } else {
-                if (keyColumns.contains(columnName)) {
-                    searchBlock.append("                    ").append(lowerColumnName).append(": null,\n");
-                }
+                dictionaryMapBlock.append("                ").append(lowerColumnName)
+                        .append("Key: \"").append(tableName).append("_").append(columnName).append("\",\n                ")
+                        .append(lowerColumnName).append("Map: this.getDictionaryMap(\"").append(tableName).append("_").append(columnName).append("\"),\n");
+                dictionaryFilterBlock.append("                this.").append(lowerTableName)
+                        .append("VO.").append(lowerColumnName).append("List = data.").append(lowerColumnName).append(";\n");
+            }
+            if (keyColumns.contains(columnName)) {
+                searchBlock.append("                    ").append(lowerColumnName).append(": null,\n");
             }
             if (addCheck.contains(columnName) || updateCheck.contains(columnName)) {
                 beanBlock.append("                    ").append(lowerColumnName).append(": null,\n");
             }
-            if (dictionaryColumnList.contains(columnName)) {
-                dictionaryMapBlock.append("                ").append(lowerColumnName)
-                        .append("Key: \"").append(tableName).append("_").append(columnName).append("\",\n                ")
-                        .append(lowerColumnName).append("Map: this.getDictionaryMap(\"").append(tableName).append("_").append(columnName).append("\"),\n");
+            if (sortCheck.contains(columnName)) {
+                sortBlock.append("                    case \"").append(lowerColumnName)
+                        .append("\":\n                        this.").append(lowerTableName)
+                        .append("VO.sortLabel = \"").append(columnName).append("\";\n                        break;\n                }\n");
             }
+        }
+        if (CollectionUtils.isNotEmpty(sortCheck)) {
+            sortBlock.append("                this.").append(lowerTableName)
+                    .append("VO.sortOrder = data.order ? data.order.replace(\"ending\", \"\") : null;\n                this.handleSearch();\n            },\n");
+        }
+        if (hasUpdate) {
+            handleUpdateBlock.append("                this.updateVisible = true;\n            },\n");
+        }
+        if (hasAdd) {
+            addShowBlock.append("                this.addVisible = true;\n            },\n");
         }
         return "\n<script>\n    export default {\n        data() {\n            return {\n" +
                 addVisible + updateVisible + detailVisible + timeRangeBlock.toString() + timePickerBlock.toString() +
@@ -301,102 +372,11 @@ public class ViewGenerator {
                 "VO.page = val;\n                this.handleSearch();\n            },\n            handleSearch() {\n                this.$axios.post(\"/" +
                 lowerTableName + "List\", this." + lowerTableName +
                 "VO).then(response => {\n                    let data = response.data;\n                    if (data.status === 0) {\n                        this.pageBean = data.data;\n                    }\n                });\n            },\n" +
-                handleTimeRangeBlock.toString() +
-                "            handleSort(data) {\n" +
-                "                switch (data.prop) {\n" +
-                "                    case \"createTime\":\n" +
-                "                        this.testVO.sortLabel = \"create_time\";\n" +
-                "                        break;\n" +
-                "                }\n" +
-                "                this.testVO.sortOrder = data.order ? data.order.replace(\"ending\", \"\") : null;\n" +
-                "                this.handleSearch();\n" +
-                "            },\n" +
-                "            handleFilterChange(data) {\n" +
-                "                this.testVO.testDictionaryList = data.testDictionary;\n" +
-                "                this.handleSearch();\n" +
-                "            },\n" +
-                "            handleSetProperties(row) {\n" +
-                "                this.test.gid = row.gid;\n" +
-                "                this.$axios.post(\"/testDetail\", this.test).then(response => {\n" +
-                "                    let data = response.data;\n" +
-                "                    if (data.status === 0) {\n" +
-                "                        this.test = data.data;\n" +
-                "                    } else {\n" +
-                "                        this.$message.error(\"操作失败\");\n" +
-                "                    }\n" +
-                "                });\n" +
-                "            },\n" +
-                "            handleUpdateShow(row) {\n" +
-                "                this.handleSetProperties(row);\n" +
-                "                this.createTimePicker = row.createTime * 1000;\n" +
-                "                this.updateVisible = true;\n" +
-                "            },\n" +
-                "            handleDetail(row) {\n" +
-                "                this.handleSetProperties(row);\n" +
-                "                this.detailVisible = true;\n" +
-                "            },\n" +
-                "            handleAddShow() {\n" +
-                "                this.handleClear();\n" +
-                "                this.createTimePicker = null;\n" +
-                "                this.addVisible = true;\n" +
-                "            },\n" +
-                "            handleClear() {\n" +
-                "                for (let key in this.test) {\n" +
-                "                    if (this.test.hasOwnProperty(key)) {\n" +
-                "                        this.test[key] = null;\n" +
-                "                    }\n" +
-                "                }\n" +
-                "            },\n" +
-                "            handleAddUpdate(uri) {\n" +
-                "                this.$axios.post(uri, this.test).then(response => {\n" +
-                "                    let data = response.data;\n" +
-                "                    if (data.status === 0) {\n" +
-                "                        this.$message.success(\"操作成功\");\n" +
-                "                        this.handleClear();\n" +
-                "                        this.handleSearch();\n" +
-                "                        this.addVisible = false;\n" +
-                "                        this.updateVisible = false;\n" +
-                "                    } else {\n" +
-                "                        this.$message.error(\"操作失败\");\n" +
-                "                    }\n" +
-                "                });\n" +
-                "            },\n" +
-                "            selectToDelete(val) {\n" +
-                "                let gidList = [];\n" +
-                "                for (let i = 0, size = val.length; i < size; i++) {\n" +
-                "                    gidList.push(val[i].gid);\n" +
-                "                }\n" +
-                "                this.testVO.gidList = gidList;\n" +
-                "            },\n" +
-                "            handleDelete() {\n" +
-                "                if (this.testVO.gidList.length > 0) {\n" +
-                "                    this.$confirm(\"确定删除选中的数据?\", \"提示\", {type: \"warning\"}).then(() => {\n" +
-                "                        this.$axios.post(\"/testDelete\", this.testVO).then(response => {\n" +
-                "                            let data = response.data;\n" +
-                "                            if (data.status === 0) {\n" +
-                "                                this.$message.success(\"操作成功\");\n" +
-                "                                this.handleSearch();\n" +
-                "                            } else {\n" +
-                "                                this.$message.error(\"操作失败\");\n" +
-                "                            }\n" +
-                "                        });\n" +
-                "                    }).catch(() => {\n" +
-                "                        this.$message.info(\"取消删除\");\n" +
-                "                    });\n" +
-                "                } else {\n" +
-                "                    this.$message.warning(\"请选择要删除的数据\");\n" +
-                "                }\n" +
-                "            }\n" +
-                "        },\n" +
-                "        mounted() {\n" +
-                "            this.handleSearch();\n" +
-                "        },\n" +
-                "        computed: {\n" +
-                "            fullHeight() {\n" +
-                "                return this.$store.state.fullHeight - 140;\n" +
-                "            }\n" +
-                "        }\n" +
-                "    }\n" +
-                "</script>";
+                handleTimeRangeBlock.toString() + sortBlock.toString() + "            handleFilterChange(data) {\n" + dictionaryFilterBlock.toString() + "                this.handleSearch();\n            },\n" +
+                handlePropertyBlock.toString() + handleUpdateBlock.toString() + handleDetailBlock.toString() + addShowBlock.toString() +
+                "            handleClear() {\n                for (let key in this." + lowerTableName + ") {\n                    if (this." + lowerTableName +
+                ".hasOwnProperty(key)) {\n                        this." + lowerTableName + "[key] = null;\n                    }\n                }\n            },\n" +
+                handleAddUpdateBlock.toString() + handleDeleteBlock.toString() +
+                "        mounted() {\n            this.handleSearch();\n        },\n       computed: {\n            fullHeight() {\n                return this.$store.state.fullHeight - 140;\n            }\n        }\n    }\n</script>";
     }
 }

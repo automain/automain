@@ -132,7 +132,7 @@ public class GeneratorController implements ServiceContainer {
             generateFile(controller, now + "/controller/" + upperPrefix + "Controller" + ".java");
 
             ViewGenerator viewGenerator = new ViewGenerator();
-            String view = viewGenerator.generate(columns, prefix, upperPrefix, tableName, upperTableName, listCheck, addCheck, updateCheck, detailCheck, keyColumns, sortCheck, hasIsValid, hasGlobalId, dictionaryColumnList);
+            String view = viewGenerator.generate(columns, tableName, listCheck, addCheck, updateCheck, detailCheck, keyColumns, sortCheck, hasIsValid, hasGlobalId, dictionaryColumnList);
             generateFile(view, now + "/view/" + upperPrefix + ".vue");
 
             String compressPath = "/data/" + now;
