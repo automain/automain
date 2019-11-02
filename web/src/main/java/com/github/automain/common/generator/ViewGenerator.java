@@ -338,7 +338,7 @@ public class ViewGenerator {
                 dictionaryFilterBlock.append("                this.").append(lowerTableName)
                         .append("VO.").append(lowerColumnName).append("List = data.").append(lowerColumnName).append(";\n");
             }
-            if (keyColumns.contains(columnName)) {
+            if (keyColumns.contains(columnName) && !"id".equals(columnName) && !"gid".equals(columnName)) {
                 searchBlock.append("                    ").append(lowerColumnName).append(": null,\n");
             }
             if (addCheck.contains(columnName) || updateCheck.contains(columnName)) {
