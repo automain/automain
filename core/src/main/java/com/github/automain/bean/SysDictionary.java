@@ -1,6 +1,6 @@
 package com.github.automain.bean;
 
-import com.github.fastjdbc.common.BaseBean;
+import com.github.fastjdbc.BaseBean;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

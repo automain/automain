@@ -4,7 +4,7 @@ import com.github.automain.common.annotation.RequestUri;
 import com.github.automain.common.bean.ColumnBean;
 import com.github.automain.common.bean.GeneratorVO;
 import com.github.automain.common.bean.JsonResponse;
-import com.github.automain.common.container.ServiceContainer;
+import com.github.automain.common.container.ServiceDaoContainer;
 import com.github.automain.common.generator.BeanGenerator;
 import com.github.automain.common.generator.CommonGenerator;
 import com.github.automain.common.generator.ControllerGenerator;
@@ -35,7 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GeneratorController implements ServiceContainer {
+public class GeneratorController implements ServiceDaoContainer {
 
     @RequestUri("/dev/databaseList")
     public JsonResponse databaseList(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) {
@@ -62,14 +62,16 @@ public class GeneratorController implements ServiceContainer {
             List<ColumnBean> columnList = selectAllColumnList(connection, databaseName, tableName);
             String upperTableName = CommonGenerator.convertToJavaName(tableName, true);
             String serviceName = upperTableName + "Service";
-            String paramName = tableName.toUpperCase() + "_SERVICE";
-            String serviceContainer = serviceName + " " + paramName + " = new "
-                    + serviceName + "(new " + upperTableName + "(), new " + upperTableName + "Dao());";
+            String servicePropertyName = tableName.toUpperCase() + "_SERVICE";
+            String daoName = upperTableName + "Dao";
+            String daoPropertyName = tableName.toUpperCase() + "_DAO";
+            String serviceDaoContainer = serviceName + " " + servicePropertyName + " = new "
+                    + serviceName + "();\n" + daoName + " " + daoPropertyName + " = new " + daoName + "();";
             BeanGenerator beanGenerator = new BeanGenerator();
             String bean = beanGenerator.generate(columnList, tableName, upperTableName);
             Map<String, Object> data = new HashMap<String, Object>();
             data.put("columnList", columnList);
-            data.put("serviceContainer", serviceContainer);
+            data.put("serviceDaoContainer", serviceDaoContainer);
             data.put("bean", bean);
             return JsonResponse.getSuccessJson(data);
         } else {
@@ -107,7 +109,7 @@ public class GeneratorController implements ServiceContainer {
             boolean hasCreateTime = hasCreateTime(columns);
             boolean hasUpdateTime = hasUpdateTime(columns);
 
-            List<String> dictionaryColumnList = SYS_DICTIONARY_SERVICE.selectDictionaryColumn(connection, tableName);
+            List<String> dictionaryColumnList = SYS_DICTIONARY_DAO.selectDictionaryColumn(connection, tableName);
 
             String now = DateUtil.getNow("yyyyMMddHHmmss");
 
@@ -120,7 +122,7 @@ public class GeneratorController implements ServiceContainer {
             generateFile(vo, now + "/vo/" + upperTableName + "VO" + ".java");
 
             DaoGenerator daoGenerator = new DaoGenerator();
-            String dao = daoGenerator.generate(columns, keyColumns, tableName, upperTableName, hasIsValid, dictionaryColumnList);
+            String dao = daoGenerator.generate(columns, keyColumns, tableName, upperTableName, hasIsValid, dictionaryColumnList, hasGlobalId);
             generateFile(dao, now + "/dao/" + upperTableName + "Dao" + ".java");
 
             ServiceGenerator serviceGenerator = new ServiceGenerator();
@@ -132,7 +134,7 @@ public class GeneratorController implements ServiceContainer {
             generateFile(controller, now + "/controller/" + upperPrefix + "Controller" + ".java");
 
             ViewGenerator viewGenerator = new ViewGenerator();
-            String view = viewGenerator.generate(columns, tableName, listCheck, addCheck, updateCheck, detailCheck, keyColumns, sortCheck, hasIsValid, hasGlobalId, dictionaryColumnList);
+            String view = viewGenerator.generate(columns, tableName, listCheck, addCheck, updateCheck, detailCheck, keyColumns, sortCheck, hasIsValid, hasGlobalId, dictionaryColumnList, prefix);
             generateFile(view, now + "/view/" + upperPrefix + ".vue");
 
             String compressPath = "/data/" + now;

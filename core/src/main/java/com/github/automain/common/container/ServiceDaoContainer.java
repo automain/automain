@@ -1,17 +1,17 @@
 package com.github.automain.common.container;
 
-import com.github.automain.bean.SysDictionary;
-import com.github.automain.bean.Test;
 import com.github.automain.dao.SysDictionaryDao;
 import com.github.automain.dao.TestDao;
 import com.github.automain.service.SysDictionaryService;
 import com.github.automain.service.TestService;
 
-public interface ServiceContainer {
+public interface ServiceDaoContainer {
 
     // ==================== frame start ==================
-    SysDictionaryService SYS_DICTIONARY_SERVICE = new SysDictionaryService(new SysDictionary(), new SysDictionaryDao());
-    TestService TEST_SERVICE = new TestService(new Test(), new TestDao());
+    SysDictionaryService SYS_DICTIONARY_SERVICE = new SysDictionaryService();
+    SysDictionaryDao SYS_DICTIONARY_DAO = new SysDictionaryDao();
+    TestService TEST_SERVICE = new TestService();
+    TestDao TEST_DAO = new TestDao();
     // ==================== frame end ====================
 
     // ==================== business start ==================

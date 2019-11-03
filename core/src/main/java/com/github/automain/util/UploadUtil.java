@@ -1,10 +1,10 @@
 package com.github.automain.util;
 
-import com.github.automain.common.container.ServiceContainer;
+import com.github.automain.common.container.ServiceDaoContainer;
 
 import java.util.List;
 
-public class UploadUtil implements ServiceContainer {
+public class UploadUtil implements ServiceDaoContainer {
 
     public static final List<String> IMG_TYPES = List.of("bmp", "jpg", "jpeg", "png", "gif");
     public static final String UPLOADS_PATH = PropertiesUtil.getStringProperty("app.uploadsPath");

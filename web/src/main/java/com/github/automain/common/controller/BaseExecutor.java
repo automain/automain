@@ -8,7 +8,7 @@ import com.github.automain.util.PropertiesUtil;
 import com.github.automain.util.RedisUtil;
 import com.github.automain.util.SystemUtil;
 import com.github.automain.util.http.HTTPUtil;
-import com.github.fastjdbc.bean.ConnectionPool;
+import com.github.fastjdbc.ConnectionPool;
 import redis.clients.jedis.Jedis;
 
 import javax.servlet.AsyncContext;
@@ -122,7 +122,7 @@ public abstract class BaseExecutor implements Runnable {
 //        if (user == null) {
 //            return false;
 //        }
-//        Set<String> roleLabel = RolePrivilegeContainer.getRoleLabelByUserId(jedis, user.getUserId());
+//        Set<String> roleLabel = RolePrivilegeDaoContainer.getRoleLabelByUserId(jedis, user.getUserId());
 //        if (roleLabel == null) {
 //            return false;
 //        }
@@ -133,7 +133,7 @@ public abstract class BaseExecutor implements Runnable {
 //        if (CollectionUtils.isEmpty(labels)) {
 //            return true;
 //        }
-//        Set<String> privileges = RolePrivilegeContainer.getPrivilegeSetByUserId(jedis, user.getUserId());
+//        Set<String> privileges = RolePrivilegeDaoContainer.getPrivilegeSetByUserId(jedis, user.getUserId());
 //        if (privileges != null) {
 //            for (String label : labels) {
 //                if (privileges.contains(label)) {
@@ -181,7 +181,7 @@ public abstract class BaseExecutor implements Runnable {
 //                        ConnectionBean connection = null;
 //                        try {
 //                            connection = ConnectionPool.getConnectionBean(null);
-//                            TbUser user = ServiceContainer.TB_USER_SERVICE.selectTableById(connection, userId);
+//                            TbUser user = ServiceDaoContainer.TB_USER_SERVICE.selectTableById(connection, userId);
 //                            userMap = new HashMap<String, String>();
 //                            userMap.put("userName", user.getUserName());
 //                            userMap.put("cellphone", user.getCellphone());

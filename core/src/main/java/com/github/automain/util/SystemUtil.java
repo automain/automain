@@ -1,7 +1,7 @@
 package com.github.automain.util;
 
 import com.alibaba.fastjson.JSONObject;
-import com.github.fastjdbc.bean.ConnectionPool;
+import com.github.fastjdbc.ConnectionPool;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang3.StringUtils;
@@ -147,7 +147,7 @@ public class SystemUtil {
 //            }
 //            TbSchedule bean = new TbSchedule();
 //            bean.setIsDelete(0);
-//            List<TbSchedule> scheduleList = ServiceContainer.TB_SCHEDULE_SERVICE.selectTableByBean(connection, bean);
+//            List<TbSchedule> scheduleList = ServiceDaoContainer.TB_SCHEDULE_SERVICE.selectTableByBean(connection, bean);
 //            int size = scheduleList.size();
 //            if (size > 0) {
 //                SCHEDULE_THREAD_POOL = Executors.newScheduledThreadPool(size);

@@ -16,22 +16,8 @@
 
 package com.github.automain.service;
 
-import com.github.automain.bean.Test;
-import com.github.automain.dao.TestDao;
-import com.github.automain.vo.TestVO;
-import com.github.fastjdbc.bean.PageBean;
-import com.github.fastjdbc.common.BaseService;
+import com.github.automain.common.container.ServiceDaoContainer;
 
-import java.sql.Connection;
-
-public class TestService extends BaseService<Test, TestDao> {
-
-    public TestService(Test bean, TestDao dao) {
-        super(bean, dao);
-    }
-
-    public PageBean<Test> selectTableForCustomPage(Connection connection, TestVO bean) throws Exception {
-        return getDao().selectTableForCustomPage(connection, bean);
-    }
+public class TestService implements ServiceDaoContainer {
 
 }

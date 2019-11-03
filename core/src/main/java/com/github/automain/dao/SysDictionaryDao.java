@@ -3,17 +3,88 @@ package com.github.automain.dao;
 import com.github.automain.bean.SysDictionary;
 import com.github.automain.vo.DictionaryVO;
 import com.github.automain.vo.SysDictionaryVO;
-import com.github.fastjdbc.bean.ConnectionPool;
-import com.github.fastjdbc.bean.PageBean;
-import com.github.fastjdbc.bean.PageParamBean;
-import com.github.fastjdbc.common.BaseDao;
+import com.github.fastjdbc.BaseDao;
+import com.github.fastjdbc.ConnectionPool;
+import com.github.fastjdbc.PageBean;
+import com.github.fastjdbc.PageParamBean;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SysDictionaryDao extends BaseDao<SysDictionary> {
+
+    private static final SysDictionary DEFAULT_BEAN = new SysDictionary();
+
+    public int insertIntoTable(Connection connection, SysDictionary bean) throws SQLException {
+        return super.insertIntoTable(connection, bean);
+    }
+
+    public Integer insertIntoTableReturnId(Connection connection, SysDictionary bean) throws SQLException {
+        return super.insertIntoTableReturnId(connection, bean);
+    }
+
+    public int batchInsertIntoTable(Connection connection, List<SysDictionary> list) throws SQLException {
+        return super.batchInsertIntoTable(connection, list);
+    }
+
+    public int updateTableById(Connection connection, SysDictionary bean, boolean all) throws SQLException {
+        return super.updateTableById(connection, bean, all);
+    }
+
+    public int updateTableByIdList(Connection connection, SysDictionary bean, List<Integer> idList, boolean all) throws SQLException {
+        return super.updateTableByIdList(connection, bean, idList, all);
+    }
+
+    public int updateTable(Connection connection, SysDictionary paramBean, SysDictionary newBean, boolean insertWhenNotExist, boolean updateMulti, boolean all) throws SQLException {
+        return super.updateTable(connection, paramBean, newBean, insertWhenNotExist, updateMulti, all);
+    }
+
+    public int softDeleteTableById(Connection connection, SysDictionary bean) throws SQLException {
+        return super.softDeleteTableById(connection, bean);
+    }
+
+    public int softDeleteTableByIdList(Connection connection, List<Integer> idList) throws SQLException {
+        return super.softDeleteTableByIdList(connection, DEFAULT_BEAN, idList);
+    }
+
+    public int deleteTableById(Connection connection, SysDictionary bean) throws SQLException {
+        return super.deleteTableById(connection, bean);
+    }
+
+    public int deleteTableByIdList(Connection connection, List<Integer> idList) throws SQLException {
+        return super.deleteTableByIdList(connection, DEFAULT_BEAN, idList);
+    }
+
+    public int countTableByBean(Connection connection, SysDictionary bean) throws SQLException {
+        return super.countTableByBean(connection, bean);
+    }
+
+    public SysDictionary selectTableById(Connection connection, SysDictionary bean) throws SQLException {
+        return super.selectTableById(connection, bean);
+    }
+
+    public List<SysDictionary> selectTableByIdList(Connection connection, List<Integer> idList) throws SQLException {
+        return super.selectTableByIdList(connection, DEFAULT_BEAN, idList);
+    }
+
+    public SysDictionary selectOneTableByBean(Connection connection, SysDictionary bean) throws SQLException {
+        return super.selectOneTableByBean(connection, bean);
+    }
+
+    public List<SysDictionary> selectTableByBean(Connection connection, SysDictionary bean) throws SQLException {
+        return super.selectTableByBean(connection, bean);
+    }
+
+    public List<SysDictionary> selectAllTable(Connection connection) throws SQLException {
+        return super.selectAllTable(connection, DEFAULT_BEAN);
+    }
+
+    public PageBean<SysDictionary> selectTableForPage(Connection connection, SysDictionary bean, int page, int size) throws Exception {
+        return super.selectTableForPage(connection, bean, page, size);
+    }
 
     @SuppressWarnings("unchecked")
     public PageBean<SysDictionary> selectTableForCustomPage(Connection connection, SysDictionaryVO bean) throws Exception {
@@ -35,7 +106,7 @@ public class SysDictionaryDao extends BaseDao<SysDictionary> {
 
     private String setSearchCondition(SysDictionaryVO bean, List<Object> paramList, boolean isCountSql) {
         StringBuilder sql = new StringBuilder("SELECT ");
-        sql.append(isCountSql ? "COUNT(1)" : "*").append(" FROM sys_dictionary WHERE is_valid = 1 ");
+        sql.append(isCountSql ? "COUNT(1)" : "*").append(" FROM sys_dictionary WHERE is_valid = 1");
         if (bean.getTableName() != null) {
             sql.append(" AND table_name = ?");
             paramList.add(bean.getTableName());
@@ -48,25 +119,8 @@ public class SysDictionaryDao extends BaseDao<SysDictionary> {
             sql.append(" AND dictionary_key = ?");
             paramList.add(bean.getDictionaryKey());
         }
-        if (bean.getCreateTime() != null ) {
-            sql.append(" AND create_time >= ?");
-            paramList.add(bean.getCreateTime());
-        }
-        if (bean.getCreateTimeEnd() != null) {
-            sql.append(" AND create_time < ?");
-            paramList.add(bean.getCreateTimeEnd());
-        }
-        if (bean.getUpdateTime() != null ) {
-            sql.append(" AND update_time >= ?");
-            paramList.add(bean.getUpdateTime());
-        }
-        if (bean.getUpdateTimeEnd() != null) {
-            sql.append(" AND update_time < ?");
-            paramList.add(bean.getUpdateTimeEnd());
-        }
-        if (bean.getDictionaryValue() != null) {
-            sql.append(" AND dictionary_value = ?");
-            paramList.add(bean.getDictionaryValue());
+        if (!isCountSql && bean.getSortLabel() != null && bean.getSortOrder() != null && bean.columnMap(true).containsKey(bean.getSortLabel())) {
+            sql.append(" ORDER BY ").append(bean.getSortLabel()).append("asc".equalsIgnoreCase(bean.getSortOrder()) ? " ASC" : " DESC");
         }
         return sql.toString();
     }

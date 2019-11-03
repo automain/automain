@@ -1,6 +1,6 @@
 package com.github.automain.bean;
 
-import com.github.fastjdbc.common.BaseBean;
+import com.github.fastjdbc.BaseBean;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;

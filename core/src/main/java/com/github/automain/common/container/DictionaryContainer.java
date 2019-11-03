@@ -4,7 +4,7 @@ public class DictionaryContainer {
 
 //    public static void reloadDictionary(Jedis jedis, ConnectionBean connection) {
 //        try {
-//            List<TbDictionary> validList = ServiceContainer.TB_DICTIONARY_SERVICE.selectValidTable(connection);
+//            List<TbDictionary> validList = ServiceDaoContainer.TB_DICTIONARY_SERVICE.selectValidTable(connection);
 //            String dictTableNameOffset = "";
 //            String dictColumnNameOffset = "";
 //            Long parentIdOffset = 0L;

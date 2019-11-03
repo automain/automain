@@ -2,11 +2,11 @@ package com.github.automain.common.controller;
 
 import com.github.automain.common.annotation.RequestUri;
 import com.github.automain.common.bean.JsonResponse;
-import com.github.automain.common.container.ServiceContainer;
+import com.github.automain.common.container.ServiceDaoContainer;
 import com.github.automain.util.RedisUtil;
 import com.github.automain.util.SystemUtil;
 import com.github.automain.util.http.HTTPUtil;
-import com.github.fastjdbc.bean.ConnectionPool;
+import com.github.fastjdbc.ConnectionPool;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +59,7 @@ public class DispatcherController extends HttpServlet {
             // 初始化字典表缓存
 //            DictionaryContainer.reloadDictionary(jedis, connection);
 //            // 初始化人员角色权限缓存
-//            RolePrivilegeContainer.reloadRolePrivilege(jedis, connection);
+//            RolePrivilegeDaoContainer.reloadRolePrivilege(jedis, connection);
             // 初始化定时任务
 //            SystemUtil.reloadSchedule(connection);
             LOGGER.info("===============================System Start Success===============================");
@@ -83,7 +83,7 @@ public class DispatcherController extends HttpServlet {
                 if (classPath.endsWith(".class")) {
                     classPath = classPath.substring(classPath.indexOf(File.separator + "classes") + 9, classPath.lastIndexOf(".")).replace(File.separator, ".");
                     Class clazz = Class.forName(classPath);
-                    if (ServiceContainer.class.isAssignableFrom(clazz)) {
+                    if (ServiceDaoContainer.class.isAssignableFrom(clazz)) {
                         Method[] methods = clazz.getDeclaredMethods();
                         Object controller = clazz.getDeclaredConstructor().newInstance();
                         for (Method method : methods) {

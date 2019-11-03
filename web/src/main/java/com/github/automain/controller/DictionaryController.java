@@ -3,59 +3,62 @@ package com.github.automain.controller;
 import com.github.automain.bean.SysDictionary;
 import com.github.automain.common.annotation.RequestUri;
 import com.github.automain.common.bean.JsonResponse;
-import com.github.automain.common.container.ServiceContainer;
+import com.github.automain.common.container.ServiceDaoContainer;
 import com.github.automain.util.DateUtil;
 import com.github.automain.util.SystemUtil;
-import com.github.automain.vo.DictionaryVO;
 import com.github.automain.vo.SysDictionaryVO;
-import com.github.fastjdbc.bean.PageBean;
+import com.github.fastjdbc.PageBean;
 import org.apache.commons.collections4.CollectionUtils;
 import redis.clients.jedis.Jedis;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.sql.Connection;
-import java.util.List;
 
-public class DictionaryController implements ServiceContainer {
+public class DictionaryController implements ServiceDaoContainer {
 
-    @RequestUri("/dictionaryAll")
-    public JsonResponse dictionaryAll(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        List<DictionaryVO> allDictionary = SYS_DICTIONARY_SERVICE.selectAllDictionaryVO(connection);
-        return JsonResponse.getSuccessJson(allDictionary);
-    }
-
-    @RequestUri("/dictionaryList")
+    @RequestUri(value = "/dictionaryList", slave = "slave1")
     public JsonResponse dictionaryList(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         SysDictionaryVO vo = SystemUtil.getRequestParam(request, SysDictionaryVO.class);
         if (vo != null) {
-            PageBean<SysDictionary> pageBean = SYS_DICTIONARY_SERVICE.selectTableForCustomPage(connection, vo);
+            PageBean<SysDictionary> pageBean = SYS_DICTIONARY_DAO.selectTableForCustomPage(connection, vo);
             return JsonResponse.getSuccessJson(pageBean);
         }
         return JsonResponse.getFailedJson();
     }
 
-    @RequestUri("/dictionaryAddOrUpdate")
-    public JsonResponse dictionaryAddOrUpdate(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    @RequestUri("/dictionaryAdd")
+    public JsonResponse dictionaryAdd(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         SysDictionary bean = SystemUtil.getRequestParam(request, SysDictionary.class);
-        if (bean != null) {
+        if (checkValid(bean, false)) {
             bean.setUpdateTime(DateUtil.getNow());
-            if (bean.getId() != null) {
-                SYS_DICTIONARY_SERVICE.updateTableById(connection, bean, false);
-            } else {
-                bean.setCreateTime(bean.getUpdateTime());
-                SYS_DICTIONARY_SERVICE.insertIntoTable(connection, bean);
-            }
+            bean.setCreateTime(bean.getUpdateTime());
+            SYS_DICTIONARY_DAO.insertIntoTable(connection, bean);
             return JsonResponse.getSuccessJson();
         }
         return JsonResponse.getFailedJson();
     }
 
-    @RequestUri("/dictionaryDetail")
+    private boolean checkValid(SysDictionary bean, boolean isUpdate) {
+        return bean != null && (!isUpdate || bean.getId() != null);
+    }
+
+    @RequestUri("/dictionaryUpdate")
+    public JsonResponse dictionaryUpdate(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        SysDictionary bean = SystemUtil.getRequestParam(request, SysDictionary.class);
+        if (checkValid(bean, true)) {
+            bean.setUpdateTime(DateUtil.getNow());
+            SYS_DICTIONARY_DAO.updateTableById(connection, bean, false);
+            return JsonResponse.getSuccessJson();
+        }
+        return JsonResponse.getFailedJson();
+    }
+
+    @RequestUri(value = "/dictionaryDetail", slave = "slave1")
     public JsonResponse dictionaryDetail(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         SysDictionary bean = SystemUtil.getRequestParam(request, SysDictionary.class);
         if (bean != null && bean.getId() != null) {
-            SysDictionary detail = SYS_DICTIONARY_SERVICE.selectTableById(connection, bean);
+            SysDictionary detail = SYS_DICTIONARY_DAO.selectTableById(connection, bean);
             return JsonResponse.getSuccessJson(detail);
         }
         return JsonResponse.getFailedJson();
@@ -65,7 +68,7 @@ public class DictionaryController implements ServiceContainer {
     public JsonResponse dictionaryDelete(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         SysDictionaryVO vo = SystemUtil.getRequestParam(request, SysDictionaryVO.class);
         if (vo != null && CollectionUtils.isNotEmpty(vo.getIdList())) {
-            SYS_DICTIONARY_SERVICE.softDeleteTableByIdList(connection, vo.getIdList());
+            SYS_DICTIONARY_DAO.softDeleteTableByIdList(connection, vo.getIdList());
             return JsonResponse.getSuccessJson();
         }
         return JsonResponse.getFailedJson();

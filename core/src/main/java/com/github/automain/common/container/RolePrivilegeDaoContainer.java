@@ -1,6 +1,6 @@
 package com.github.automain.common.container;
 
-public class RolePrivilegeContainer implements ServiceContainer {
+public class RolePrivilegeDaoContainer implements ServiceDaoContainer {
 
 //    public static void reloadRolePrivilege(Jedis jedis, ConnectionBean connection) {
 //        // 角色ID->角色权限标识

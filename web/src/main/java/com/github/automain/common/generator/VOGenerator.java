@@ -32,7 +32,10 @@ public class VOGenerator {
                 .append("VO setPage(int page) {\n        this.page = page;\n        return this;\n    }")
                 .append("\n\n    public int getSize() {\n        return size;\n    }\n\n")
                 .append("    public ").append(upperTableName)
-                .append("VO setSize(int size) {\n        this.size = size;\n        return this;\n    }");
+                .append("VO setSize(int size) {\n        this.size = size;\n        return this;\n    }")
+                .append("\n\n    public String getSortLabel() {\n        return sortLabel;\n    }\n\n    public ").append(upperTableName)
+                .append("VO setSortLabel(String sortLabel) {\n        this.sortLabel = sortLabel;\n        return this;\n    }\n\n    public String getSortOrder() {\n        return sortOrder;\n    }\n\n    public ")
+                .append(upperTableName).append("VO setSortOrder(String sortOrder) {\n        this.sortOrder = sortOrder;\n        return this;\n    }");
         if (hasGlobalId) {
             getterSetter.append("\n\n    public List<String> getGidList() {\n        return gidList;\n    }\n\n")
                     .append("    public ").append(upperTableName)

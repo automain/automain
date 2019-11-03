@@ -8,7 +8,7 @@ import java.util.List;
 public class ViewGenerator {
 
     public String generate(List<ColumnBean> columns, String tableName, List<String> listCheck, List<String> addCheck, List<String> updateCheck, List<String> detailCheck,
-                           List<String> keyColumns, List<String> sortCheck, boolean hasIsValid, boolean hasGlobalId, List<String> dictionaryColumnList) {
+                           List<String> keyColumns, List<String> sortCheck, boolean hasIsValid, boolean hasGlobalId, List<String> dictionaryColumnList, String prefix) {
         String resultStr = "<template>\n    <div>";
 
         boolean hasAdd = !addCheck.isEmpty();
@@ -24,16 +24,16 @@ public class ViewGenerator {
             resultStr += getList(columns, hasIsValid, tableName, listCheck, dictionaryColumnList, sortCheck, hasUpdate, hasDetail);
         }
         if (hasAdd) {
-            resultStr += addDialog(columns, tableName, addCheck, dictionaryColumnList);
+            resultStr += addDialog(columns, tableName, addCheck, dictionaryColumnList, prefix);
         }
         if (hasUpdate) {
-            resultStr += updateDialog(columns, tableName, updateCheck, dictionaryColumnList);
+            resultStr += updateDialog(columns, tableName, updateCheck, dictionaryColumnList, prefix);
         }
         if (hasDetail) {
             resultStr += detailDialog(columns, tableName, detailCheck, dictionaryColumnList);
         }
         resultStr += "\n    </div>\n</template>\n";
-        resultStr += getScript(columns, tableName, keyColumns, addCheck, updateCheck, detailCheck, sortCheck, dictionaryColumnList, hasIsValid, hasGlobalId);
+        resultStr += getScript(columns, tableName, keyColumns, addCheck, updateCheck, detailCheck, sortCheck, dictionaryColumnList, hasIsValid, hasGlobalId, prefix);
         return resultStr;
     }
 
@@ -118,13 +118,14 @@ public class ViewGenerator {
             operation.append("                </template>\n            </el-table-column>\n");
         }
         String deleteSelect = hasIsValid ? "            <el-table-column type=\"selection\" width=\"42\" fixed=\"left\"></el-table-column>\n" : "";
-        return "\n        <el-table ref=\"multipleTable\" :data=\"pageBean.data\" tooltip-effect=\"dark\" :height=\"fullHeight\" @selection-change=\"selectToDelete\" @sort-change=\"handleSort\" @filter-change=\"handleFilterChange\">\n" +
-                deleteSelect + listBlock + operation +
+        String sortChange = CollectionUtils.isNotEmpty(sortCheck) ? " @sort-change=\"handleSort\"" : "";
+        return "\n        <el-table ref=\"multipleTable\" :data=\"pageBean.data\" tooltip-effect=\"dark\" :height=\"fullHeight\" @selection-change=\"selectToDelete\" " +
+                sortChange + " @filter-change=\"handleFilterChange\">\n" + deleteSelect + listBlock + operation +
                 "        </el-table>\n        <el-pagination @size-change=\"handleSizeChange\" @current-change=\"handlePageChange\" :page-sizes=\"[10, 20, 50, 100]\" :page-size=\"" +
                 table + "VO.size\" layout=\"->, total, prev, pager, next, jumper, sizes\" :total=\"pageBean.total\"></el-pagination>";
     }
 
-    private String addDialog(List<ColumnBean> columns, String tableName, List<String> addCheck, List<String> dictionaryColumnList) {
+    private String addDialog(List<ColumnBean> columns, String tableName, List<String> addCheck, List<String> dictionaryColumnList, String prefix) {
         String lowerTableName = CommonGenerator.convertToJavaName(tableName, false);
         StringBuilder addBlock = new StringBuilder();
         for (ColumnBean column : columns) {
@@ -161,10 +162,10 @@ public class ViewGenerator {
         return "\n        <el-dialog title=\"添加\" :visible.sync=\"addVisible\" class=\"add-update-dialog\">\n            <el-form :model=\"" +
                 lowerTableName + "\" inline label-width=\"120px\" size=\"mini\">\n" + addBlock +
                 "            </el-form>\n            <div slot=\"footer\" class=\"dialog-footer\">\n                <el-button @click=\"addVisible = false\">取消</el-button>\n                <el-button type=\"primary\" @click=\"handleAddUpdate('/" +
-                lowerTableName + "Add')\">确定</el-button>\n            </div>\n        </el-dialog>";
+                prefix + "Add')\">确定</el-button>\n            </div>\n        </el-dialog>";
     }
 
-    private String updateDialog(List<ColumnBean> columns, String tableName, List<String> updateCheck, List<String> dictionaryColumnList) {
+    private String updateDialog(List<ColumnBean> columns, String tableName, List<String> updateCheck, List<String> dictionaryColumnList, String prefix) {
         String lowerTableName = CommonGenerator.convertToJavaName(tableName, false);
         StringBuilder updateBlock = new StringBuilder();
         for (ColumnBean column : columns) {
@@ -201,7 +202,7 @@ public class ViewGenerator {
         return "\n        <el-dialog title=\"编辑\" :visible.sync=\"updateVisible\" class=\"add-update-dialog\">\n            <el-form :model=\"" +
                 lowerTableName + "\" inline label-width=\"120px\" size=\"mini\">\n" + updateBlock +
                 "            </el-form>\n            <div slot=\"footer\" class=\"dialog-footer\">\n                <el-button @click=\"updateVisible = false\">取消</el-button>\n                <el-button type=\"primary\" @click=\"handleAddUpdate('/" +
-                lowerTableName + "Update')\">确定</el-button>\n            </div>\n        </el-dialog>";
+                prefix + "Update')\">确定</el-button>\n            </div>\n        </el-dialog>";
     }
 
     private String detailDialog(List<ColumnBean> columns, String tableName, List<String> detailCheck, List<String> dictionaryColumnList) {
@@ -233,7 +234,7 @@ public class ViewGenerator {
                 detailBlock + "            </el-form>\n        </el-dialog>";
     }
 
-    private String getScript(List<ColumnBean> columns, String tableName, List<String> keyColumns, List<String> addCheck, List<String> updateCheck, List<String> detailCheck, List<String> sortCheck, List<String> dictionaryColumnList, boolean hasIsValid, boolean hasGlobalId) {
+    private String getScript(List<ColumnBean> columns, String tableName, List<String> keyColumns, List<String> addCheck, List<String> updateCheck, List<String> detailCheck, List<String> sortCheck, List<String> dictionaryColumnList, boolean hasIsValid, boolean hasGlobalId, String prefix) {
         String lowerTableName = CommonGenerator.convertToJavaName(tableName, false);
         boolean hasAdd = !addCheck.isEmpty();
         boolean hasUpdate = !updateCheck.isEmpty();
@@ -270,7 +271,7 @@ public class ViewGenerator {
             handleDeleteBlock.append("            },\n            handleDelete() {\n                if (this.").append(lowerTableName).append("VO.");
             handleDeleteBlock.append(hasGlobalId ? "gidList" : "idList");
             handleDeleteBlock.append(".length > 0) {\n                    this.$confirm(\"确定删除选中的数据?\", \"提示\", {type: \"warning\"}).then(() => {\n                        this.$axios.post(\"/")
-                    .append(lowerTableName).append("Delete\", this.").append(lowerTableName)
+                    .append(prefix).append("Delete\", this.").append(lowerTableName)
                     .append("VO).then(response => {\n                            let data = response.data;\n                            if (data.status === 0) {\n                                this.$message.success(\"操作成功\");\n                                this.handleSearch();\n                            } else {\n                                this.$message.error(\"操作失败\");\n                            }\n                        });\n                    }).catch(() => {\n                        this.$message.info(\"取消删除\");\n                    });\n                } else {\n                    this.$message.warning(\"请选择要删除的数据\");\n                }\n            }\n        },\n");
         }
         if (hasAdd || hasUpdate) {
@@ -288,8 +289,7 @@ public class ViewGenerator {
         if (hasDetail || hasUpdate) {
             handlePropertyBlock.append("            handleSetProperties(row) {\n                this.").append(lowerTableName);
             handlePropertyBlock.append(hasGlobalId ? ".gid = row.gid;\n" : ".id = row.id;\n");
-            handlePropertyBlock.append("                this.$axios.post(\"/").append(lowerTableName)
-                    .append("Detail\", this.").append(lowerTableName)
+            handlePropertyBlock.append("                this.$axios.post(\"/").append(prefix).append("Detail\", this.").append(lowerTableName)
                     .append(").then(response => {\n                    let data = response.data;\n                    if (data.status === 0) {\n                        this.")
                     .append(lowerTableName).append(" = data.data;\n                    } else {\n                        this.$message.error(\"操作失败\");\n                    }\n                });\n            },\n");
             if (hasUpdate) {
@@ -369,8 +369,7 @@ public class ViewGenerator {
                 lowerTableName + ": {\n" + beanBlock.toString() + "                },\n" + dictionaryMapBlock.toString() +
                 "            }\n        },\n        methods: {\n            handleSizeChange(val) {\n                this." + lowerTableName +
                 "VO.size = val;\n                this.handleSearch();\n            },\n            handlePageChange(val) {\n                this." + lowerTableName +
-                "VO.page = val;\n                this.handleSearch();\n            },\n            handleSearch() {\n                this.$axios.post(\"/" +
-                lowerTableName + "List\", this." + lowerTableName +
+                "VO.page = val;\n                this.handleSearch();\n            },\n            handleSearch() {\n                this.$axios.post(\"/" + prefix + "List\", this." + lowerTableName +
                 "VO).then(response => {\n                    let data = response.data;\n                    if (data.status === 0) {\n                        this.pageBean = data.data;\n                    }\n                });\n            },\n" +
                 handleTimeRangeBlock.toString() + sortBlock.toString() + "            handleFilterChange(data) {\n" + dictionaryFilterBlock.toString() + "                this.handleSearch();\n            },\n" +
                 handlePropertyBlock.toString() + handleUpdateBlock.toString() + handleDetailBlock.toString() + addShowBlock.toString() +

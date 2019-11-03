@@ -1,7 +1,7 @@
 package com.github.automain.test;
 
 import com.github.automain.util.SystemUtil;
-import com.github.fastjdbc.bean.ConnectionPool;
+import com.github.fastjdbc.ConnectionPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

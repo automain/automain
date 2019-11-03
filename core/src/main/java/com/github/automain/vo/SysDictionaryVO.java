@@ -10,6 +10,10 @@ public class SysDictionaryVO extends SysDictionary {
     private int page;
     // 页大小
     private int size;
+    // 排序字段
+    private String sortLabel;
+    // 排序顺序
+    private String sortOrder;
     // 删除用ID集合
     private List<Integer> idList;
     // 创建时间结束
@@ -32,6 +36,24 @@ public class SysDictionaryVO extends SysDictionary {
 
     public SysDictionaryVO setSize(int size) {
         this.size = size;
+        return this;
+    }
+
+    public String getSortLabel() {
+        return sortLabel;
+    }
+
+    public SysDictionaryVO setSortLabel(String sortLabel) {
+        this.sortLabel = sortLabel;
+        return this;
+    }
+
+    public String getSortOrder() {
+        return sortOrder;
+    }
+
+    public SysDictionaryVO setSortOrder(String sortOrder) {
+        this.sortOrder = sortOrder;
         return this;
     }
 
