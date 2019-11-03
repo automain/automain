@@ -113,18 +113,18 @@ CREATE TABLE `sys_menu` (
   `is_valid` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '是否有效(0:否,1:是)',
   `menu_path` varchar(64) DEFAULT NULL COMMENT '菜单路径',
   `menu_name` varchar(16) NOT NULL COMMENT '菜单名称',
-  `menu_icon` varchar(16) NOT NULL COMMENT '菜单图标',
+  `menu_icon` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '菜单图标',
   `parent_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '父级ID',
-  `top_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '顶级ID',
   `sequence_number` smallint(5) unsigned NOT NULL DEFAULT '1' COMMENT '菜单排序',
-  `is_leaf` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '是否是叶子节点(0:否,1:是)',
   PRIMARY KEY (`id`),
   KEY `idx_parent_id` (`parent_id`),
   KEY `idx_sequence_number` (`sequence_number`),
   KEY `idx_menu_name` (`menu_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `sys_menu` */
+
+insert  into `sys_menu`(`id`,`create_time`,`update_time`,`is_valid`,`menu_path`,`menu_name`,`menu_icon`,`parent_id`,`sequence_number`) values (1,1572792195,1572792195,1,NULL,'开发工具','el-icon-s-cooperation',0,1),(2,1572792223,1572792223,1,NULL,'系统管理','el-icon-setting',0,2),(3,1572792259,1572792259,1,'/dev/generator','生成器','el-icon-s-platform',1,1),(4,1572792298,1572792298,1,'/dev/test','测试','el-icon-s-flag',1,2),(5,1572792330,1572792330,1,'/system/dictionary','字典','el-icon-notebook-2',2,1),(6,1572792357,1572792357,1,'/system/menu','菜单','el-icon-menu',2,2);
 
 /*Table structure for table `sys_privilege` */
 
