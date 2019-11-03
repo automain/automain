@@ -12,11 +12,12 @@ public class DaoGenerator {
     }
 
     private String getImportHead(List<String> dictionaryColumnList) {
-        String collectionUtilImport = dictionaryColumnList.isEmpty() ? "\n" : "import org.apache.commons.collections4.CollectionUtils;\n\n";
+        String collectionUtilImport = dictionaryColumnList.isEmpty() ? "" : "import org.apache.commons.collections4.CollectionUtils;\n";
         return "import com.github.fastjdbc.PageBean;\n" +
                 "import com.github.fastjdbc.PageParamBean;\n" +
                 "import com.github.fastjdbc.BaseDao;\n" +
                 collectionUtilImport +
+                "import org.apache.commons.lang3.StringUtils;\n\n" +
                 "import java.sql.Connection;\n" +
                 "import java.sql.SQLException;\n" +
                 "import java.util.ArrayList;\n" +
@@ -127,11 +128,14 @@ public class DaoGenerator {
                         .append("            sql.append(\" AND ").append(columnName).append(" < ?\");\n")
                         .append("            paramList.add(bean.get").append(upperColumnName).append("End());\n")
                         .append("        }\n");
+            } else if ("String".equals(column.getDataType())) {
+                condition.append("        if (StringUtils.isNotBlank(bean.get").append(upperColumnName)
+                        .append("())) {\n            sql.append(\" AND ")
+                        .append(columnName).append(" = ?\");\n            paramList.add(bean.get").append(upperColumnName).append("());\n        }\n");
             } else {
-                condition.append("        if (bean.get").append(upperColumnName).append("() != null) {\n")
-                        .append("            sql.append(\" AND ").append(columnName).append(" = ?\");\n")
-                        .append("            paramList.add(bean.get").append(upperColumnName).append("());\n")
-                        .append("        }\n");
+                condition.append("        if (bean.get").append(upperColumnName)
+                        .append("() != null) {\n            sql.append(\" AND ")
+                        .append(columnName).append(" = ?\");\n            paramList.add(bean.get").append(upperColumnName).append("());\n        }\n");
             }
         }
         return condition.toString();

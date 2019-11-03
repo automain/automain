@@ -17,6 +17,7 @@ import com.github.automain.util.DateUtil;
 import com.github.automain.util.PropertiesUtil;
 import com.github.automain.util.SystemUtil;
 import com.github.automain.util.http.HTTPUtil;
+import com.github.automain.vo.SysDictionaryVO;
 import org.apache.commons.collections4.CollectionUtils;
 import redis.clients.jedis.Jedis;
 
@@ -48,6 +49,23 @@ public class GeneratorController implements ServiceDaoContainer {
         if (vo != null) {
             List<String> tableNameList = selectTableNameList(connection, vo.getDatabaseName());
             return JsonResponse.getSuccessJson(tableNameList);
+        } else {
+            return JsonResponse.getFailedJson();
+        }
+    }
+
+    @RequestUri("/dev/appTableList")
+    public JsonResponse appTableList(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) {
+        List<String> tableNameList = selectTableNameList(connection, SystemUtil.DATABASE_NAME);
+        return JsonResponse.getSuccessJson(tableNameList);
+    }
+
+    @RequestUri("/dev/appColumnList")
+    public JsonResponse appColumnList(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) {
+        SysDictionaryVO vo = SystemUtil.getRequestParam(request, SysDictionaryVO.class);
+        if (vo != null) {
+            List<ColumnBean> columnList = selectAllColumnList(connection, SystemUtil.DATABASE_NAME, vo.getTableName());
+            return JsonResponse.getSuccessJson(columnList);
         } else {
             return JsonResponse.getFailedJson();
         }

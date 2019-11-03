@@ -22,6 +22,7 @@ import com.github.fastjdbc.BaseDao;
 import com.github.fastjdbc.PageBean;
 import com.github.fastjdbc.PageParamBean;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -153,7 +154,7 @@ public class TestDao extends BaseDao<Test> {
     private String setSearchCondition(TestVO bean, List<Object> paramList, boolean isCountSql) {
         StringBuilder sql = new StringBuilder("SELECT ");
         sql.append(isCountSql ? "COUNT(1)" : "*").append(" FROM test WHERE is_valid = 1");
-        if (bean.getGid() != null) {
+        if (StringUtils.isNotBlank(bean.getGid())) {
             sql.append(" AND gid = ?");
             paramList.add(bean.getGid());
         }
@@ -165,7 +166,7 @@ public class TestDao extends BaseDao<Test> {
             sql.append(" AND create_time < ?");
             paramList.add(bean.getCreateTimeEnd());
         }
-        if (bean.getTestName() != null) {
+        if (StringUtils.isNotBlank(bean.getTestName())) {
             sql.append(" AND test_name LIKE ?");
             paramList.add(bean.getTestName() + "%");
         }

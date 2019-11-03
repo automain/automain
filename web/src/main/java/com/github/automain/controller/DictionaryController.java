@@ -6,6 +6,7 @@ import com.github.automain.common.bean.JsonResponse;
 import com.github.automain.common.container.ServiceDaoContainer;
 import com.github.automain.util.DateUtil;
 import com.github.automain.util.SystemUtil;
+import com.github.automain.vo.DictionaryVO;
 import com.github.automain.vo.SysDictionaryVO;
 import com.github.fastjdbc.PageBean;
 import org.apache.commons.collections4.CollectionUtils;
@@ -14,8 +15,15 @@ import redis.clients.jedis.Jedis;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.sql.Connection;
+import java.util.List;
 
 public class DictionaryController implements ServiceDaoContainer {
+
+    @RequestUri("/dictionaryAll")
+    public JsonResponse dictionaryAll(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        List<DictionaryVO> allDictionary = SYS_DICTIONARY_DAO.selectAllDictionaryVO(connection);
+        return JsonResponse.getSuccessJson(allDictionary);
+    }
 
     @RequestUri(value = "/dictionaryList", slave = "slave1")
     public JsonResponse dictionaryList(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {

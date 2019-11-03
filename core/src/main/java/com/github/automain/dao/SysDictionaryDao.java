@@ -7,6 +7,7 @@ import com.github.fastjdbc.BaseDao;
 import com.github.fastjdbc.ConnectionPool;
 import com.github.fastjdbc.PageBean;
 import com.github.fastjdbc.PageParamBean;
+import org.apache.commons.lang3.StringUtils;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -107,11 +108,11 @@ public class SysDictionaryDao extends BaseDao<SysDictionary> {
     private String setSearchCondition(SysDictionaryVO bean, List<Object> paramList, boolean isCountSql) {
         StringBuilder sql = new StringBuilder("SELECT ");
         sql.append(isCountSql ? "COUNT(1)" : "*").append(" FROM sys_dictionary WHERE is_valid = 1");
-        if (bean.getTableName() != null) {
+        if (StringUtils.isNotBlank(bean.getTableName())) {
             sql.append(" AND table_name = ?");
             paramList.add(bean.getTableName());
         }
-        if (bean.getColumnName() != null) {
+        if (StringUtils.isNotBlank(bean.getColumnName())) {
             sql.append(" AND column_name = ?");
             paramList.add(bean.getColumnName());
         }
