@@ -11,27 +11,29 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class SysMenuService implements ServiceDaoContainer {
 
     public List<MenuVO> authorityMenu(Connection connection) throws SQLException {
         List<SysMenu> menuList = SYS_MENU_DAO.selectTableByBean(connection, new SysMenu().setIsValid(1));
-        Map<Integer, List<SysMenu>> menuMap = new HashMap<Integer, List<SysMenu>>();
+        Map<Integer, Set<SysMenu>> menuMap = new HashMap<Integer, Set<SysMenu>>();
         for (SysMenu menu : menuList) {
             Integer parentId = menu.getParentId();
-            List<SysMenu> list = menuMap.containsKey(parentId) ? menuMap.get(parentId) : new ArrayList<SysMenu>();
-            list.add(menu);
-            menuMap.put(parentId, list);
+            Set<SysMenu> set = menuMap.containsKey(parentId) ? menuMap.get(parentId) : new TreeSet<SysMenu>();
+            set.add(menu);
+            menuMap.put(parentId, set);
         }
         return getChildrenMenu(menuMap, 0);
     }
 
-    private List<MenuVO> getChildrenMenu(Map<Integer, List<SysMenu>> menuMap, Integer id) {
-        List<SysMenu> menuList = menuMap.get(id);
-        if (CollectionUtils.isNotEmpty(menuList)) {
-            List<MenuVO> result = new ArrayList<MenuVO>(menuList.size());
+    private List<MenuVO> getChildrenMenu(Map<Integer, Set<SysMenu>> menuMap, Integer id) {
+        Set<SysMenu> menuSet = menuMap.get(id);
+        if (CollectionUtils.isNotEmpty(menuSet)) {
+            List<MenuVO> result = new ArrayList<MenuVO>(menuSet.size());
             MenuVO vo = null;
-            for (SysMenu menu : menuList) {
+            for (SysMenu menu : menuSet) {
                 vo = new MenuVO();
                 vo.setMenuName(menu.getMenuName());
                 vo.setMenuIcon(menu.getMenuIcon());

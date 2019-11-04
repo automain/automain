@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SysMenu implements BaseBean<SysMenu> {
+public class SysMenu implements BaseBean<SysMenu>, Comparable<SysMenu> {
 
     // 主键
     private Integer id;
@@ -174,5 +174,13 @@ public class SysMenu implements BaseBean<SysMenu> {
                 ", parentId=" + parentId +
                 ", sequenceNumber=" + sequenceNumber +
                 '}';
+    }
+
+    @Override
+    public int compareTo(SysMenu o) {
+        if (o == null || o.getSequenceNumber() == null || this.getSequenceNumber() == null) {
+            return 0;
+        }
+        return this.getSequenceNumber().compareTo(o.getSequenceNumber());
     }
 }
