@@ -1,6 +1,7 @@
 package com.github.automain.dao;
 
 import com.github.automain.bean.SysMenu;
+import com.github.automain.vo.IdNameVO;
 import com.github.automain.vo.SysMenuVO;
 import com.github.fastjdbc.BaseDao;
 import com.github.fastjdbc.PageBean;
@@ -121,5 +122,10 @@ public class SysMenuDao extends BaseDao<SysMenu> {
             sql.append(" ORDER BY ").append(bean.getSortLabel()).append("asc".equalsIgnoreCase(bean.getSortOrder()) ? " ASC" : " DESC");
         }
         return sql.toString();
+    }
+
+    public List<IdNameVO> allValidMenu(Connection connection) throws SQLException {
+        String sql = "SELECT sm.id AS 'id', sm.menu_name AS 'name' FROM sys_menu sm WHERE sm.is_valid = 1";
+        return executeSelectReturnList(connection, sql, null, new IdNameVO());
     }
 }

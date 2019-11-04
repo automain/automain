@@ -6,6 +6,7 @@ import com.github.automain.common.bean.JsonResponse;
 import com.github.automain.common.container.ServiceDaoContainer;
 import com.github.automain.util.DateUtil;
 import com.github.automain.util.SystemUtil;
+import com.github.automain.vo.IdNameVO;
 import com.github.automain.vo.MenuVO;
 import com.github.automain.vo.SysMenuVO;
 import com.github.fastjdbc.PageBean;
@@ -79,6 +80,12 @@ public class MenuController implements ServiceDaoContainer {
     @RequestUri(value = "/authorityMenu", slave = "slave1")
     public JsonResponse authorityMenu(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         List<MenuVO> menuVOList = SYS_MENU_SERVICE.authorityMenu(connection);
+        return JsonResponse.getSuccessJson(menuVOList);
+    }
+
+    @RequestUri(value = "/allValidMenu", slave = "slave1")
+    public JsonResponse allValidMenu(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        List<IdNameVO> menuVOList = SYS_MENU_DAO.allValidMenu(connection);
         return JsonResponse.getSuccessJson(menuVOList);
     }
 }
