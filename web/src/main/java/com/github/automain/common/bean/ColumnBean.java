@@ -14,6 +14,8 @@ public class ColumnBean {
 
     private Boolean isTextArea;
 
+    private Boolean isNullAble;
+
     public String getColumnName() {
         return columnName;
     }
@@ -60,5 +62,13 @@ public class ColumnBean {
 
     public void setIsTextArea(Boolean isTextArea) {
         this.isTextArea = isTextArea;
+    }
+
+    public Boolean getIsNullAble() {
+        return isNullAble;
+    }
+
+    public void setIsNullAble(Boolean isNullAble) {
+        this.isNullAble = isNullAble;
     }
 }

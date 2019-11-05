@@ -215,7 +215,7 @@ public class GeneratorController implements ServiceDaoContainer {
 
     private List<ColumnBean> selectAllColumnList(Connection connection, String databaseName, String tableName) {
         List<ColumnBean> columnList = new ArrayList<ColumnBean>();
-        try (PreparedStatement statement = connection.prepareStatement("SELECT c.COLUMN_NAME, c.DATA_TYPE, c.COLUMN_COMMENT, c.COLUMN_KEY, c.EXTRA, c.CHARACTER_MAXIMUM_LENGTH FROM information_schema.COLUMNS c WHERE c.TABLE_SCHEMA = '" + databaseName + "' AND c.TABLE_NAME = '" + tableName + "'" + " ORDER BY c.ORDINAL_POSITION");
+        try (PreparedStatement statement = connection.prepareStatement("SELECT c.COLUMN_NAME, c.DATA_TYPE, c.COLUMN_COMMENT, c.COLUMN_KEY, c.EXTRA, c.CHARACTER_MAXIMUM_LENGTH, c.IS_NULLABLE FROM information_schema.COLUMNS c WHERE c.TABLE_SCHEMA = '" + databaseName + "' AND c.TABLE_NAME = '" + tableName + "'" + " ORDER BY c.ORDINAL_POSITION");
              ResultSet rs = statement.executeQuery()) {
             ColumnBean bean = null;
             List<String> textAreaColumnList = List.of("longtext", "mediumtext", "text", "tinytext");
@@ -233,6 +233,7 @@ public class GeneratorController implements ServiceDaoContainer {
                 bean.setColumnComment(rs.getString("COLUMN_COMMENT"));
                 bean.setColumnKey(rs.getString("COLUMN_KEY"));
                 bean.setExtra(rs.getString("EXTRA"));
+                bean.setIsNullAble("YES".equals(rs.getString("IS_NULLABLE")));
                 columnList.add(bean);
             }
         } catch (Exception e) {

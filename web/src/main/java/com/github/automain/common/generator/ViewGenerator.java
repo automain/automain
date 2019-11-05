@@ -160,9 +160,9 @@ public class ViewGenerator {
             }
         }
         return "\n        <el-dialog title=\"添加\" :visible.sync=\"addVisible\" class=\"add-update-dialog\">\n            <el-form :model=\"" +
-                lowerTableName + "\" inline label-width=\"120px\" size=\"mini\">\n" + addBlock +
+                lowerTableName + "\" ref=\"" + lowerTableName + "Add\" :rules=\"rules\" inline label-width=\"120px\" size=\"mini\">\n" + addBlock +
                 "            </el-form>\n            <div slot=\"footer\" class=\"dialog-footer\">\n                <el-button @click=\"addVisible = false\">取消</el-button>\n                <el-button type=\"primary\" @click=\"handleAddUpdate('/" +
-                prefix + "Add')\">确定</el-button>\n            </div>\n        </el-dialog>";
+                prefix + "Add', '" + lowerTableName + "Add')\">确定</el-button>\n            </div>\n        </el-dialog>";
     }
 
     private String updateDialog(List<ColumnBean> columns, String tableName, List<String> updateCheck, List<String> dictionaryColumnList, String prefix) {
@@ -200,9 +200,9 @@ public class ViewGenerator {
             }
         }
         return "\n        <el-dialog title=\"编辑\" :visible.sync=\"updateVisible\" class=\"add-update-dialog\">\n            <el-form :model=\"" +
-                lowerTableName + "\" inline label-width=\"120px\" size=\"mini\">\n" + updateBlock +
+                lowerTableName + "\" ref=\"" + lowerTableName + "Update\" :rules=\"rules\" inline label-width=\"120px\" size=\"mini\">\n" + updateBlock +
                 "            </el-form>\n            <div slot=\"footer\" class=\"dialog-footer\">\n                <el-button @click=\"updateVisible = false\">取消</el-button>\n                <el-button type=\"primary\" @click=\"handleAddUpdate('/" +
-                prefix + "Update')\">确定</el-button>\n            </div>\n        </el-dialog>";
+                prefix + "Update', '" + lowerTableName + "Update')\">确定</el-button>\n            </div>\n        </el-dialog>";
     }
 
     private String detailDialog(List<ColumnBean> columns, String tableName, List<String> detailCheck, List<String> dictionaryColumnList) {
@@ -252,6 +252,7 @@ public class ViewGenerator {
         StringBuilder beanBlock = new StringBuilder();
         beanBlock.append(hasIsValid ? "                    gid: null,\n" : "                    id: null,\n");
         StringBuilder dictionaryMapBlock = new StringBuilder();
+        StringBuilder rulesBlock = new StringBuilder();
         StringBuilder handleTimeRangeBlock = new StringBuilder();
         StringBuilder sortBlock = new StringBuilder();
         StringBuilder dictionaryFilterBlock = new StringBuilder();
@@ -275,16 +276,17 @@ public class ViewGenerator {
                     .append("VO).then(response => {\n                            let data = response.data;\n                            if (data.status === 0) {\n                                this.$message.success(\"操作成功\");\n                                this.handleSearch();\n                            } else {\n                                this.$message.error(\"操作失败\");\n                            }\n                        });\n                    }).catch(() => {\n                        this.$message.info(\"取消删除\");\n                    });\n                } else {\n                    this.$message.warning(\"请选择要删除的数据\");\n                }\n            }\n        },\n");
         }
         if (hasAdd || hasUpdate) {
-            handleAddUpdateBlock.append("            handleAddUpdate(uri) {\n                this.$axios.post(uri, this.").append(lowerTableName)
-                    .append(").then(response => {\n                    let data = response.data;\n                    if (data.status === 0) {\n                        this.$message.success(\"操作成功\");\n                        this.handleClear();\n                        this.handleSearch();\n");
+            handleAddUpdateBlock.append("            handleAddUpdate(uri, formName) {\n                this.$refs[formName].validate((valid) => {\n                    if (valid) {\n                        this.$axios.post(uri, this.").append(lowerTableName)
+                    .append(").then(response => {\n                            let data = response.data;\n                            if (data.status === 0) {\n                                this.$message.success(\"操作成功\");\n                                this.handleClear();\n                                this.handleSearch();\n");
             if (hasAdd) {
-                addShowBlock.append("            handleAddShow() {\n                this.handleClear();\n");
-                handleAddUpdateBlock.append("                        this.addVisible = false;\n");
+                addShowBlock.append("            handleAddShow() {\n                this.handleClear();\n                if (this.$refs['")
+                        .append(lowerTableName).append("Add']) {\n                    this.$refs['").append(lowerTableName).append("Add'].resetFields();\n                }\n");
+                handleAddUpdateBlock.append("                                this.addVisible = false;\n");
             }
             if (hasUpdate) {
-                handleAddUpdateBlock.append("                        this.updateVisible = false;\n");
+                handleAddUpdateBlock.append("                                this.updateVisible = false;\n");
             }
-            handleAddUpdateBlock.append("                    } else {\n                        this.$message.error(\"操作失败\");\n                    }\n                });\n            },\n");
+            handleAddUpdateBlock.append("                            } else {\n                                this.$message.error(\"操作失败\");\n                            }\n                        });\n                    } else {\n                        return false;\n                    }\n                });\n            },\n");
         }
         if (hasDetail || hasUpdate) {
             handlePropertyBlock.append("            handleSetProperties(row) {\n                this.").append(lowerTableName);
@@ -349,6 +351,9 @@ public class ViewGenerator {
                         .append("\":\n                        this.").append(lowerTableName)
                         .append("VO.sortLabel = \"").append(columnName).append("\";\n                        break;\n                }\n");
             }
+            if (!column.getIsNullAble() && addCheck.contains(columnName) && updateCheck.contains(columnName)) {
+                rulesBlock.append("                    ").append(lowerColumnName).append(": [{required: true, message: '").append(column.getColumnComment()).append("不能为空'}],\n");
+            }
         }
         if (CollectionUtils.isNotEmpty(sortCheck)) {
             sortBlock.append("                this.").append(lowerTableName)
@@ -366,8 +371,8 @@ public class ViewGenerator {
                 "VO: {\n                    page: 1,\n                    size: 10,\n" + sortParam + deleteParam +
                 timeSearchBlock.toString() + dictionarySearchBlock.toString() + searchBlock.toString() +
                 "                },\n                pageBean: {\n                    page: 1,\n                    total: 0,\n                    data: [],\n                },\n                " +
-                lowerTableName + ": {\n" + beanBlock.toString() + "                },\n" + dictionaryMapBlock.toString() +
-                "            }\n        },\n        methods: {\n            handleSizeChange(val) {\n                this." + lowerTableName +
+                lowerTableName + ": {\n" + beanBlock.toString() + "                },\n" + dictionaryMapBlock.toString() + "                rules: {\n" + rulesBlock.toString() +
+                "                },\n            }\n        },\n        methods: {\n            handleSizeChange(val) {\n                this." + lowerTableName +
                 "VO.size = val;\n                this.handleSearch();\n            },\n            handlePageChange(val) {\n                this." + lowerTableName +
                 "VO.page = val;\n                this.handleSearch();\n            },\n            handleSearch() {\n                this.$axios.post(\"/" + prefix + "List\", this." + lowerTableName +
                 "VO).then(response => {\n                    let data = response.data;\n                    if (data.status === 0) {\n                        this.pageBean = data.data;\n                    }\n                });\n            },\n" +
