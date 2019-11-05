@@ -166,10 +166,6 @@ public class TestDao extends BaseDao<Test> {
             sql.append(" AND create_time < ?");
             paramList.add(bean.getCreateTimeEnd());
         }
-        if (StringUtils.isNotBlank(bean.getTestName())) {
-            sql.append(" AND test_name LIKE ?");
-            paramList.add(bean.getTestName() + "%");
-        }
         if (CollectionUtils.isNotEmpty(bean.getTestDictionaryList())) {
             sql.append(" AND test_dictionary").append(makeInStr(bean.getTestDictionaryList()));
             paramList.addAll(bean.getTestDictionaryList());

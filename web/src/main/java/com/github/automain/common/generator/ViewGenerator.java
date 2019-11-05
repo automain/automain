@@ -45,7 +45,7 @@ public class ViewGenerator {
         if (!keyColumns.isEmpty()) {
             for (ColumnBean column : columns) {
                 String columnName = column.getColumnName();
-                if (keyColumns.contains(columnName)) {
+                if (keyColumns.contains(columnName) && !"id".equals(columnName) && !"gid".equals(columnName)) {
                     String lowerColumnName = CommonGenerator.convertToJavaName(columnName, false);
                     String upperColumnName = CommonGenerator.convertToJavaName(columnName, true);
                     String columnComment = column.getColumnComment();
@@ -119,7 +119,7 @@ public class ViewGenerator {
         }
         String deleteSelect = hasIsValid ? "            <el-table-column type=\"selection\" width=\"42\" fixed=\"left\"></el-table-column>\n" : "";
         String sortChange = CollectionUtils.isNotEmpty(sortCheck) ? " @sort-change=\"handleSort\"" : "";
-        return "\n        <el-table ref=\"multipleTable\" :data=\"pageBean.data\" tooltip-effect=\"dark\" :height=\"fullHeight\" @selection-change=\"selectToDelete\" " +
+        return "\n        <el-table ref=\"multipleTable\" :data=\"pageBean.data\" tooltip-effect=\"dark\" :height=\"fullHeight\" @selection-change=\"selectToDelete\"" +
                 sortChange + " @filter-change=\"handleFilterChange\">\n" + deleteSelect + listBlock + operation +
                 "        </el-table>\n        <el-pagination @size-change=\"handleSizeChange\" @current-change=\"handlePageChange\" :page-sizes=\"[10, 20, 50, 100]\" :page-size=\"" +
                 table + "VO.size\" layout=\"->, total, prev, pager, next, jumper, sizes\" :total=\"pageBean.total\"></el-pagination>";
@@ -307,12 +307,13 @@ public class ViewGenerator {
         for (ColumnBean column : columns) {
             String columnName = column.getColumnName();
             String lowerColumnName = CommonGenerator.convertToJavaName(columnName, false);
+            String upperColumnName = CommonGenerator.convertToJavaName(columnName, true);
             if (CommonGenerator.checkTimeTypeColumn(column)) {
                 if (keyColumns.contains(columnName)) {
                     timeRangeBlock.append("                ").append(lowerColumnName).append("Range: [],\n");
                     timeSearchBlock.append("                    ").append(lowerColumnName)
                             .append(": null,\n                    ").append(lowerColumnName).append("End: null,\n");
-                    handleTimeRangeBlock.append("            handle").append(lowerColumnName)
+                    handleTimeRangeBlock.append("            handle").append(upperColumnName)
                             .append("Range() {\n                if (this.").append(lowerColumnName)
                             .append("Range) {\n                    this.").append(lowerTableName)
                             .append("VO.").append(lowerColumnName).append(" = this.").append(lowerColumnName)
@@ -331,19 +332,20 @@ public class ViewGenerator {
                         addShowBlock.append("                this.").append(lowerColumnName).append("Picker = null;\n");
                     }
                 }
+            } else {
+                if (keyColumns.contains(columnName) && !"id".equals(columnName) && !"gid".equals(columnName)) {
+                    searchBlock.append("                    ").append(lowerColumnName).append(": null,\n");
+                }
             }
             if (dictionaryColumnList.contains(columnName)) {
-                dictionarySearchBlock.append("                    ").append(lowerColumnName).append("List: []\n");
+                dictionarySearchBlock.append("                    ").append(lowerColumnName).append("List: [],\n");
                 dictionaryMapBlock.append("                ").append(lowerColumnName)
                         .append("Key: \"").append(tableName).append("_").append(columnName).append("\",\n                ")
                         .append(lowerColumnName).append("Map: this.getDictionaryMap(\"").append(tableName).append("_").append(columnName).append("\"),\n");
                 dictionaryFilterBlock.append("                this.").append(lowerTableName)
                         .append("VO.").append(lowerColumnName).append("List = data.").append(lowerColumnName).append(";\n");
             }
-            if (keyColumns.contains(columnName) && !"id".equals(columnName) && !"gid".equals(columnName)) {
-                searchBlock.append("                    ").append(lowerColumnName).append(": null,\n");
-            }
-            if (addCheck.contains(columnName) || updateCheck.contains(columnName)) {
+            if (addCheck.contains(columnName) || updateCheck.contains(columnName) || detailCheck.contains(columnName)) {
                 beanBlock.append("                    ").append(lowerColumnName).append(": null,\n");
             }
             if (sortCheck.contains(columnName)) {
