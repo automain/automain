@@ -1,10 +1,17 @@
 package com.github.automain.controller;
 
+import com.github.automain.bean.SysUser;
 import com.github.automain.common.annotation.RequestUri;
 import com.github.automain.common.bean.JsonResponse;
 import com.github.automain.common.container.ServiceDaoContainer;
 import com.github.automain.util.CaptchaUtil;
+import com.github.automain.util.DateUtil;
+import com.github.automain.util.EncryptUtil;
+import com.github.automain.util.PropertiesUtil;
 import com.github.automain.util.RedisUtil;
+import com.github.automain.util.SystemUtil;
+import com.github.automain.vo.LoginUserVO;
+import org.apache.commons.lang3.StringUtils;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.params.SetParams;
 
@@ -31,5 +38,58 @@ public class LoginController implements ServiceDaoContainer {
         result.put("captchaKey", captchaKey);
         result.put("captchaImage", captcha.getBase64Image());
         return JsonResponse.getSuccessJson(result);
+    }
+
+    @RequestUri("/login")
+    public JsonResponse login(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        LoginUserVO user = SystemUtil.getRequestParam(request, LoginUserVO.class);
+        if (user != null) {
+            String userName = user.getUserName();
+            String password = user.getPassword();
+            String captcha = user.getCaptcha();
+            String captchaKey = user.getCaptchaKey();
+            if (StringUtils.isNoneBlank(userName, password, captcha, captchaKey)) {
+                String cacheCaptcha = null;
+                if (jedis != null) {
+                    cacheCaptcha = jedis.get(user.getCaptchaKey());
+                } else {
+                    cacheCaptcha = RedisUtil.getLocalCache(user.getCaptchaKey());
+                }
+                if (captcha.equals(cacheCaptcha)) {
+                    SysUser sysUser = SYS_USER_DAO.selectOneTableByBean(connection, new SysUser().setUserName(userName));
+                    if (sysUser != null) {
+                        String pwd = EncryptUtil.MD5((sysUser.getPasswordMd5() + captcha).getBytes(PropertiesUtil.DEFAULT_CHARSET));
+                        if (password.equalsIgnoreCase(pwd)) {
+                            int now = DateUtil.getNow();
+                            int sessionExpireSeconds = PropertiesUtil.getIntProperty("app.sessionExpireSeconds", "1800");
+                            int expireTime = now + sessionExpireSeconds;
+                            int cacheExpireTime = expireTime + 500;
+                            String userCacheKey = "user:" + sysUser.getId();
+                            Map<String, String> userCacheMap = new HashMap<String, String>();
+                            userCacheMap.put("userName", sysUser.getUserName());
+                            userCacheMap.put("phone", sysUser.getPhone());
+                            userCacheMap.put("email", sysUser.getEmail());
+                            userCacheMap.put("expireTime", String.valueOf(cacheExpireTime));
+                            if (jedis != null) {
+                                jedis.del(userCacheKey);
+                                jedis.hmset(userCacheKey, userCacheMap);
+                                jedis.expire(userCacheKey, cacheExpireTime);
+                            } else {
+                                RedisUtil.delLocalCache(userCacheKey);
+                                RedisUtil.setLocalCache(userCacheKey, userCacheMap);
+                            }
+                            return JsonResponse.getSuccessJson("登录成功");
+                        } else {
+                            return JsonResponse.getFailedJson("用户名或密码错误");
+                        }
+                    } else {
+                        return JsonResponse.getFailedJson("用户不存在");
+                    }
+                } else {
+                    return JsonResponse.getFailedJson("验证码错误");
+                }
+            }
+        }
+        return JsonResponse.getFailedJson("参数错误");
     }
 }

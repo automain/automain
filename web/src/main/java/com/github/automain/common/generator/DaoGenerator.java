@@ -13,9 +13,9 @@ public class DaoGenerator {
 
     private String getImportHead(List<String> dictionaryColumnList) {
         String collectionUtilImport = dictionaryColumnList.isEmpty() ? "" : "import org.apache.commons.collections4.CollectionUtils;\n";
-        return "import com.github.fastjdbc.PageBean;\n" +
+        return "import com.github.fastjdbc.BaseDao;\n" +
+                "import com.github.fastjdbc.PageBean;\n" +
                 "import com.github.fastjdbc.PageParamBean;\n" +
-                "import com.github.fastjdbc.BaseDao;\n" +
                 collectionUtilImport +
                 "import org.apache.commons.lang3.StringUtils;\n\n" +
                 "import java.sql.Connection;\n" +
