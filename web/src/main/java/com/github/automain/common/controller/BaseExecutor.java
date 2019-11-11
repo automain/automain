@@ -2,8 +2,13 @@ package com.github.automain.common.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.github.automain.bean.SysUser;
 import com.github.automain.common.bean.JsonResponse;
+import com.github.automain.common.container.ServiceDaoContainer;
 import com.github.automain.util.CompressUtil;
+import com.github.automain.util.CookieUtil;
+import com.github.automain.util.DateUtil;
+import com.github.automain.util.EncryptUtil;
 import com.github.automain.util.PropertiesUtil;
 import com.github.automain.util.RedisUtil;
 import com.github.automain.util.SystemUtil;
@@ -20,14 +25,17 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class BaseExecutor implements Runnable {
 
     private static final List<String> WHITE_LIST_URL = List.of("/test");
     private static final int SESSION_EXPIRE_SECONDS = PropertiesUtil.getIntProperty("app.sessionExpireSeconds", "1800");
-    private static final int CACHE_EXPIRE_SECONDS = SESSION_EXPIRE_SECONDS + 300;
+    private static final int CACHE_EXPIRE_SECONDS = SESSION_EXPIRE_SECONDS + 600;
     private static final String AES_PASSWORD = PropertiesUtil.getStringProperty("app.AESPassword");
+    private static final String AUTHORIZATION = "Authorization";
 
     private AsyncContext asyncContext;
 
@@ -152,76 +160,66 @@ public abstract class BaseExecutor implements Runnable {
      * @param response
      * @return
      */
-//    protected static TbUser getSessionUser(Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-//        String accessToken = CookieUtil.getCookieByName(request, "accessToken");
-//        if (accessToken == null) {
-//            accessToken = request.getHeader("accessToken");
-//        }
-//        if (accessToken != null) {
-//            HTTPUtil.setResponseHeader(response, "accessToken", accessToken);
-//            String decrypt = EncryptUtil.AESDecrypt(accessToken.getBytes(PropertiesUtil.DEFAULT_CHARSET), AES_PASSWORD);
-//            String[] arr = decrypt.split("_");
-//            if (arr.length == 2) {
-//                Long userId = Long.valueOf(arr[0]);
-//                String userKey = "user:" + userId;
-//                Long expireTime = Long.valueOf(arr[1]);
-//                Map<String, String> userMap = null;
-//                int newExpireTime = DateUtil.getNow() + SESSION_EXPIRE_SECONDS;
-//                int newCacheExpireTime = DateUtil.getNow() + CACHE_EXPIRE_SECONDS;
-//                if (jedis != null) {
-//                    userMap = jedis.hgetAll(userKey);
-//                } else {
-//                    userMap = RedisUtil.getLocalCache(userKey);
-//                }
-//                boolean isRefresh = false;
-//                if (userMap == null) {
-//                    if (expireTime < System.currentTimeMillis()) {
-//                        return null;
-//                    } else {
-//                        ConnectionBean connection = null;
-//                        try {
-//                            connection = ConnectionPool.getConnectionBean(null);
-//                            TbUser user = ServiceDaoContainer.TB_USER_SERVICE.selectTableById(connection, userId);
-//                            userMap = new HashMap<String, String>();
-//                            userMap.put("userName", user.getUserName());
-//                            userMap.put("cellphone", user.getCellphone());
-//                            userMap.put("email", user.getEmail());
-//                            isRefresh = true;
-//                        } finally {
-//                            ConnectionPool.closeConnectionBean(connection);
-//                        }
-//                    }
-//                } else {
-//                    long cacheExpire = Long.parseLong(userMap.get("expireTime"));
-//                    if (cacheExpire < System.currentTimeMillis()) {
-//                        RedisUtil.delLocalCache(userKey);
-//                        return null;
-//                    } else if (expireTime < System.currentTimeMillis()) {
-//                        isRefresh = true;
-//                    }
-//                }
-//                if (isRefresh) {
-//                    userMap.put("expireTime", String.valueOf(newCacheExpireTime));
-//                    if (jedis != null) {
-//                        jedis.hmset(userKey, userMap);
-//                        jedis.expire(userKey, CACHE_EXPIRE_SECONDS);
-//                    } else {
-//                        RedisUtil.setLocalCache(userKey, userMap);
-//                    }
-//                    String value = userId + "_" + newExpireTime;
-//                    String newAccessToken = EncryptUtil.AESEncrypt(value.getBytes(PropertiesUtil.DEFAULT_CHARSET), AES_PASSWORD);
-//                    CookieUtil.addCookie(response, "accessToken", newAccessToken, -1);
-//                    HTTPUtil.setResponseHeader(response, "accessToken", newAccessToken);
-//                }
-//                TbUser user = new TbUser();
-//                user.setUserName(userMap.get("userName"));
-//                user.setCellphone(userMap.get("cellphone"));
-//                user.setEmail(userMap.get("email"));
-//                user.setUserId(userId);
-//                return user;
-//            }
-//        }
-//        return null;
-//    }
+    protected static SysUser getSessionUser(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String authorization = CookieUtil.getCookieByName(request, AUTHORIZATION);
+        if (authorization == null) {
+            authorization = request.getHeader(AUTHORIZATION);
+        }
+        if (authorization != null) {
+            HTTPUtil.setResponseHeader(response, AUTHORIZATION, authorization);
+            String decrypt = EncryptUtil.AESDecrypt(authorization.getBytes(PropertiesUtil.DEFAULT_CHARSET), AES_PASSWORD);
+            String[] arr = decrypt.split("_");
+            if (arr.length == 2) {
+                Integer userId = Integer.valueOf(arr[0]);
+                String userCacheKey = "user:" + userId;
+                int expireTime = Integer.parseInt(arr[1]);
+                Map<String, String> userCacheMap = null;
+                int now = DateUtil.getNow();
+                int newExpireTime = now + SESSION_EXPIRE_SECONDS;
+                int newCacheExpireTime = now + CACHE_EXPIRE_SECONDS;
+                if (jedis != null) {
+                    userCacheMap = jedis.hgetAll(userCacheKey);
+                } else {
+                    userCacheMap = RedisUtil.getLocalCache(userCacheKey);
+                }
+                boolean isRefresh = false;
+                if (userCacheMap == null) {
+                    if (expireTime < now) {
+                        return null;
+                    } else {
+                        SysUser user = ServiceDaoContainer.SYS_USER_DAO.selectTableById(connection, new SysUser().setId(userId));
+                        userCacheMap = new HashMap<String, String>();
+                        userCacheMap.put("userName", user.getUserName());
+                        userCacheMap.put("phone", user.getPhone());
+                        userCacheMap.put("email", user.getEmail());
+                        isRefresh = true;
+                    }
+                } else {
+                    int cacheExpire = Integer.parseInt(userCacheMap.get("expireTime"));
+                    if (cacheExpire < now) {
+                        RedisUtil.delLocalCache(userCacheKey);
+                        return null;
+                    } else if (expireTime < now) {
+                        isRefresh = true;
+                    }
+                }
+                if (isRefresh) {
+                    userCacheMap.put("expireTime", String.valueOf(newCacheExpireTime));
+                    if (jedis != null) {
+                        jedis.hmset(userCacheKey, userCacheMap);
+                        jedis.expire(userCacheKey, CACHE_EXPIRE_SECONDS);
+                    } else {
+                        RedisUtil.setLocalCache(userCacheKey, userCacheMap);
+                    }
+                    String value = userId + "_" + newExpireTime;
+                    String newAuthorization = EncryptUtil.AESEncrypt(value.getBytes(PropertiesUtil.DEFAULT_CHARSET), AES_PASSWORD);
+                    CookieUtil.addCookie(response, AUTHORIZATION, newAuthorization, CACHE_EXPIRE_SECONDS);
+                    HTTPUtil.setResponseHeader(response, AUTHORIZATION, newAuthorization);
+                }
+                return new SysUser().setId(userId).setUserName(userCacheMap.get("userName")).setPhone(userCacheMap.get("phone")).setEmail(userCacheMap.get("email"));
+            }
+        }
+        return null;
+    }
 
 }
