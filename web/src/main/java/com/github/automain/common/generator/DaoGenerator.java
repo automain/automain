@@ -8,12 +8,15 @@ import java.util.List;
 public class DaoGenerator {
 
     public String generate(List<ColumnBean> columns, List<String> keyColumns, String tableName, String upperTableName, boolean hasIsValid, List<String> dictionaryColumnList, boolean hasGlobalId) {
-        return getImportHead(dictionaryColumnList) + getClassHead(upperTableName) + getDefaultBean(upperTableName) + getBaseDaoFunction(upperTableName, hasIsValid, hasGlobalId) + getSelectTableForCustomPage(upperTableName) + getSetSearchCondition(tableName, upperTableName, columns, keyColumns, hasIsValid, dictionaryColumnList) + "\n}";
+        return getImportHead(dictionaryColumnList, upperTableName) + getClassHead(upperTableName) + getDefaultBean(upperTableName) + getBaseDaoFunction(upperTableName, hasIsValid, hasGlobalId) + getSelectTableForCustomPage(upperTableName) + getSetSearchCondition(tableName, upperTableName, columns, keyColumns, hasIsValid, dictionaryColumnList) + "\n}";
     }
 
-    private String getImportHead(List<String> dictionaryColumnList) {
+    private String getImportHead(List<String> dictionaryColumnList, String upperTableName) {
         String collectionUtilImport = dictionaryColumnList.isEmpty() ? "" : "import org.apache.commons.collections4.CollectionUtils;\n";
-        return "import com.github.fastjdbc.BaseDao;\n" +
+        return "package com.github.automain.dao;\n\n" +
+                "import com.github.automain.bean." + upperTableName + ";\n" +
+                "import com.github.automain.vo." + upperTableName + "VO;\n" +
+                "import com.github.fastjdbc.BaseDao;\n" +
                 "import com.github.fastjdbc.PageBean;\n" +
                 "import com.github.fastjdbc.PageParamBean;\n" +
                 collectionUtilImport +

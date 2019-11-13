@@ -138,8 +138,6 @@ CREATE TABLE `sys_privilege` (
   `privilege_label` varchar(16) NOT NULL COMMENT '权限标识',
   `privilege_name` varchar(16) NOT NULL COMMENT '权限名称',
   `parent_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '父级ID',
-  `top_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '顶级ID',
-  `is_leaf` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '是否是叶子节点(0:否,1:是)',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_privilege_label` (`privilege_label`),
   KEY `idx_parent_id` (`parent_id`),

@@ -24,10 +24,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.sql.Connection;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @WebServlet(urlPatterns = "/", asyncSupported = true, loadOnStartup = 2)
 public class DispatcherController extends HttpServlet {
@@ -36,7 +33,7 @@ public class DispatcherController extends HttpServlet {
 
     private static final Map<String, BaseExecutor> REQUEST_MAPPING = new HashMap<String, BaseExecutor>();
 
-    static final Map<String, Set<String>> PRIVILEGE_LABEL_MAP = new HashMap<String, Set<String>>();
+    static final Map<String, String> PRIVILEGE_LABEL_MAP = new HashMap<String, String>();
 
     static final Map<String, String> SLAVE_POOL_MAP = new HashMap<String, String>();
 
@@ -113,9 +110,9 @@ public class DispatcherController extends HttpServlet {
                                 };
                                 requestMap.put(uri, executor);
                                 LOGGER.info("mapping uri: " + uri);
-                                String labels = requestUri.labels();
-                                if (StringUtils.isNotBlank(labels)) {
-                                    PRIVILEGE_LABEL_MAP.put(uri, new HashSet<String>(List.of(labels.split(","))));
+                                String label = requestUri.label();
+                                if (StringUtils.isNotBlank(label)) {
+                                    PRIVILEGE_LABEL_MAP.put(uri, label);
                                 }
                                 String slavePoolName = requestUri.slave();
                                 if (StringUtils.isNotBlank(slavePoolName)) {

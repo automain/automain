@@ -7,11 +7,13 @@ import java.util.List;
 public class VOGenerator {
 
     public String generate(List<ColumnBean> columns, String upperTableName, boolean hasGlobalId, List<String> dictionaryColumnList) {
-        return getImportHead() + getClassHead(upperTableName) + getProperties(columns, upperTableName, hasGlobalId, dictionaryColumnList) + "\n}";
+        return getImportHead(upperTableName) + getClassHead(upperTableName) + getProperties(columns, upperTableName, hasGlobalId, dictionaryColumnList) + "\n}";
     }
 
-    private String getImportHead() {
-        return "import java.util.List;\n\n";
+    private String getImportHead(String upperTableName) {
+        return "package com.github.automain.vo;\n\n" +
+                "import com.github.automain.bean." + upperTableName + ";\n\n" +
+                "import java.util.List;\n\n";
     }
 
     private String getClassHead(String upperTableName) {

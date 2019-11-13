@@ -23,7 +23,8 @@ public class BeanGenerator {
                 break;
             }
         }
-        return "import com.github.fastjdbc.BaseBean;\n\n" + bigDecimalType +
+        return "package com.github.automain.bean;\n\n" +
+                "import com.github.fastjdbc.BaseBean;\n\n" + bigDecimalType +
                 "import java.sql.ResultSet;\n" +
                 "import java.sql.SQLException;\n" +
                 "import java.util.HashMap;\n" +

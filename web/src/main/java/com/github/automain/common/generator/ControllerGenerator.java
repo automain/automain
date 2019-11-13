@@ -6,7 +6,7 @@ public class ControllerGenerator {
         String daoName = tableName.toUpperCase() + "_DAO";
         String resultStr = "";
 
-        resultStr += getImportHead(hasIsValid, hasCreateTime, hasUpdateTime, hasGlobalId);
+        resultStr += getImportHead(hasIsValid, hasCreateTime, hasUpdateTime, hasGlobalId, upperTableName);
 
         resultStr += getClassHead(upperPrefix);
 
@@ -26,7 +26,7 @@ public class ControllerGenerator {
             resultStr += getUpdate(prefix, upperTableName, hasUpdateTime, hasGlobalId, daoName);
         }
 
-        if (hasDetail|| hasUpdate) {
+        if (hasDetail || hasUpdate) {
             resultStr += getDetail(prefix, upperTableName, hasGlobalId, daoName);
         }
 
@@ -38,15 +38,18 @@ public class ControllerGenerator {
         return resultStr;
     }
 
-    private String getImportHead(boolean hasIsValid, boolean hasCreateTime, boolean hasUpdateTime, boolean hasGlobalId) {
+    private String getImportHead(boolean hasIsValid, boolean hasCreateTime, boolean hasUpdateTime, boolean hasGlobalId, String upperTableName) {
         String dateImport = (hasCreateTime || hasUpdateTime) ? "import com.github.automain.util.DateUtil;\n" : "";
         String collectionUtilsImport = hasIsValid ? "import org.apache.commons.collections4.CollectionUtils;\n" : "";
         String uuidImport = hasGlobalId ? "import java.util.UUID;\n" : "";
-        return "import com.github.automain.common.annotation.RequestUri;\n" +
+        return "package com.github.automain.controller;\n\n" +
+                "import com.github.automain.bean." + upperTableName + ";\n" +
+                "import com.github.automain.common.annotation.RequestUri;\n" +
                 "import com.github.automain.common.bean.JsonResponse;\n" +
                 "import com.github.automain.common.container.ServiceDaoContainer;\n" +
                 dateImport +
                 "import com.github.automain.util.SystemUtil;\n" +
+                "import com.github.automain.vo." + upperTableName + "VO;\n" +
                 "import com.github.fastjdbc.PageBean;\n" +
                 collectionUtilsImport +
                 "import redis.clients.jedis.Jedis;\n\n" +
