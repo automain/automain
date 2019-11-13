@@ -73,7 +73,7 @@ public class UserController implements ServiceDaoContainer {
                 } else {
                     cacheCaptcha = RedisUtil.getLocalCache(user.getCaptchaKey());
                 }
-                if (captcha.equals(cacheCaptcha)) {
+                if (captcha.equalsIgnoreCase(cacheCaptcha)) {
                     SysUser sysUser = SYS_USER_DAO.selectOneTableByBean(connection, new SysUser().setUserName(userName));
                     if (sysUser != null) {
                         String pwd = EncryptUtil.MD5((sysUser.getPasswordMd5() + captcha).getBytes(PropertiesUtil.DEFAULT_CHARSET));
@@ -98,7 +98,8 @@ public class UserController implements ServiceDaoContainer {
                             String authorization = EncryptUtil.AESEncrypt((sysUser.getId() + "_" + expireTime).getBytes(PropertiesUtil.DEFAULT_CHARSET), AES_PASSWORD);
                             CookieUtil.addCookie(response, AUTHORIZATION, authorization, CACHE_EXPIRE_SECONDS);
                             response.addHeader(AUTHORIZATION, authorization);
-                            return JsonResponse.getSuccessJson("登录成功");
+                            List<MenuVO> menuData = SYS_MENU_SERVICE.authorityMenu(connection);
+                            return JsonResponse.getSuccessJson("登录成功", menuData);
                         } else {
                             return JsonResponse.getFailedJson("用户名或密码错误");
                         }
