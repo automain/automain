@@ -34,8 +34,8 @@ public class Filter01CharacterEncoding implements Filter {
             response.setHeader("Access-Control-Allow-Origin", origin);
             response.setHeader("Access-Control-Allow-Methods", "*");
             response.setHeader("Access-Control-Max-Age", "3600");
-            response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Connection, User-Agent, Cookie");
-            response.setHeader("Access-Control-Expose-Headers", "Content-Disposition, token");
+            response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Connection, User-Agent, Authorization");
+            response.setHeader("Access-Control-Expose-Headers", "Content-Disposition, Authorization");
             response.setHeader("Access-Control-Allow-Credentials", "true");
         }
         filterChain.doFilter(servletRequest, response);
