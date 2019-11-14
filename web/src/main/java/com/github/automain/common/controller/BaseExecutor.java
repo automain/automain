@@ -6,7 +6,6 @@ import com.github.automain.bean.SysUser;
 import com.github.automain.common.bean.JsonResponse;
 import com.github.automain.common.container.ServiceDaoContainer;
 import com.github.automain.util.CompressUtil;
-import com.github.automain.util.CookieUtil;
 import com.github.automain.util.DateUtil;
 import com.github.automain.util.EncryptUtil;
 import com.github.automain.util.PropertiesUtil;
@@ -161,12 +160,8 @@ public abstract class BaseExecutor implements Runnable {
      * @return
      */
     protected static SysUser getSessionUser(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String authorization = CookieUtil.getCookieByName(request, AUTHORIZATION);
-        if (authorization == null) {
-            authorization = request.getHeader(AUTHORIZATION);
-        }
+        String authorization = request.getHeader(AUTHORIZATION);
         if (authorization != null) {
-            HTTPUtil.setResponseHeader(response, AUTHORIZATION, authorization);
             String decrypt = EncryptUtil.AESDecrypt(authorization.getBytes(PropertiesUtil.DEFAULT_CHARSET), AES_PASSWORD);
             String[] arr = decrypt.split("_");
             if (arr.length == 2) {
@@ -212,9 +207,8 @@ public abstract class BaseExecutor implements Runnable {
                         RedisUtil.setLocalCache(userCacheKey, userCacheMap);
                     }
                     String value = userId + "_" + newExpireTime;
-                    String newAuthorization = EncryptUtil.AESEncrypt(value.getBytes(PropertiesUtil.DEFAULT_CHARSET), AES_PASSWORD);
-                    CookieUtil.addCookie(response, AUTHORIZATION, newAuthorization, CACHE_EXPIRE_SECONDS);
-                    HTTPUtil.setResponseHeader(response, AUTHORIZATION, newAuthorization);
+                    authorization = EncryptUtil.AESEncrypt(value.getBytes(PropertiesUtil.DEFAULT_CHARSET), AES_PASSWORD);
+                    response.setHeader(AUTHORIZATION, authorization);
                 }
                 return new SysUser().setId(userId).setUserName(userCacheMap.get("userName")).setPhone(userCacheMap.get("phone")).setEmail(userCacheMap.get("email"));
             }

@@ -16,8 +16,8 @@ import java.util.TreeSet;
 
 public class SysMenuService implements ServiceDaoContainer {
 
-    public List<MenuVO> authorityMenu(Connection connection) throws SQLException {
-        List<SysMenu> menuList = SYS_MENU_DAO.selectTableByBean(connection, new SysMenu().setIsValid(1));
+    public List<MenuVO> authorityMenu(Connection connection, Integer userId) throws SQLException {
+        List<SysMenu> menuList = SYS_MENU_DAO.selectAuthorityMenu(connection, userId);
         Map<Integer, Set<SysMenu>> menuMap = new HashMap<Integer, Set<SysMenu>>();
         for (SysMenu menu : menuList) {
             Integer parentId = menu.getParentId();

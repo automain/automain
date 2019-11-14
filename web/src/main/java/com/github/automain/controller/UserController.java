@@ -8,7 +8,6 @@ import com.github.automain.common.annotation.RequestUri;
 import com.github.automain.common.bean.JsonResponse;
 import com.github.automain.common.container.ServiceDaoContainer;
 import com.github.automain.util.CaptchaUtil;
-import com.github.automain.util.CookieUtil;
 import com.github.automain.util.DateUtil;
 import com.github.automain.util.EncryptUtil;
 import com.github.automain.util.PropertiesUtil;
@@ -40,7 +39,6 @@ public class UserController implements ServiceDaoContainer {
     private static final int SESSION_EXPIRE_SECONDS = PropertiesUtil.getIntProperty("app.sessionExpireSeconds", "1800");
     private static final int CACHE_EXPIRE_SECONDS = SESSION_EXPIRE_SECONDS + 600;
     private static final String AES_PASSWORD = PropertiesUtil.getStringProperty("app.AESPassword");
-    private static final String AUTHORIZATION = "Authorization";
 
     @RequestUri("/getCaptcha")
     public JsonResponse getCaptcha(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -96,9 +94,8 @@ public class UserController implements ServiceDaoContainer {
                                 RedisUtil.setLocalCache(userCacheKey, userCacheMap);
                             }
                             String authorization = EncryptUtil.AESEncrypt((sysUser.getId() + "_" + expireTime).getBytes(PropertiesUtil.DEFAULT_CHARSET), AES_PASSWORD);
-                            CookieUtil.addCookie(response, AUTHORIZATION, authorization, CACHE_EXPIRE_SECONDS);
-                            response.addHeader(AUTHORIZATION, authorization);
-                            List<MenuVO> menuData = SYS_MENU_SERVICE.authorityMenu(connection);
+                            response.setHeader("Authorization", authorization);
+                            List<MenuVO> menuData = SYS_MENU_SERVICE.authorityMenu(connection, sysUser.getId());
                             return JsonResponse.getSuccessJson("登录成功", menuData);
                         } else {
                             return JsonResponse.getFailedJson("用户名或密码错误");
@@ -229,12 +226,6 @@ public class UserController implements ServiceDaoContainer {
             return JsonResponse.getSuccessJson();
         }
         return JsonResponse.getFailedJson();
-    }
-
-    @RequestUri(value = "/authorityMenu", slave = "slave1")
-    public JsonResponse authorityMenu(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        List<MenuVO> menuVOList = SYS_MENU_SERVICE.authorityMenu(connection);
-        return JsonResponse.getSuccessJson(menuVOList);
     }
 
     @RequestUri(value = "/allValidMenu", slave = "slave1")

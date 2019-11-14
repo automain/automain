@@ -298,7 +298,7 @@ public class HTTPUtil {
     public static boolean checkGzip(HttpServletRequest request, HttpServletResponse response, long length) {
         String acceptEncoding = request.getHeader("Accept-Encoding");
         if (acceptEncoding != null && acceptEncoding.contains("gzip") && length > COMPRESSION_MIN_SIZE) {
-            response.addHeader("Content-Encoding", "gzip");
+            response.setHeader("Content-Encoding", "gzip");
             return true;
         }
         return false;
