@@ -32,6 +32,7 @@ import java.sql.Connection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public class UserController implements ServiceDaoContainer {
@@ -76,27 +77,41 @@ public class UserController implements ServiceDaoContainer {
                     if (sysUser != null) {
                         String pwd = EncryptUtil.MD5((sysUser.getPasswordMd5() + captcha).getBytes(PropertiesUtil.DEFAULT_CHARSET));
                         if (password.equalsIgnoreCase(pwd)) {
+                            Integer userId = sysUser.getId();
                             int now = DateUtil.getNow();
                             int expireTime = now + SESSION_EXPIRE_SECONDS;
                             int cacheExpireTime = now + CACHE_EXPIRE_SECONDS;
-                            String userCacheKey = "user:" + sysUser.getId();
+                            String userCacheKey = "user:" + userId;
                             Map<String, String> userCacheMap = new HashMap<String, String>();
                             userCacheMap.put("userName", sysUser.getUserName());
                             userCacheMap.put("phone", sysUser.getPhone());
                             userCacheMap.put("email", sysUser.getEmail());
+                            userCacheMap.put("gid", sysUser.getGid());
                             userCacheMap.put("expireTime", String.valueOf(cacheExpireTime));
+                            String userPrivilegeKey = "userPrivilege:" + userId;
+                            Set<String> privilegeSet = SYS_PRIVILEGE_DAO.selectUserPrivilege(connection, userId);
                             if (jedis != null) {
                                 jedis.del(userCacheKey);
                                 jedis.hmset(userCacheKey, userCacheMap);
                                 jedis.expire(userCacheKey, CACHE_EXPIRE_SECONDS);
+                                String[] privilegeArr = new String[privilegeSet.size()];
+                                privilegeArr = privilegeSet.toArray(privilegeArr);
+                                jedis.del(userPrivilegeKey);
+                                jedis.sadd(userPrivilegeKey, privilegeArr);
+                                jedis.expire(userPrivilegeKey, CACHE_EXPIRE_SECONDS);
                             } else {
                                 RedisUtil.delLocalCache(userCacheKey);
                                 RedisUtil.setLocalCache(userCacheKey, userCacheMap);
+                                RedisUtil.delLocalCache(userPrivilegeKey);
+                                RedisUtil.setLocalCache(userPrivilegeKey, privilegeSet);
                             }
-                            String authorization = EncryptUtil.AESEncrypt((sysUser.getId() + "_" + expireTime).getBytes(PropertiesUtil.DEFAULT_CHARSET), AES_PASSWORD);
+                            String authorization = EncryptUtil.AESEncrypt((userId + "_" + expireTime).getBytes(PropertiesUtil.DEFAULT_CHARSET), AES_PASSWORD);
                             response.setHeader("Authorization", authorization);
-                            List<MenuVO> menuData = SYS_MENU_SERVICE.authorityMenu(connection, sysUser.getId());
-                            return JsonResponse.getSuccessJson("登录成功", menuData);
+                            List<MenuVO> menuData = SYS_USER_SERVICE.selectAuthorityMenu(connection, userId);
+                            Map<String, Object> map = new HashMap<String, Object>(2);
+                            map.put("menuData", menuData);
+                            map.put("privilege", privilegeSet);
+                            return JsonResponse.getSuccessJson("登录成功", map);
                         } else {
                             return JsonResponse.getFailedJson("用户名或密码错误");
                         }

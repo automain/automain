@@ -10,9 +10,6 @@ import com.github.automain.dao.SysUserDao;
 import com.github.automain.dao.SysUserRoleDao;
 import com.github.automain.dao.TestDao;
 import com.github.automain.service.SysDictionaryService;
-import com.github.automain.service.SysMenuService;
-import com.github.automain.service.SysPrivilegeService;
-import com.github.automain.service.SysRoleService;
 import com.github.automain.service.SysUserService;
 import com.github.automain.service.TestService;
 
@@ -25,13 +22,10 @@ public interface ServiceDaoContainer {
     TestDao TEST_DAO = new TestDao();
     SysUserService SYS_USER_SERVICE = new SysUserService();
     SysUserDao SYS_USER_DAO = new SysUserDao();
-    SysRoleService SYS_ROLE_SERVICE = new SysRoleService();
     SysRoleDao SYS_ROLE_DAO = new SysRoleDao();
     SysUserRoleDao SYS_USER_ROLE_DAO = new SysUserRoleDao();
-    SysMenuService SYS_MENU_SERVICE = new SysMenuService();
     SysMenuDao SYS_MENU_DAO = new SysMenuDao();
     SysRoleMenuDao SYS_ROLE_MENU_DAO = new SysRoleMenuDao();
-    SysPrivilegeService SYS_PRIVILEGE_SERVICE = new SysPrivilegeService();
     SysPrivilegeDao SYS_PRIVILEGE_DAO = new SysPrivilegeDao();
     SysRolePrivilegeDao SYS_ROLE_PRIVILEGE_DAO = new SysRolePrivilegeDao();
     // ==================== frame end ====================

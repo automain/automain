@@ -27,10 +27,11 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class BaseExecutor implements Runnable {
 
-    private static final List<String> WHITE_LIST_URL = List.of("/test");
+    private static final List<String> WHITE_LIST_URL = List.of("/getCaptcha", "login");
     private static final int SESSION_EXPIRE_SECONDS = PropertiesUtil.getIntProperty("app.sessionExpireSeconds", "1800");
     private static final int CACHE_EXPIRE_SECONDS = SESSION_EXPIRE_SECONDS + 600;
     private static final String AES_PASSWORD = PropertiesUtil.getStringProperty("app.AESPassword");
@@ -53,7 +54,7 @@ public abstract class BaseExecutor implements Runnable {
             String uri = HTTPUtil.getRequestUri(request);
             connection = ConnectionPool.getConnection(DispatcherController.SLAVE_POOL_MAP.get(uri));
             JsonResponse jsonResponse = null;
-            if (checkUserAuthority(jedis, request, response)) {
+            if (checkUserAuthority(connection, jedis, request, response)) {
                 jsonResponse = execute(connection, jedis, request, response);
             } else {
                 jsonResponse = JsonResponse.getJson(403, "无权限访问或登录已过期");
@@ -120,35 +121,31 @@ public abstract class BaseExecutor implements Runnable {
      * @return
      * @throws Exception
      */
-    private boolean checkUserAuthority(Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-//        String uri = HTTPUtil.getRequestUri(request);
-//        if (WHITE_LIST_URL.contains(uri)) {
-//            return true;
-//        }
-//        TbUser user = getSessionUser(jedis, request, response);
-//        if (user == null) {
-//            return false;
-//        }
-//        Set<String> roleLabel = RolePrivilegeDaoContainer.getRoleLabelByUserId(jedis, user.getUserId());
-//        if (roleLabel == null) {
-//            return false;
-//        }
-//        if (roleLabel.contains("admin")) {
-//            return true;
-//        }
-//        Set<String> labels = DispatcherController.PRIVILEGE_LABEL_MAP.get(uri);
-//        if (CollectionUtils.isEmpty(labels)) {
-//            return true;
-//        }
-//        Set<String> privileges = RolePrivilegeDaoContainer.getPrivilegeSetByUserId(jedis, user.getUserId());
-//        if (privileges != null) {
-//            for (String label : labels) {
-//                if (privileges.contains(label)) {
-//                    return true;
-//                }
-//            }
-//        }
-        return true;
+    private boolean checkUserAuthority(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String uri = HTTPUtil.getRequestUri(request);
+        if (WHITE_LIST_URL.contains(uri)) {
+            return true;
+        }
+        SysUser user = getSessionUser(connection, jedis, request, response);
+        if (user == null) {
+            return false;
+        }
+        Integer userId = user.getId();
+        Set<String> privilegeSet = null;
+        String userPrivilegeKey = "userPrivilege:" + userId;
+        if (jedis != null) {
+            privilegeSet = jedis.smembers(userPrivilegeKey);
+        } else {
+            privilegeSet = RedisUtil.getLocalCache(userPrivilegeKey);
+        }
+        if (privilegeSet == null) {
+            return false;
+        }
+        if (privilegeSet.contains("admin")) {
+            return true;
+        }
+        String label = DispatcherController.PRIVILEGE_LABEL_MAP.get(uri);
+        return label == null || privilegeSet.contains(label);
     }
 
     /**
@@ -167,6 +164,7 @@ public abstract class BaseExecutor implements Runnable {
             if (arr.length == 2) {
                 Integer userId = Integer.valueOf(arr[0]);
                 String userCacheKey = "user:" + userId;
+                String userPrivilegeKey = "userPrivilege:" + userId;
                 int expireTime = Integer.parseInt(arr[1]);
                 Map<String, String> userCacheMap = null;
                 int now = DateUtil.getNow();
@@ -187,6 +185,7 @@ public abstract class BaseExecutor implements Runnable {
                         userCacheMap.put("userName", user.getUserName());
                         userCacheMap.put("phone", user.getPhone());
                         userCacheMap.put("email", user.getEmail());
+                        userCacheMap.put("gid", user.getGid());
                         isRefresh = true;
                     }
                 } else {
@@ -200,17 +199,27 @@ public abstract class BaseExecutor implements Runnable {
                 }
                 if (isRefresh) {
                     userCacheMap.put("expireTime", String.valueOf(newCacheExpireTime));
+                    Set<String> privilegeSet = ServiceDaoContainer.SYS_PRIVILEGE_DAO.selectUserPrivilege(connection, userId);
                     if (jedis != null) {
+                        jedis.del(userCacheKey);
                         jedis.hmset(userCacheKey, userCacheMap);
                         jedis.expire(userCacheKey, CACHE_EXPIRE_SECONDS);
+                        String[] privilegeArr = new String[privilegeSet.size()];
+                        privilegeArr = privilegeSet.toArray(privilegeArr);
+                        jedis.del(userPrivilegeKey);
+                        jedis.sadd(userPrivilegeKey, privilegeArr);
+                        jedis.expire(userPrivilegeKey, CACHE_EXPIRE_SECONDS);
                     } else {
+                        RedisUtil.delLocalCache(userCacheKey);
                         RedisUtil.setLocalCache(userCacheKey, userCacheMap);
+                        RedisUtil.delLocalCache(userPrivilegeKey);
+                        RedisUtil.setLocalCache(userPrivilegeKey, privilegeSet);
                     }
                     String value = userId + "_" + newExpireTime;
                     authorization = EncryptUtil.AESEncrypt(value.getBytes(PropertiesUtil.DEFAULT_CHARSET), AES_PASSWORD);
                     response.setHeader(AUTHORIZATION, authorization);
                 }
-                return new SysUser().setId(userId).setUserName(userCacheMap.get("userName")).setPhone(userCacheMap.get("phone")).setEmail(userCacheMap.get("email"));
+                return new SysUser().setId(userId).setUserName(userCacheMap.get("userName")).setPhone(userCacheMap.get("phone")).setEmail(userCacheMap.get("email")).setGid(userCacheMap.get("gid"));
             }
         }
         return null;

@@ -3,14 +3,18 @@ package com.github.automain.dao;
 import com.github.automain.bean.SysPrivilege;
 import com.github.automain.vo.SysPrivilegeVO;
 import com.github.fastjdbc.BaseDao;
+import com.github.fastjdbc.ConnectionPool;
 import com.github.fastjdbc.PageBean;
 import com.github.fastjdbc.PageParamBean;
 import org.apache.commons.lang3.StringUtils;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class SysPrivilegeDao extends BaseDao<SysPrivilege> {
 
@@ -121,5 +125,20 @@ public class SysPrivilegeDao extends BaseDao<SysPrivilege> {
             sql.append(" ORDER BY ").append(bean.getSortLabel()).append("asc".equalsIgnoreCase(bean.getSortOrder()) ? " ASC" : " DESC");
         }
         return sql.toString();
+    }
+
+    public Set<String> selectUserPrivilege(Connection connection, Integer userId) throws SQLException {
+        String sql = "SELECT sp.privilege_label FROM sys_user_role sur INNER JOIN sys_role_privilege srp ON sur.role_id = srp.role_id INNER JOIN sys_privilege sp ON srp.privilege_id = sp.id WHERE sur.is_valid = 1 AND srp.is_valid = 1 AND sp.is_valid = 1 AND sur.user_id = ? GROUP BY sp.privilege_label";
+        ResultSet rs = null;
+        Set<String> result = new HashSet<String>();
+        try {
+            rs = executeSelectReturnResultSet(connection, sql, List.of(userId));
+            while (rs.next()) {
+                result.add(rs.getString("privilege_label"));
+            }
+        } finally {
+            ConnectionPool.close(rs);
+        }
+        return result;
     }
 }
