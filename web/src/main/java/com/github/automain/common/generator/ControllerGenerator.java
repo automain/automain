@@ -46,9 +46,8 @@ public class ControllerGenerator {
                 "import com.github.automain.bean." + upperTableName + ";\n" +
                 "import com.github.automain.common.annotation.RequestUri;\n" +
                 "import com.github.automain.common.bean.JsonResponse;\n" +
-                "import com.github.automain.common.container.ServiceDaoContainer;\n" +
+                "import com.github.automain.common.controller.BaseController;\n" +
                 dateImport +
-                "import com.github.automain.util.SystemUtil;\n" +
                 "import com.github.automain.vo." + upperTableName + "VO;\n" +
                 "import com.github.fastjdbc.PageBean;\n" +
                 collectionUtilsImport +
@@ -66,7 +65,7 @@ public class ControllerGenerator {
     private String getList(String prefix, String upperTableName, String daoName) {
         return "\n\n    @RequestUri(value = \"/" + prefix + "List\", slave = \"slave1\")\n    public JsonResponse " + prefix +
                 "List(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {\n        " +
-                upperTableName + "VO vo = SystemUtil.getRequestParam(request, " + upperTableName +
+                upperTableName + "VO vo = getRequestParam(request, " + upperTableName +
                 "VO.class);\n        if (vo != null) {\n            PageBean<" + upperTableName + "> pageBean = " + daoName +
                 ".selectTableForCustomPage(connection, vo);\n            return JsonResponse.getSuccessJson(pageBean);\n        }\n        return JsonResponse.getFailedJson();\n    }";
     }
@@ -79,7 +78,7 @@ public class ControllerGenerator {
         String gidSet = hasGlobalId ? "            bean.setGid(UUID.randomUUID().toString());\n" : "";
         return "\n\n    @RequestUri(\"/" + prefix + "Add\")\n    public JsonResponse " + prefix +
                 "Add(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {\n        " +
-                upperTableName + " bean = SystemUtil.getRequestParam(request, " + upperTableName + ".class);\n        if (checkValid(bean, false)) {\n" +
+                upperTableName + " bean = getRequestParam(request, " + upperTableName + ".class);\n        if (checkValid(bean, false)) {\n" +
                 updateTimeSet + createTimeSet + gidSet + "            " + daoName +
                 ".insertIntoTable(connection, bean);\n            return JsonResponse.getSuccessJson();\n        }\n        return JsonResponse.getFailedJson();\n    }";
     }
@@ -96,7 +95,7 @@ public class ControllerGenerator {
                 : "            " + daoName + ".updateTableById(connection, bean, false);\n";
         return "\n\n    @RequestUri(\"/" + prefix + "Update\")\n    public JsonResponse " + prefix +
                 "Update(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {\n        " +
-                upperTableName + " bean = SystemUtil.getRequestParam(request, " + upperTableName + ".class);\n        if (checkValid(bean, true)) {\n" +
+                upperTableName + " bean = getRequestParam(request, " + upperTableName + ".class);\n        if (checkValid(bean, true)) {\n" +
                 updateTimeSet + updateFun +
                 "            return JsonResponse.getSuccessJson();\n        }\n        return JsonResponse.getFailedJson();\n    }";
     }
@@ -109,7 +108,7 @@ public class ControllerGenerator {
                 ".selectTableById(connection, bean);\n            return JsonResponse.getSuccessJson(detail);\n        }\n";
         return "\n\n    @RequestUri(value = \"/" + prefix + "Detail\", slave = \"slave1\")\n    public JsonResponse " + prefix +
                 "Detail(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {\n        " +
-                upperTableName + " bean = SystemUtil.getRequestParam(request, " + upperTableName + ".class);\n" +
+                upperTableName + " bean = getRequestParam(request, " + upperTableName + ".class);\n" +
                 detailContent + "        return JsonResponse.getFailedJson();\n    }";
     }
 
@@ -121,7 +120,7 @@ public class ControllerGenerator {
                 ".softDeleteTableByIdList(connection, vo.getIdList());\n            return JsonResponse.getSuccessJson();\n        }\n";
         return "\n\n    @RequestUri(\"/" + prefix + "Delete\")\n    public JsonResponse " + prefix +
                 "Delete(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {\n        " +
-                upperTableName + "VO vo = SystemUtil.getRequestParam(request, " + upperTableName + "VO.class);\n" +
+                upperTableName + "VO vo = getRequestParam(request, " + upperTableName + "VO.class);\n" +
                 deleteContent + "        return JsonResponse.getFailedJson();\n    }";
     }
 }

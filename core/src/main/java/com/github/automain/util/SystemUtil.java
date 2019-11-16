@@ -1,17 +1,13 @@
 package com.github.automain.util;
 
-import com.alibaba.fastjson.JSONObject;
 import com.github.fastjdbc.ConnectionPool;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang3.StringUtils;
 import redis.clients.jedis.Jedis;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
@@ -108,29 +104,6 @@ public class SystemUtil {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * 获取请求参数
-     *
-     * @param request
-     * @param clazz
-     * @param <T>
-     * @return
-     */
-    public static <T> T getRequestParam(HttpServletRequest request, Class<T> clazz) {
-        try (InputStreamReader isr = new InputStreamReader(request.getInputStream(), PropertiesUtil.DEFAULT_CHARSET);
-             BufferedReader br = new BufferedReader(isr)) {
-            StringBuilder sb = new StringBuilder();
-            String temp = null;
-            while ((temp = br.readLine()) != null) {
-                sb.append(temp);
-            }
-            return JSONObject.parseObject(sb.toString(), clazz);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     /**

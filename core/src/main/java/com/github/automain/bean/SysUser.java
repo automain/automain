@@ -23,6 +23,8 @@ public class SysUser implements BaseBean<SysUser> {
     private String userName;
     // 密码MD5值
     private String passwordMd5;
+    // 真实姓名
+    private String realName;
     // 手机号
     private String phone;
     // 邮箱
@@ -91,6 +93,15 @@ public class SysUser implements BaseBean<SysUser> {
         return this;
     }
 
+    public String getRealName() {
+        return realName;
+    }
+
+    public SysUser setRealName(String realName) {
+        this.realName = realName;
+        return this;
+    }
+
     public String getPhone() {
         return phone;
     }
@@ -116,7 +127,7 @@ public class SysUser implements BaseBean<SysUser> {
 
     @Override
     public Map<String, Object> columnMap(boolean all) {
-        Map<String, Object> map = new HashMap<String, Object>(9);
+        Map<String, Object> map = new HashMap<String, Object>(10);
         if (all || this.getId() != null) {
             map.put("id", this.getId());
         }
@@ -138,6 +149,9 @@ public class SysUser implements BaseBean<SysUser> {
         if (all || this.getPasswordMd5() != null) {
             map.put("password_md5", this.getPasswordMd5());
         }
+        if (all || this.getRealName() != null) {
+            map.put("real_name", this.getRealName());
+        }
         if (all || this.getPhone() != null) {
             map.put("phone", this.getPhone());
         }
@@ -157,6 +171,7 @@ public class SysUser implements BaseBean<SysUser> {
                 .setIsValid(rs.getInt("is_valid"))
                 .setUserName(rs.getString("user_name"))
                 .setPasswordMd5(rs.getString("password_md5"))
+                .setRealName(rs.getString("real_name"))
                 .setPhone(rs.getString("phone"))
                 .setEmail(rs.getString("email"));
     }
@@ -171,6 +186,7 @@ public class SysUser implements BaseBean<SysUser> {
                 ", isValid=" + isValid +
                 ", userName='" + userName + '\'' +
                 ", passwordMd5='" + passwordMd5 + '\'' +
+                ", realName='" + realName + '\'' +
                 ", phone='" + phone + '\'' +
                 ", email='" + email + '\'' +
                 '}';

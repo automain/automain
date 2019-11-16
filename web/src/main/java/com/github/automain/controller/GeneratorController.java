@@ -4,7 +4,7 @@ import com.github.automain.common.annotation.RequestUri;
 import com.github.automain.common.bean.ColumnBean;
 import com.github.automain.common.bean.GeneratorVO;
 import com.github.automain.common.bean.JsonResponse;
-import com.github.automain.common.container.ServiceDaoContainer;
+import com.github.automain.common.controller.BaseController;
 import com.github.automain.common.generator.BeanGenerator;
 import com.github.automain.common.generator.CommonGenerator;
 import com.github.automain.common.generator.ControllerGenerator;
@@ -36,7 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GeneratorController implements ServiceDaoContainer {
+public class GeneratorController extends BaseController {
 
     @RequestUri("/dev/databaseList")
     public JsonResponse databaseList(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) {
@@ -45,7 +45,7 @@ public class GeneratorController implements ServiceDaoContainer {
 
     @RequestUri("/dev/tableList")
     public JsonResponse tableList(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) {
-        GeneratorVO vo = SystemUtil.getRequestParam(request, GeneratorVO.class);
+        GeneratorVO vo = getRequestParam(request, GeneratorVO.class);
         if (vo != null) {
             List<String> tableNameList = selectTableNameList(connection, vo.getDatabaseName());
             return JsonResponse.getSuccessJson(tableNameList);
@@ -62,7 +62,7 @@ public class GeneratorController implements ServiceDaoContainer {
 
     @RequestUri("/dev/appColumnList")
     public JsonResponse appColumnList(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) {
-        SysDictionaryVO vo = SystemUtil.getRequestParam(request, SysDictionaryVO.class);
+        SysDictionaryVO vo = getRequestParam(request, SysDictionaryVO.class);
         if (vo != null) {
             List<ColumnBean> columnList = selectAllColumnList(connection, SystemUtil.DATABASE_NAME, vo.getTableName());
             return JsonResponse.getSuccessJson(columnList);
@@ -73,7 +73,7 @@ public class GeneratorController implements ServiceDaoContainer {
 
     @RequestUri("/dev/columnList")
     public JsonResponse columnList(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) {
-        GeneratorVO vo = SystemUtil.getRequestParam(request, GeneratorVO.class);
+        GeneratorVO vo = getRequestParam(request, GeneratorVO.class);
         if (vo != null) {
             String databaseName = vo.getDatabaseName();
             String tableName = vo.getTableName();
@@ -99,7 +99,7 @@ public class GeneratorController implements ServiceDaoContainer {
 
     @RequestUri("/dev/generate")
     public JsonResponse generate(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        GeneratorVO generatorVO = SystemUtil.getRequestParam(request, GeneratorVO.class);
+        GeneratorVO generatorVO = getRequestParam(request, GeneratorVO.class);
         if (generatorVO != null) {
             String databaseName = generatorVO.getDatabaseName();
             String tableName = generatorVO.getTableName();

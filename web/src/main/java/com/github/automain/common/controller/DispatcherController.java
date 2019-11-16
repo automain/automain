@@ -2,7 +2,6 @@ package com.github.automain.common.controller;
 
 import com.github.automain.common.annotation.RequestUri;
 import com.github.automain.common.bean.JsonResponse;
-import com.github.automain.common.container.ServiceDaoContainer;
 import com.github.automain.util.RedisUtil;
 import com.github.automain.util.SystemUtil;
 import com.github.automain.util.http.HTTPUtil;
@@ -80,7 +79,7 @@ public class DispatcherController extends HttpServlet {
                 if (classPath.endsWith(".class")) {
                     classPath = classPath.substring(classPath.indexOf(File.separator + "classes") + 9, classPath.lastIndexOf(".")).replace(File.separator, ".");
                     Class clazz = Class.forName(classPath);
-                    if (ServiceDaoContainer.class.isAssignableFrom(clazz)) {
+                    if (BaseController.class.isAssignableFrom(clazz)) {
                         Method[] methods = clazz.getDeclaredMethods();
                         Object controller = clazz.getDeclaredConstructor().newInstance();
                         for (Method method : methods) {

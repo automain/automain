@@ -3,9 +3,8 @@ package com.github.automain.controller;
 import com.github.automain.bean.SysDictionary;
 import com.github.automain.common.annotation.RequestUri;
 import com.github.automain.common.bean.JsonResponse;
-import com.github.automain.common.container.ServiceDaoContainer;
+import com.github.automain.common.controller.BaseController;
 import com.github.automain.util.DateUtil;
-import com.github.automain.util.SystemUtil;
 import com.github.automain.vo.DictionaryVO;
 import com.github.automain.vo.SysDictionaryVO;
 import com.github.fastjdbc.PageBean;
@@ -17,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.sql.Connection;
 import java.util.List;
 
-public class DictionaryController implements ServiceDaoContainer {
+public class DictionaryController extends BaseController {
 
     @RequestUri("/dictionaryAll")
     public JsonResponse dictionaryAll(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -27,7 +26,7 @@ public class DictionaryController implements ServiceDaoContainer {
 
     @RequestUri(value = "/dictionaryList", slave = "slave1")
     public JsonResponse dictionaryList(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        SysDictionaryVO vo = SystemUtil.getRequestParam(request, SysDictionaryVO.class);
+        SysDictionaryVO vo = getRequestParam(request, SysDictionaryVO.class);
         if (vo != null) {
             PageBean<SysDictionary> pageBean = SYS_DICTIONARY_DAO.selectTableForCustomPage(connection, vo);
             return JsonResponse.getSuccessJson(pageBean);
@@ -37,7 +36,7 @@ public class DictionaryController implements ServiceDaoContainer {
 
     @RequestUri("/dictionaryAdd")
     public JsonResponse dictionaryAdd(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        SysDictionary bean = SystemUtil.getRequestParam(request, SysDictionary.class);
+        SysDictionary bean = getRequestParam(request, SysDictionary.class);
         if (checkValid(bean, false)) {
             bean.setUpdateTime(DateUtil.getNow());
             bean.setCreateTime(bean.getUpdateTime());
@@ -53,7 +52,7 @@ public class DictionaryController implements ServiceDaoContainer {
 
     @RequestUri("/dictionaryUpdate")
     public JsonResponse dictionaryUpdate(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        SysDictionary bean = SystemUtil.getRequestParam(request, SysDictionary.class);
+        SysDictionary bean = getRequestParam(request, SysDictionary.class);
         if (checkValid(bean, true)) {
             bean.setUpdateTime(DateUtil.getNow());
             SYS_DICTIONARY_DAO.updateTableById(connection, bean, false);
@@ -64,7 +63,7 @@ public class DictionaryController implements ServiceDaoContainer {
 
     @RequestUri(value = "/dictionaryDetail", slave = "slave1")
     public JsonResponse dictionaryDetail(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        SysDictionary bean = SystemUtil.getRequestParam(request, SysDictionary.class);
+        SysDictionary bean = getRequestParam(request, SysDictionary.class);
         if (bean != null && bean.getId() != null) {
             SysDictionary detail = SYS_DICTIONARY_DAO.selectTableById(connection, bean);
             return JsonResponse.getSuccessJson(detail);
@@ -74,7 +73,7 @@ public class DictionaryController implements ServiceDaoContainer {
 
     @RequestUri("/dictionaryDelete")
     public JsonResponse dictionaryDelete(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        SysDictionaryVO vo = SystemUtil.getRequestParam(request, SysDictionaryVO.class);
+        SysDictionaryVO vo = getRequestParam(request, SysDictionaryVO.class);
         if (vo != null && CollectionUtils.isNotEmpty(vo.getIdList())) {
             SYS_DICTIONARY_DAO.softDeleteTableByIdList(connection, vo.getIdList());
             return JsonResponse.getSuccessJson();

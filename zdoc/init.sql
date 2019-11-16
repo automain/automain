@@ -25,9 +25,9 @@ CREATE TABLE `sys_config` (
   `create_time` int(10) unsigned NOT NULL COMMENT '创建时间',
   `update_time` int(10) unsigned NOT NULL COMMENT '更新时间',
   `is_valid` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '是否有效(0:否,1:是)',
-  `config_key` varchar(32) NOT NULL COMMENT '配置项键',
-  `config_value` varchar(256) NOT NULL COMMENT '配置项值',
-  `config_remark` varchar(256) DEFAULT NULL COMMENT '配置项描述',
+  `config_key` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '配置项键',
+  `config_value` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '配置项值',
+  `config_remark` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '配置项描述',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_congig_key` (`config_key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -63,10 +63,10 @@ CREATE TABLE `sys_file` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
   `gid` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '文件GID',
   `create_time` int(10) unsigned NOT NULL COMMENT '创建时间',
-  `file_extension` varchar(16) NOT NULL COMMENT '文件扩展名',
-  `file_path` varchar(64) NOT NULL COMMENT '文件相对路径',
+  `file_extension` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '文件扩展名',
+  `file_path` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '文件相对路径',
   `file_size` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '文件大小(字节)',
-  `file_md5` char(32) NOT NULL COMMENT '文件MD5值',
+  `file_md5` char(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '文件MD5值',
   `image_width` smallint(5) unsigned NOT NULL DEFAULT '0' COMMENT '图片宽度',
   `image_height` smallint(5) unsigned NOT NULL DEFAULT '0' COMMENT '图片高度',
   PRIMARY KEY (`id`),
@@ -85,13 +85,13 @@ CREATE TABLE `sys_file_relation` (
   `create_time` int(10) unsigned NOT NULL COMMENT '创建时间',
   `update_time` int(10) unsigned NOT NULL COMMENT '更新时间',
   `is_valid` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '是否有效(0:否,1:是)',
-  `file_gid` char(36) NOT NULL COMMENT 'sys_file表gid',
-  `record_table_name` varchar(64) NOT NULL COMMENT '记录表名',
+  `file_gid` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT 'sys_file表gid',
+  `record_table_name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '记录表名',
   `record_id` int(11) DEFAULT NULL COMMENT '记录ID',
-  `record_gid` char(36) DEFAULT NULL COMMENT '记录GID',
-  `record_label` varchar(32) DEFAULT NULL COMMENT '记录标识',
+  `record_gid` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '记录GID',
+  `record_label` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '记录标识',
   `sequence_number` smallint(5) unsigned NOT NULL DEFAULT '1' COMMENT '展示顺序',
-  `file_table_name` varchar(64) NOT NULL COMMENT '关联的文件表表名',
+  `file_table_name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '关联的文件表表名',
   PRIMARY KEY (`id`),
   KEY `idx_record_table_name` (`record_table_name`),
   KEY `idx_record_id` (`record_id`),
@@ -111,8 +111,8 @@ CREATE TABLE `sys_menu` (
   `create_time` int(10) unsigned NOT NULL COMMENT '创建时间',
   `update_time` int(10) unsigned NOT NULL COMMENT '更新时间',
   `is_valid` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '是否有效(0:否,1:是)',
-  `menu_path` varchar(64) DEFAULT NULL COMMENT '菜单路径',
-  `menu_name` varchar(16) NOT NULL COMMENT '菜单名称',
+  `menu_path` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '菜单路径',
+  `menu_name` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '菜单名称',
   `menu_icon` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '菜单图标',
   `parent_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '父级ID',
   `sequence_number` smallint(5) unsigned NOT NULL DEFAULT '1' COMMENT '菜单排序',
@@ -135,16 +135,18 @@ CREATE TABLE `sys_privilege` (
   `create_time` int(10) unsigned NOT NULL COMMENT '创建时间',
   `update_time` int(10) unsigned NOT NULL COMMENT '更新时间',
   `is_valid` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '是否有效(0:否,1:是)',
-  `privilege_label` varchar(16) NOT NULL COMMENT '权限标识',
-  `privilege_name` varchar(16) NOT NULL COMMENT '权限名称',
+  `privilege_label` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '权限标识',
+  `privilege_name` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '权限名称',
   `parent_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '父级ID',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_privilege_label` (`privilege_label`),
   KEY `idx_parent_id` (`parent_id`),
   KEY `idx_privilege_name` (`privilege_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `sys_privilege` */
+
+insert  into `sys_privilege`(`id`,`create_time`,`update_time`,`is_valid`,`privilege_label`,`privilege_name`,`parent_id`) values (1,1,1,1,'admin','所有权限',0);
 
 /*Table structure for table `sys_role` */
 
@@ -155,14 +157,16 @@ CREATE TABLE `sys_role` (
   `create_time` int(10) unsigned NOT NULL COMMENT '创建时间',
   `update_time` int(10) unsigned NOT NULL COMMENT '更新时间',
   `is_valid` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '是否有效(0:否,1:是)',
-  `role_name` varchar(16) NOT NULL COMMENT '角色名称',
-  `role_label` varchar(16) NOT NULL COMMENT '角色标识',
+  `role_name` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '角色名称',
+  `role_label` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '角色标识',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_role_label` (`role_label`),
   KEY `idx_role_name` (`role_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `sys_role` */
+
+insert  into `sys_role`(`id`,`create_time`,`update_time`,`is_valid`,`role_name`,`role_label`) values (1,1,1,1,'admin','admin');
 
 /*Table structure for table `sys_role_menu` */
 
@@ -178,9 +182,11 @@ CREATE TABLE `sys_role_menu` (
   PRIMARY KEY (`id`),
   KEY `idx_role_id` (`role_id`),
   KEY `idx_menu_id` (`menu_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `sys_role_menu` */
+
+insert  into `sys_role_menu`(`id`,`create_time`,`update_time`,`is_valid`,`role_id`,`menu_id`) values (1,1,1,1,1,1),(2,1,1,1,1,2),(3,1,1,1,1,3),(4,1,1,1,1,4),(5,1,1,1,1,5),(6,1,1,1,1,6);
 
 /*Table structure for table `sys_role_privilege` */
 
@@ -196,9 +202,11 @@ CREATE TABLE `sys_role_privilege` (
   PRIMARY KEY (`id`),
   KEY `idx_role_id` (`role_id`),
   KEY `idx_privilege_id` (`privilege_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `sys_role_privilege` */
+
+insert  into `sys_role_privilege`(`id`,`create_time`,`update_time`,`is_valid`,`role_id`,`privilege_id`) values (1,1,1,1,1,1);
 
 /*Table structure for table `sys_schedule` */
 
@@ -209,8 +217,8 @@ CREATE TABLE `sys_schedule` (
   `create_time` int(10) unsigned NOT NULL COMMENT '创建时间',
   `update_time` int(10) unsigned NOT NULL COMMENT '更新时间',
   `is_valid` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '是否有效(0:否,1:是)',
-  `schedule_name` varchar(32) NOT NULL COMMENT '任务名称',
-  `schedule_url` varchar(256) NOT NULL COMMENT '任务地址',
+  `schedule_name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '任务名称',
+  `schedule_url` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '任务地址',
   `start_execute_time` int(10) unsigned NOT NULL COMMENT '开始执行时间',
   `delay_time` int(10) unsigned NOT NULL COMMENT '间隔时间(秒)',
   `last_execute_time` int(10) unsigned DEFAULT NULL COMMENT '上次执行时间',
@@ -225,21 +233,24 @@ DROP TABLE IF EXISTS `sys_user`;
 
 CREATE TABLE `sys_user` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `gid` char(36) NOT NULL COMMENT '用户GID',
+  `gid` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '用户GID',
   `create_time` int(10) unsigned NOT NULL COMMENT '创建时间',
   `update_time` int(10) unsigned NOT NULL COMMENT '更新时间',
   `is_valid` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '是否有效(0:无效,1:有效)',
-  `user_name` varchar(32) NOT NULL COMMENT '用户名',
-  `password_md5` char(32) NOT NULL COMMENT '密码MD5值',
+  `user_name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '用户名',
+  `password_md5` char(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '密码MD5值',
+  `real_name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '真实姓名',
   `phone` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '手机号',
-  `email` varchar(128) NOT NULL COMMENT '邮箱',
+  `email` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '邮箱',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_gid` (`gid`),
   KEY `idx_user_name` (`user_name`),
   KEY `idx_phone` (`phone`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `sys_user` */
+
+insert  into `sys_user`(`id`,`gid`,`create_time`,`update_time`,`is_valid`,`user_name`,`password_md5`,`real_name`,`phone`,`email`) values (1,'1',1,1,1,'admin','e10adc3949ba59abbe56e057f20f883e','管理员','1','1');
 
 /*Table structure for table `sys_user_role` */
 
@@ -255,9 +266,11 @@ CREATE TABLE `sys_user_role` (
   PRIMARY KEY (`id`),
   KEY `idx_user_id` (`user_id`),
   KEY `idx_role_id` (`role_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `sys_user_role` */
+
+insert  into `sys_user_role`(`id`,`create_time`,`update_time`,`is_valid`,`user_id`,`role_id`) values (1,1,1,1,1,1);
 
 /*Table structure for table `test` */
 
@@ -265,12 +278,12 @@ DROP TABLE IF EXISTS `test`;
 
 CREATE TABLE `test` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `gid` char(36) NOT NULL COMMENT '测试GID',
+  `gid` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '测试GID',
   `create_time` int(10) unsigned NOT NULL COMMENT '创建时间',
   `update_time` int(10) unsigned NOT NULL COMMENT '更新时间',
   `is_valid` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '是否有效(0:否,1:是)',
   `money` decimal(10,2) unsigned DEFAULT NULL COMMENT '金额',
-  `remark` varchar(256) DEFAULT NULL COMMENT '备注',
+  `remark` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '备注',
   `test_name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '测试名称',
   `test_dictionary` int(11) NOT NULL DEFAULT '0' COMMENT '测试字典(0:字典0,1:字典1,2:字典2)',
   PRIMARY KEY (`id`),
