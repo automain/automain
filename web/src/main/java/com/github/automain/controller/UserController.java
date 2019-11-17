@@ -146,6 +146,18 @@ public class UserController extends BaseController {
     }
 
     // user
+    @RequestUri(value = "/checkUserExist", slave = "slave1")
+    public JsonResponse checkUserExist(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+         String userName = request.getParameter("userName");
+         if (StringUtils.isNotBlank(userName)) {
+             int count = SYS_USER_DAO.countTableByBean(connection, new SysUser().setUserName(userName));
+             if (count == 0) {
+                 return JsonResponse.getSuccessJson();
+             }
+         }
+         return JsonResponse.getFailedJson();
+    }
+
     @RequestUri(value = "/userList", slave = "slave1")
     public JsonResponse userList(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         SysUserVO vo = getRequestParam(request, SysUserVO.class);
