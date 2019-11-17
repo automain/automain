@@ -261,16 +261,16 @@ CREATE TABLE `sys_user_role` (
   `create_time` int(10) unsigned NOT NULL COMMENT '创建时间',
   `update_time` int(10) unsigned NOT NULL COMMENT '更新时间',
   `is_valid` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '是否有效(0:否,1:是)',
-  `user_id` int(10) unsigned NOT NULL COMMENT 'sys_user表主键',
+  `user_gid` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT 'sys_user表gid',
   `role_id` int(10) unsigned NOT NULL COMMENT 'sys_role表主键',
   PRIMARY KEY (`id`),
-  KEY `idx_user_id` (`user_id`),
-  KEY `idx_role_id` (`role_id`)
+  KEY `idx_role_id` (`role_id`),
+  KEY `idx_user_gid` (`user_gid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `sys_user_role` */
 
-insert  into `sys_user_role`(`id`,`create_time`,`update_time`,`is_valid`,`user_id`,`role_id`) values (1,1,1,1,1,1);
+insert  into `sys_user_role`(`id`,`create_time`,`update_time`,`is_valid`,`user_gid`,`role_id`) values (1,1,1,1,'1',1);
 
 /*Table structure for table `test` */
 

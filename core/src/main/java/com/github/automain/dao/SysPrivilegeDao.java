@@ -127,12 +127,12 @@ public class SysPrivilegeDao extends BaseDao<SysPrivilege> {
         return sql.toString();
     }
 
-    public Set<String> selectUserPrivilege(Connection connection, Integer userId) throws SQLException {
-        String sql = "SELECT sp.privilege_label FROM sys_user_role sur INNER JOIN sys_role_privilege srp ON sur.role_id = srp.role_id INNER JOIN sys_privilege sp ON srp.privilege_id = sp.id WHERE sur.is_valid = 1 AND srp.is_valid = 1 AND sp.is_valid = 1 AND sur.user_id = ? GROUP BY sp.privilege_label";
+    public Set<String> selectUserPrivilege(Connection connection, String userGid) throws SQLException {
+        String sql = "SELECT sp.privilege_label FROM sys_user_role sur INNER JOIN sys_role_privilege srp ON sur.role_id = srp.role_id INNER JOIN sys_privilege sp ON srp.privilege_id = sp.id WHERE sur.is_valid = 1 AND srp.is_valid = 1 AND sp.is_valid = 1 AND sur.user_gid = ? GROUP BY sp.privilege_label";
         ResultSet rs = null;
         Set<String> result = new HashSet<String>();
         try {
-            rs = executeSelectReturnResultSet(connection, sql, List.of(userId));
+            rs = executeSelectReturnResultSet(connection, sql, List.of(userGid));
             while (rs.next()) {
                 result.add(rs.getString("privilege_label"));
             }

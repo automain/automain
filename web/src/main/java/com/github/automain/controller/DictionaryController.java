@@ -37,7 +37,7 @@ public class DictionaryController extends BaseController {
     @RequestUri("/dictionaryAdd")
     public JsonResponse dictionaryAdd(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         SysDictionary bean = getRequestParam(request, SysDictionary.class);
-        if (checkValid(bean, false)) {
+        if (checkValid(bean)) {
             bean.setUpdateTime(DateUtil.getNow());
             bean.setCreateTime(bean.getUpdateTime());
             SYS_DICTIONARY_DAO.insertIntoTable(connection, bean);
@@ -46,14 +46,14 @@ public class DictionaryController extends BaseController {
         return JsonResponse.getFailedJson();
     }
 
-    private boolean checkValid(SysDictionary bean, boolean isUpdate) {
-        return bean != null && (!isUpdate || bean.getId() != null);
+    private boolean checkValid(SysDictionary bean) {
+        return bean != null && bean.getTableName() != null && bean.getColumnName() != null && bean.getDictionaryKey() != null && bean.getDictionaryValue() != null;
     }
 
     @RequestUri("/dictionaryUpdate")
     public JsonResponse dictionaryUpdate(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         SysDictionary bean = getRequestParam(request, SysDictionary.class);
-        if (checkValid(bean, true)) {
+        if (checkValid(bean) && bean.getId() != null) {
             bean.setUpdateTime(DateUtil.getNow());
             SYS_DICTIONARY_DAO.updateTableById(connection, bean, false);
             return JsonResponse.getSuccessJson();

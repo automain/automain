@@ -148,7 +148,7 @@ public class GeneratorController extends BaseController {
             generateFile(service, now + "/service/" + upperTableName + "Service" + ".java");
 
             ControllerGenerator controllerGenerator = new ControllerGenerator();
-            String controller = controllerGenerator.generate(prefix, upperPrefix, tableName, upperTableName, hasList, hasAdd, hasUpdate, hasDetail, hasIsValid, hasGlobalId, hasCreateTime, hasUpdateTime);
+            String controller = controllerGenerator.generate(columns, prefix, upperPrefix, tableName, upperTableName, hasList, hasAdd, hasUpdate, hasDetail, hasIsValid, hasGlobalId, hasCreateTime, hasUpdateTime);
             generateFile(controller, now + "/controller/" + upperPrefix + "Controller" + ".java");
 
             ViewGenerator viewGenerator = new ViewGenerator();

@@ -76,11 +76,11 @@ public class UserController extends BaseController {
                     if (sysUser != null) {
                         String pwd = EncryptUtil.MD5((sysUser.getPasswordMd5() + captcha).getBytes(PropertiesUtil.DEFAULT_CHARSET));
                         if (password.equalsIgnoreCase(pwd)) {
-                            Integer userId = sysUser.getId();
+                            String userGid = sysUser.getGid();
                             int now = DateUtil.getNow();
                             int expireTime = now + SESSION_EXPIRE_SECONDS;
                             int cacheExpireTime = now + CACHE_EXPIRE_SECONDS;
-                            String userCacheKey = "user:" + userId;
+                            String userCacheKey = "user:" + userGid;
                             Map<String, String> userCacheMap = new HashMap<String, String>();
                             userCacheMap.put("userName", sysUser.getUserName());
                             userCacheMap.put("phone", sysUser.getPhone());
@@ -88,8 +88,8 @@ public class UserController extends BaseController {
                             userCacheMap.put("gid", sysUser.getGid());
                             userCacheMap.put("realName", sysUser.getRealName());
                             userCacheMap.put("expireTime", String.valueOf(cacheExpireTime));
-                            String userPrivilegeKey = "userPrivilege:" + userId;
-                            Set<String> privilegeSet = SYS_PRIVILEGE_DAO.selectUserPrivilege(connection, userId);
+                            String userPrivilegeKey = "userPrivilege:" + userGid;
+                            Set<String> privilegeSet = SYS_PRIVILEGE_DAO.selectUserPrivilege(connection, userGid);
                             if (jedis != null) {
                                 jedis.del(userCacheKey);
                                 jedis.hmset(userCacheKey, userCacheMap);
@@ -105,9 +105,9 @@ public class UserController extends BaseController {
                                 RedisUtil.delLocalCache(userPrivilegeKey);
                                 RedisUtil.setLocalCache(userPrivilegeKey, privilegeSet);
                             }
-                            String authorization = EncryptUtil.AESEncrypt((userId + "_" + expireTime).getBytes(PropertiesUtil.DEFAULT_CHARSET), AES_PASSWORD);
+                            String authorization = EncryptUtil.AESEncrypt((userGid + "_" + expireTime).getBytes(PropertiesUtil.DEFAULT_CHARSET), AES_PASSWORD);
                             response.setHeader("Authorization", authorization);
-                            List<MenuVO> menuData = SYS_USER_SERVICE.selectAuthorityMenu(connection, userId);
+                            List<MenuVO> menuData = SYS_USER_SERVICE.selectAuthorityMenu(connection, userGid);
                             Map<String, Object> map = new HashMap<String, Object>(2);
                             map.put("menuData", menuData);
                             map.put("privilege", privilegeSet);
@@ -158,8 +158,9 @@ public class UserController extends BaseController {
 
     @RequestUri("/userAdd")
     public JsonResponse userAdd(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        SysUser bean = getRequestParam(request, SysUser.class);
-        if (checkValid(bean, false)) {
+        SysUserVO bean = getRequestParam(request, SysUserVO.class);
+        if (checkValid(bean) && bean.getPassword() != null && bean.getPassword().equals(bean.getPassword2())) {
+            bean.setPasswordMd5(EncryptUtil.MD5(bean.getPassword().getBytes(PropertiesUtil.DEFAULT_CHARSET)));
             bean.setUpdateTime(DateUtil.getNow());
             bean.setCreateTime(bean.getUpdateTime());
             bean.setGid(UUID.randomUUID().toString());
@@ -169,14 +170,14 @@ public class UserController extends BaseController {
         return JsonResponse.getFailedJson();
     }
 
-    private boolean checkValid(SysUser bean, boolean isUpdate) {
-        return bean != null && (!isUpdate || bean.getGid() != null);
+    private boolean checkValid(SysUser bean) {
+        return bean != null && bean.getUserName() != null && bean.getRealName() != null && bean.getPhone() != null && bean.getEmail() != null;
     }
 
     @RequestUri("/userUpdate")
     public JsonResponse userUpdate(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         SysUser bean = getRequestParam(request, SysUser.class);
-        if (checkValid(bean, true)) {
+        if (checkValid(bean) && bean.getGid() != null) {
             bean.setUpdateTime(DateUtil.getNow());
             SYS_USER_DAO.updateTableByGid(connection, bean, false);
             return JsonResponse.getSuccessJson();
@@ -218,7 +219,7 @@ public class UserController extends BaseController {
     @RequestUri("/menuAdd")
     public JsonResponse menuAdd(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         SysMenu bean = getRequestParam(request, SysMenu.class);
-        if (checkValid(bean, false)) {
+        if (checkValid(bean)) {
             bean.setUpdateTime(DateUtil.getNow());
             bean.setCreateTime(bean.getUpdateTime());
             SYS_MENU_DAO.insertIntoTable(connection, bean);
@@ -227,14 +228,14 @@ public class UserController extends BaseController {
         return JsonResponse.getFailedJson();
     }
 
-    private boolean checkValid(SysMenu bean, boolean isUpdate) {
-        return bean != null && (!isUpdate || bean.getId() != null);
+    private boolean checkValid(SysMenu bean) {
+        return bean != null && bean.getMenuName() != null && bean.getMenuIcon() != null && bean.getParentId() != null && bean.getSequenceNumber() != null;
     }
 
     @RequestUri("/menuUpdate")
     public JsonResponse menuUpdate(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         SysMenu bean = getRequestParam(request, SysMenu.class);
-        if (checkValid(bean, true)) {
+        if (checkValid(bean) && bean.getId() != null) {
             bean.setUpdateTime(DateUtil.getNow());
             SYS_MENU_DAO.updateTableById(connection, bean, false);
             return JsonResponse.getSuccessJson();
@@ -282,7 +283,7 @@ public class UserController extends BaseController {
     @RequestUri("/roleAdd")
     public JsonResponse roleAdd(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         SysRole bean = getRequestParam(request, SysRole.class);
-        if (checkValid(bean, false)) {
+        if (checkValid(bean)) {
             bean.setUpdateTime(DateUtil.getNow());
             bean.setCreateTime(bean.getUpdateTime());
             SYS_ROLE_DAO.insertIntoTable(connection, bean);
@@ -291,14 +292,14 @@ public class UserController extends BaseController {
         return JsonResponse.getFailedJson();
     }
 
-    private boolean checkValid(SysRole bean, boolean isUpdate) {
-        return bean != null && (!isUpdate || bean.getId() != null);
+    private boolean checkValid(SysRole bean) {
+        return bean != null && bean.getRoleName() != null && bean.getRoleLabel() != null;
     }
 
     @RequestUri("/roleUpdate")
     public JsonResponse roleUpdate(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         SysRole bean = getRequestParam(request, SysRole.class);
-        if (checkValid(bean, true)) {
+        if (checkValid(bean) && bean.getId() != null) {
             bean.setUpdateTime(DateUtil.getNow());
             SYS_ROLE_DAO.updateTableById(connection, bean, false);
             return JsonResponse.getSuccessJson();
@@ -340,7 +341,7 @@ public class UserController extends BaseController {
     @RequestUri("/privilegeAdd")
     public JsonResponse privilegeAdd(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         SysPrivilege bean = getRequestParam(request, SysPrivilege.class);
-        if (checkValid(bean, false)) {
+        if (checkValid(bean)) {
             bean.setUpdateTime(DateUtil.getNow());
             bean.setCreateTime(bean.getUpdateTime());
             SYS_PRIVILEGE_DAO.insertIntoTable(connection, bean);
@@ -349,14 +350,14 @@ public class UserController extends BaseController {
         return JsonResponse.getFailedJson();
     }
 
-    private boolean checkValid(SysPrivilege bean, boolean isUpdate) {
-        return bean != null && (!isUpdate || bean.getId() != null);
+    private boolean checkValid(SysPrivilege bean) {
+        return bean != null && bean.getPrivilegeLabel() != null && bean.getPrivilegeName() != null && bean.getParentId() != null;
     }
 
     @RequestUri("/privilegeUpdate")
     public JsonResponse privilegeUpdate(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         SysPrivilege bean = getRequestParam(request, SysPrivilege.class);
-        if (checkValid(bean, true)) {
+        if (checkValid(bean) && bean.getId() != null) {
             bean.setUpdateTime(DateUtil.getNow());
             SYS_PRIVILEGE_DAO.updateTableById(connection, bean, false);
             return JsonResponse.getSuccessJson();

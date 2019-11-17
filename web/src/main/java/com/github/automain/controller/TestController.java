@@ -30,7 +30,7 @@ public class TestController extends BaseController {
     @RequestUri("/testAdd")
     public JsonResponse testAdd(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         Test bean = getRequestParam(request, Test.class);
-        if (checkValid(bean, false)) {
+        if (checkValid(bean)) {
             bean.setUpdateTime(DateUtil.getNow());
             bean.setCreateTime(bean.getUpdateTime());
             bean.setGid(UUID.randomUUID().toString());
@@ -40,14 +40,14 @@ public class TestController extends BaseController {
         return JsonResponse.getFailedJson();
     }
 
-    private boolean checkValid(Test bean, boolean isUpdate) {
-        return bean != null && (!isUpdate || bean.getGid() != null);
+    private boolean checkValid(Test bean) {
+        return bean != null && bean.getTestName() != null && bean.getTestDictionary() != null;
     }
 
     @RequestUri("/testUpdate")
     public JsonResponse testUpdate(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         Test bean = getRequestParam(request, Test.class);
-        if (checkValid(bean, true)) {
+        if (checkValid(bean) && bean.getGid() != null) {
             bean.setUpdateTime(DateUtil.getNow());
             TEST_DAO.updateTableByGid(connection, bean, false);
 //            TEST_DAO.updateTableById(connection, bean, false);

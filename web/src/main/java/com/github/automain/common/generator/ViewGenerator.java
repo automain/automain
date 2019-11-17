@@ -135,20 +135,20 @@ public class ViewGenerator {
             if (addCheck.contains(columnName)) {
                 if (CommonGenerator.checkTimeTypeColumn(column)) {
                     addBlock.append("                <el-form-item label=\"")
-                            .append(columnComment).append(":\">\n                    <el-date-picker v-model=\"")
+                            .append(columnComment).append(":\" prop=\"").append(lowerColumnName).append("\">\n                    <el-date-picker v-model=\"")
                             .append(lowerColumnName).append("Picker\" type=\"datetime\" placeholder=\"请选择")
                             .append(columnComment).append("\" value-format=\"timestamp\" @change=\"function(val){")
                             .append(lowerTableName).append(".").append(lowerColumnName)
                             .append(" = val / 1000}\"></el-date-picker>\n                </el-form-item>\n");
                 } else if (dictionaryColumnList.contains(columnName)) {
                     addBlock.append("                <el-form-item label=\"").append(columnComment)
-                            .append(":\">\n                    <el-select v-model=\"").append(lowerTableName)
+                            .append(":\" prop=\"").append(lowerColumnName).append("\">\n                    <el-select v-model=\"").append(lowerTableName)
                             .append(".").append(lowerColumnName).append("\" placeholder=\"请选择").append(columnComment)
                             .append("\">\n                        <el-option v-for=\"item in ").append(lowerColumnName)
                             .append("Map\" :key=\"item.value\" :label=\"item.text\" :value=\"item.value\"></el-option>\n                    </el-select>\n                </el-form-item>\n");
                 } else {
                     addBlock.append("                <el-form-item label=\"").append(columnComment)
-                            .append(":\">\n                    <el-input v-model=\"").append(lowerTableName)
+                            .append(":\" prop=\"").append(lowerColumnName).append("\">\n                    <el-input v-model=\"").append(lowerTableName)
                             .append(".").append(lowerColumnName).append("\"");
                     if (column.getIsTextArea()) {
                         addBlock.append(" type=\"textarea\"");
@@ -175,20 +175,20 @@ public class ViewGenerator {
             if (updateCheck.contains(columnName)) {
                 if (CommonGenerator.checkTimeTypeColumn(column)) {
                     updateBlock.append("                <el-form-item label=\"")
-                            .append(columnComment).append(":\">\n                    <el-date-picker v-model=\"")
+                            .append(columnComment).append(":\" prop=\"").append(lowerColumnName).append("\">\n                    <el-date-picker v-model=\"")
                             .append(lowerColumnName).append("Picker\" type=\"datetime\" placeholder=\"请选择")
                             .append(columnComment).append("\" value-format=\"timestamp\" @change=\"function(val){")
                             .append(lowerTableName).append(".").append(lowerColumnName)
                             .append(" = val / 1000}\"></el-date-picker>\n                </el-form-item>\n");
                 } else if (dictionaryColumnList.contains(columnName)) {
                     updateBlock.append("                <el-form-item label=\"").append(columnComment)
-                            .append(":\">\n                    <el-select v-model=\"").append(lowerTableName)
+                            .append(":\" prop=\"").append(lowerColumnName).append("\">\n                    <el-select v-model=\"").append(lowerTableName)
                             .append(".").append(lowerColumnName).append("\" placeholder=\"请选择").append(columnComment)
                             .append("\">\n                        <el-option v-for=\"item in ").append(lowerColumnName)
                             .append("Map\" :key=\"item.value\" :label=\"item.text\" :value=\"item.value\"></el-option>\n                    </el-select>\n                </el-form-item>\n");
                 } else {
                     updateBlock.append("                <el-form-item label=\"").append(columnComment)
-                            .append(":\">\n                    <el-input v-model=\"").append(lowerTableName)
+                            .append(":\" prop=\"").append(lowerColumnName).append("\">\n                    <el-input v-model=\"").append(lowerTableName)
                             .append(".").append(lowerColumnName).append("\"");
                     if (column.getIsTextArea()) {
                         updateBlock.append(" type=\"textarea\"");

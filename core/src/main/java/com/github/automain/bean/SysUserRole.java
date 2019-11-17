@@ -17,8 +17,8 @@ public class SysUserRole implements BaseBean<SysUserRole> {
     private Integer updateTime;
     // 是否有效(0:否,1:是)
     private Integer isValid;
-    // sys_user表主键
-    private Integer userId;
+    // sys_user表gid
+    private String userGid;
     // sys_role表主键
     private Integer roleId;
 
@@ -58,12 +58,12 @@ public class SysUserRole implements BaseBean<SysUserRole> {
         return this;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public String getUserGid() {
+        return userGid;
     }
 
-    public SysUserRole setUserId(Integer userId) {
-        this.userId = userId;
+    public SysUserRole setUserGid(String userGid) {
+        this.userGid = userGid;
         return this;
     }
 
@@ -96,8 +96,8 @@ public class SysUserRole implements BaseBean<SysUserRole> {
         if (all || this.getIsValid() != null) {
             map.put("is_valid", this.getIsValid());
         }
-        if (all || this.getUserId() != null) {
-            map.put("user_id", this.getUserId());
+        if (all || this.getUserGid() != null) {
+            map.put("user_gid", this.getUserGid());
         }
         if (all || this.getRoleId() != null) {
             map.put("role_id", this.getRoleId());
@@ -112,7 +112,7 @@ public class SysUserRole implements BaseBean<SysUserRole> {
                 .setCreateTime(rs.getInt("create_time"))
                 .setUpdateTime(rs.getInt("update_time"))
                 .setIsValid(rs.getInt("is_valid"))
-                .setUserId(rs.getInt("user_id"))
+                .setUserGid(rs.getString("user_gid"))
                 .setRoleId(rs.getInt("role_id"));
     }
 
@@ -123,7 +123,7 @@ public class SysUserRole implements BaseBean<SysUserRole> {
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +
                 ", isValid=" + isValid +
-                ", userId=" + userId +
+                ", userGid=" + userGid +
                 ", roleId=" + roleId +
                 '}';
     }

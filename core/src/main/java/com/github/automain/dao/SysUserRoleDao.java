@@ -104,9 +104,9 @@ public class SysUserRoleDao extends BaseDao<SysUserRole> {
     private String setSearchCondition(SysUserRoleVO bean, List<Object> paramList, boolean isCountSql) {
         StringBuilder sql = new StringBuilder("SELECT ");
         sql.append(isCountSql ? "COUNT(1)" : "*").append(" FROM sys_user_role WHERE is_valid = 1");
-        if (bean.getUserId() != null) {
-            sql.append(" AND user_id = ?");
-            paramList.add(bean.getUserId());
+        if (bean.getUserGid() != null) {
+            sql.append(" AND user_gid = ?");
+            paramList.add(bean.getUserGid());
         }
         if (bean.getRoleId() != null) {
             sql.append(" AND role_id = ?");

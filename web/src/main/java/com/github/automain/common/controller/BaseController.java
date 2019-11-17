@@ -47,9 +47,9 @@ public class BaseController implements ServiceDaoContainer {
             String decrypt = EncryptUtil.AESDecrypt(authorization.getBytes(PropertiesUtil.DEFAULT_CHARSET), AES_PASSWORD);
             String[] arr = decrypt.split("_");
             if (arr.length == 2) {
-                Integer userId = Integer.valueOf(arr[0]);
-                String userCacheKey = "user:" + userId;
-                String userPrivilegeKey = "userPrivilege:" + userId;
+                String userGid = arr[0];
+                String userCacheKey = "user:" + userGid;
+                String userPrivilegeKey = "userPrivilege:" + userGid;
                 int expireTime = Integer.parseInt(arr[1]);
                 Map<String, String> userCacheMap = null;
                 int now = DateUtil.getNow();
@@ -65,7 +65,7 @@ public class BaseController implements ServiceDaoContainer {
                     if (expireTime < now) {
                         return null;
                     } else {
-                        SysUser user = ServiceDaoContainer.SYS_USER_DAO.selectTableById(connection, new SysUser().setId(userId));
+                        SysUser user = ServiceDaoContainer.SYS_USER_DAO.selectTableByGid(connection, new SysUser().setGid(userGid));
                         userCacheMap = new HashMap<String, String>();
                         userCacheMap.put("userName", user.getUserName());
                         userCacheMap.put("phone", user.getPhone());
@@ -85,7 +85,7 @@ public class BaseController implements ServiceDaoContainer {
                 }
                 if (isRefresh) {
                     userCacheMap.put("expireTime", String.valueOf(newCacheExpireTime));
-                    Set<String> privilegeSet = ServiceDaoContainer.SYS_PRIVILEGE_DAO.selectUserPrivilege(connection, userId);
+                    Set<String> privilegeSet = ServiceDaoContainer.SYS_PRIVILEGE_DAO.selectUserPrivilege(connection, userGid);
                     if (jedis != null) {
                         jedis.del(userCacheKey);
                         jedis.hmset(userCacheKey, userCacheMap);
@@ -101,11 +101,11 @@ public class BaseController implements ServiceDaoContainer {
                         RedisUtil.delLocalCache(userPrivilegeKey);
                         RedisUtil.setLocalCache(userPrivilegeKey, privilegeSet);
                     }
-                    String value = userId + "_" + newExpireTime;
+                    String value = userGid + "_" + newExpireTime;
                     authorization = EncryptUtil.AESEncrypt(value.getBytes(PropertiesUtil.DEFAULT_CHARSET), AES_PASSWORD);
                     response.setHeader(AUTHORIZATION, authorization);
                 }
-                return new SysUser().setId(userId).setUserName(userCacheMap.get("userName")).setPhone(userCacheMap.get("phone")).setEmail(userCacheMap.get("email")).setGid(userCacheMap.get("gid")).setRealName(userCacheMap.get("realName"));
+                return new SysUser().setGid(userGid).setUserName(userCacheMap.get("userName")).setPhone(userCacheMap.get("phone")).setEmail(userCacheMap.get("email")).setGid(userCacheMap.get("gid")).setRealName(userCacheMap.get("realName"));
             }
         }
         return null;

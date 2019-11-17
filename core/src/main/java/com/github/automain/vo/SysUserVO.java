@@ -20,6 +20,10 @@ public class SysUserVO extends SysUser {
     private Integer createTimeEnd;
     // 更新时间结束
     private Integer updateTimeEnd;
+    // 添加用密码
+    private String password;
+    // 添加用确认密码
+    private String password2;
 
     public int getPage() {
         return page;
@@ -81,6 +85,24 @@ public class SysUserVO extends SysUser {
 
     public SysUserVO setUpdateTimeEnd(Integer updateTimeEnd) {
         this.updateTimeEnd = updateTimeEnd;
+        return this;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public SysUserVO setPassword(String password) {
+        this.password = password;
+        return this;
+    }
+
+    public String getPassword2() {
+        return password2;
+    }
+
+    public SysUserVO setPassword2(String password2) {
+        this.password2 = password2;
         return this;
     }
 }

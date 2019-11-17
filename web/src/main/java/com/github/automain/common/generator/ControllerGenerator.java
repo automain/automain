@@ -1,8 +1,12 @@
 package com.github.automain.common.generator;
 
+import com.github.automain.common.bean.ColumnBean;
+
+import java.util.List;
+
 public class ControllerGenerator {
 
-    public String generate(String prefix, String upperPrefix, String tableName, String upperTableName, boolean hasList, boolean hasAdd, boolean hasUpdate, boolean hasDetail, boolean hasIsValid, boolean hasGlobalId, boolean hasCreateTime, boolean hasUpdateTime) {
+    public String generate(List<ColumnBean> columns, String prefix, String upperPrefix, String tableName, String upperTableName, boolean hasList, boolean hasAdd, boolean hasUpdate, boolean hasDetail, boolean hasIsValid, boolean hasGlobalId, boolean hasCreateTime, boolean hasUpdateTime) {
         String daoName = tableName.toUpperCase() + "_DAO";
         String resultStr = "";
 
@@ -19,7 +23,7 @@ public class ControllerGenerator {
         }
 
         if (hasAdd || hasUpdate) {
-            resultStr += getCheckValid(upperTableName, hasGlobalId);
+            resultStr += getCheckValid(upperTableName, columns);
         }
 
         if (hasUpdate) {
@@ -78,24 +82,31 @@ public class ControllerGenerator {
         String gidSet = hasGlobalId ? "            bean.setGid(UUID.randomUUID().toString());\n" : "";
         return "\n\n    @RequestUri(\"/" + prefix + "Add\")\n    public JsonResponse " + prefix +
                 "Add(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {\n        " +
-                upperTableName + " bean = getRequestParam(request, " + upperTableName + ".class);\n        if (checkValid(bean, false)) {\n" +
+                upperTableName + " bean = getRequestParam(request, " + upperTableName + ".class);\n        if (checkValid(bean)) {\n" +
                 updateTimeSet + createTimeSet + gidSet + "            " + daoName +
                 ".insertIntoTable(connection, bean);\n            return JsonResponse.getSuccessJson();\n        }\n        return JsonResponse.getFailedJson();\n    }";
     }
 
-    private String getCheckValid(String upperTableName, boolean hasGlobalId) {
-        String idCheck = hasGlobalId ? "bean.getGid()" : "bean.getId()";
-        return "\n\n    private boolean checkValid(" + upperTableName
-                + " bean, boolean isUpdate) {\n        return bean != null && (!isUpdate || " + idCheck + " != null);\n    }";
+    private String getCheckValid(String upperTableName, List<ColumnBean> columns) {
+        StringBuilder nullCheck = new StringBuilder();
+        List<String> notCheckList = List.of("id", "gid", "is_valid", "create_time", "update_time");
+        for (ColumnBean column : columns) {
+            String columnName = column.getColumnName();
+            if (!column.getIsNullAble() && !notCheckList.contains(columnName)) {
+                nullCheck.append(" && bean.get").append(CommonGenerator.convertToJavaName(columnName, true)).append("() != null");
+            }
+        }
+        return "\n\n    private boolean checkValid(" + upperTableName + " bean) {\n        return bean != null" + nullCheck.toString() + ";\n    }";
     }
 
     private String getUpdate(String prefix, String upperTableName, boolean hasUpdateTime, boolean hasGlobalId, String daoName) {
         String updateTimeSet = hasUpdateTime ? "            bean.setUpdateTime(DateUtil.getNow());\n" : "";
         String updateFun = hasGlobalId ? "            " + daoName + ".updateTableByGid(connection, bean, false);\n"
                 : "            " + daoName + ".updateTableById(connection, bean, false);\n";
+        String idCheck = hasGlobalId ? "bean.getGid() != null" : "bean.getId() != null";
         return "\n\n    @RequestUri(\"/" + prefix + "Update\")\n    public JsonResponse " + prefix +
                 "Update(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {\n        " +
-                upperTableName + " bean = getRequestParam(request, " + upperTableName + ".class);\n        if (checkValid(bean, true)) {\n" +
+                upperTableName + " bean = getRequestParam(request, " + upperTableName + ".class);\n        if (checkValid(bean) && " + idCheck + ") {\n" +
                 updateTimeSet + updateFun +
                 "            return JsonResponse.getSuccessJson();\n        }\n        return JsonResponse.getFailedJson();\n    }";
     }
