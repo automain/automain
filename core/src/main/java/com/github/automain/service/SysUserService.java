@@ -1,7 +1,8 @@
 package com.github.automain.service;
 
 import com.github.automain.bean.SysMenu;
-import com.github.automain.common.container.ServiceDaoContainer;
+import com.github.automain.common.container.ServiceContainer;
+import com.github.automain.dao.SysMenuDao;
 import com.github.automain.vo.MenuVO;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -14,10 +15,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class SysUserService implements ServiceDaoContainer {
+public class SysUserService implements ServiceContainer {
 
     public List<MenuVO> selectAuthorityMenu(Connection connection, String userGid) throws SQLException {
-        List<SysMenu> menuList = SYS_MENU_DAO.selectAuthorityMenu(connection, userGid);
+        List<SysMenu> menuList = SysMenuDao.selectAuthorityMenu(connection, userGid);
         Map<Integer, Set<SysMenu>> menuMap = new HashMap<Integer, Set<SysMenu>>();
         for (SysMenu menu : menuList) {
             Integer parentId = menu.getParentId();

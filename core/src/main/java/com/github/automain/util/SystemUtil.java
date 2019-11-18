@@ -118,7 +118,7 @@ public class SystemUtil {
 //            }
 //            TbSchedule bean = new TbSchedule();
 //            bean.setIsDelete(0);
-//            List<TbSchedule> scheduleList = ServiceDaoContainer.TB_SCHEDULE_SERVICE.selectTableByBean(connection, bean);
+//            List<TbSchedule> scheduleList = ServiceContainer.TB_SCHEDULE_SERVICE.selectTableByBean(connection, bean);
 //            int size = scheduleList.size();
 //            if (size > 0) {
 //                SCHEDULE_THREAD_POOL = Executors.newScheduledThreadPool(size);

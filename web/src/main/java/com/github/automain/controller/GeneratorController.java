@@ -12,6 +12,7 @@ import com.github.automain.common.generator.DaoGenerator;
 import com.github.automain.common.generator.ServiceGenerator;
 import com.github.automain.common.generator.VOGenerator;
 import com.github.automain.common.generator.ViewGenerator;
+import com.github.automain.dao.SysDictionaryDao;
 import com.github.automain.util.CompressUtil;
 import com.github.automain.util.DateUtil;
 import com.github.automain.util.PropertiesUtil;
@@ -81,15 +82,12 @@ public class GeneratorController extends BaseController {
             String upperTableName = CommonGenerator.convertToJavaName(tableName, true);
             String serviceName = upperTableName + "Service";
             String servicePropertyName = tableName.toUpperCase() + "_SERVICE";
-            String daoName = upperTableName + "Dao";
-            String daoPropertyName = tableName.toUpperCase() + "_DAO";
-            String serviceDaoContainer = serviceName + " " + servicePropertyName + " = new "
-                    + serviceName + "();\n" + daoName + " " + daoPropertyName + " = new " + daoName + "();";
+            String serviceContainer = serviceName + " " + servicePropertyName + " = new " + serviceName + "();";
             BeanGenerator beanGenerator = new BeanGenerator();
             String bean = beanGenerator.generate(columnList, tableName, upperTableName);
             Map<String, Object> data = new HashMap<String, Object>();
             data.put("columnList", columnList);
-            data.put("serviceDaoContainer", serviceDaoContainer);
+            data.put("serviceContainer", serviceContainer);
             data.put("bean", bean);
             return JsonResponse.getSuccessJson(data);
         } else {
@@ -127,7 +125,7 @@ public class GeneratorController extends BaseController {
             boolean hasCreateTime = hasCreateTime(columns);
             boolean hasUpdateTime = hasUpdateTime(columns);
 
-            List<String> dictionaryColumnList = SYS_DICTIONARY_DAO.selectDictionaryColumn(connection, tableName);
+            List<String> dictionaryColumnList = SysDictionaryDao.selectDictionaryColumn(connection, tableName);
 
             String now = DateUtil.getNow("yyyyMMddHHmmss");
 
@@ -136,7 +134,7 @@ public class GeneratorController extends BaseController {
             generateFile(bean, now + "/bean/" + upperTableName + ".java");
 
             VOGenerator voGenerator = new VOGenerator();
-            String vo = voGenerator.generate(columns, upperTableName, hasGlobalId, dictionaryColumnList);
+            String vo = voGenerator.generate(columns, upperTableName, hasGlobalId, dictionaryColumnList, hasIsValid, keyColumns);
             generateFile(vo, now + "/vo/" + upperTableName + "VO" + ".java");
 
             DaoGenerator daoGenerator = new DaoGenerator();

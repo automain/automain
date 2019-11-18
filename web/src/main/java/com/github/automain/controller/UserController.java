@@ -7,6 +7,10 @@ import com.github.automain.bean.SysUser;
 import com.github.automain.common.annotation.RequestUri;
 import com.github.automain.common.bean.JsonResponse;
 import com.github.automain.common.controller.BaseController;
+import com.github.automain.dao.SysMenuDao;
+import com.github.automain.dao.SysPrivilegeDao;
+import com.github.automain.dao.SysRoleDao;
+import com.github.automain.dao.SysUserDao;
 import com.github.automain.util.CaptchaUtil;
 import com.github.automain.util.DateUtil;
 import com.github.automain.util.EncryptUtil;
@@ -20,6 +24,7 @@ import com.github.automain.vo.SysMenuVO;
 import com.github.automain.vo.SysPrivilegeVO;
 import com.github.automain.vo.SysRoleVO;
 import com.github.automain.vo.SysUserVO;
+import com.github.automain.vo.UserVO;
 import com.github.fastjdbc.PageBean;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -73,7 +78,7 @@ public class UserController extends BaseController {
                     cacheCaptcha = RedisUtil.getLocalCache(user.getCaptchaKey());
                 }
                 if (captcha.equalsIgnoreCase(cacheCaptcha)) {
-                    SysUser sysUser = SYS_USER_DAO.selectOneTableByBean(connection, new SysUser().setUserName(userName));
+                    SysUser sysUser = SysUserDao.selectOneTableByBean(connection, new SysUser().setUserName(userName));
                     if (sysUser != null) {
                         String pwd = EncryptUtil.MD5((sysUser.getPasswordMd5() + captcha).getBytes(PropertiesUtil.DEFAULT_CHARSET));
                         if (password.equalsIgnoreCase(pwd)) {
@@ -90,7 +95,7 @@ public class UserController extends BaseController {
                             userCacheMap.put("realName", sysUser.getRealName());
                             userCacheMap.put("expireTime", String.valueOf(cacheExpireTime));
                             String userPrivilegeKey = "userPrivilege:" + userGid;
-                            Set<String> privilegeSet = SYS_PRIVILEGE_DAO.selectUserPrivilege(connection, userGid);
+                            Set<String> privilegeSet = SysPrivilegeDao.selectUserPrivilege(connection, userGid);
                             if (jedis != null) {
                                 jedis.del(userCacheKey);
                                 jedis.hmset(userCacheKey, userCacheMap);
@@ -151,7 +156,7 @@ public class UserController extends BaseController {
     public JsonResponse checkUserExist(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
          String userName = request.getParameter("userName");
          if (StringUtils.isNotBlank(userName)) {
-             int count = SYS_USER_DAO.countTableByBean(connection, new SysUser().setUserName(userName).setIsValid(1));
+             int count = SysUserDao.countTableByBean(connection, new SysUser().setUserName(userName).setIsValid(1));
              if (count == 0) {
                  return JsonResponse.getSuccessJson();
              }
@@ -163,7 +168,7 @@ public class UserController extends BaseController {
     public JsonResponse userList(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         SysUserVO vo = getRequestParam(request, SysUserVO.class);
         if (vo != null) {
-            PageBean<SysUser> pageBean = SYS_USER_DAO.selectTableForCustomPage(connection, vo);
+            PageBean<UserVO> pageBean = SysUserDao.selectTableForCustomPage(connection, vo);
             return JsonResponse.getSuccessJson(pageBean);
         }
         return JsonResponse.getFailedJson();
@@ -177,7 +182,7 @@ public class UserController extends BaseController {
             bean.setUpdateTime(DateUtil.getNow());
             bean.setCreateTime(bean.getUpdateTime());
             bean.setGid(UUID.randomUUID().toString());
-            SYS_USER_DAO.insertIntoTable(connection, bean);
+            SysUserDao.insertIntoTable(connection, bean);
             return JsonResponse.getSuccessJson();
         }
         return JsonResponse.getFailedJson();
@@ -192,7 +197,7 @@ public class UserController extends BaseController {
         SysUser bean = getRequestParam(request, SysUser.class);
         if (checkValid(bean) && bean.getGid() != null) {
             bean.setUpdateTime(DateUtil.getNow());
-            SYS_USER_DAO.updateTableByGid(connection, bean, false);
+            SysUserDao.updateTableByGid(connection, bean, false);
             return JsonResponse.getSuccessJson();
         }
         return JsonResponse.getFailedJson();
@@ -202,7 +207,7 @@ public class UserController extends BaseController {
     public JsonResponse userDetail(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         SysUser bean = getRequestParam(request, SysUser.class);
         if (bean != null && bean.getGid() != null) {
-            SysUser detail = SYS_USER_DAO.selectTableByGid(connection, bean);
+            SysUser detail = SysUserDao.selectTableByGid(connection, bean);
             return JsonResponse.getSuccessJson(detail);
         }
         return JsonResponse.getFailedJson();
@@ -212,7 +217,7 @@ public class UserController extends BaseController {
     public JsonResponse userDelete(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         SysUserVO vo = getRequestParam(request, SysUserVO.class);
         if (vo != null && CollectionUtils.isNotEmpty(vo.getGidList())) {
-            SYS_USER_DAO.softDeleteTableByGidList(connection, vo.getGidList());
+            SysUserDao.softDeleteTableByGidList(connection, vo.getGidList());
             return JsonResponse.getSuccessJson();
         }
         return JsonResponse.getFailedJson();
@@ -223,7 +228,7 @@ public class UserController extends BaseController {
     public JsonResponse menuList(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         SysMenuVO vo = getRequestParam(request, SysMenuVO.class);
         if (vo != null) {
-            PageBean<SysMenu> pageBean = SYS_MENU_DAO.selectTableForCustomPage(connection, vo);
+            PageBean<SysMenu> pageBean = SysMenuDao.selectTableForCustomPage(connection, vo);
             return JsonResponse.getSuccessJson(pageBean);
         }
         return JsonResponse.getFailedJson();
@@ -235,7 +240,7 @@ public class UserController extends BaseController {
         if (checkValid(bean)) {
             bean.setUpdateTime(DateUtil.getNow());
             bean.setCreateTime(bean.getUpdateTime());
-            SYS_MENU_DAO.insertIntoTable(connection, bean);
+            SysMenuDao.insertIntoTable(connection, bean);
             return JsonResponse.getSuccessJson();
         }
         return JsonResponse.getFailedJson();
@@ -250,7 +255,7 @@ public class UserController extends BaseController {
         SysMenu bean = getRequestParam(request, SysMenu.class);
         if (checkValid(bean) && bean.getId() != null) {
             bean.setUpdateTime(DateUtil.getNow());
-            SYS_MENU_DAO.updateTableById(connection, bean, false);
+            SysMenuDao.updateTableById(connection, bean, false);
             return JsonResponse.getSuccessJson();
         }
         return JsonResponse.getFailedJson();
@@ -260,7 +265,7 @@ public class UserController extends BaseController {
     public JsonResponse menuDetail(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         SysMenu bean = getRequestParam(request, SysMenu.class);
         if (bean != null && bean.getId() != null) {
-            SysMenu detail = SYS_MENU_DAO.selectTableById(connection, bean);
+            SysMenu detail = SysMenuDao.selectTableById(connection, bean);
             return JsonResponse.getSuccessJson(detail);
         }
         return JsonResponse.getFailedJson();
@@ -268,7 +273,7 @@ public class UserController extends BaseController {
 
     @RequestUri(value = "/allValidMenu", slave = "slave1")
     public JsonResponse allValidMenu(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        List<IdNameVO> menuVOList = SYS_MENU_DAO.allValidMenu(connection);
+        List<IdNameVO> menuVOList = SysMenuDao.allValidMenu(connection);
         return JsonResponse.getSuccessJson(menuVOList);
     }
 
@@ -277,7 +282,7 @@ public class UserController extends BaseController {
     public JsonResponse checkRoleExist(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         String roleLabel = request.getParameter("roleLabel");
         if (StringUtils.isNotBlank(roleLabel)) {
-            int count = SYS_ROLE_DAO.countTableByBean(connection, new SysRole().setRoleLabel(roleLabel));
+            int count = SysRoleDao.countTableByBean(connection, new SysRole().setRoleLabel(roleLabel));
             if (count == 0) {
                 return JsonResponse.getSuccessJson();
             }
@@ -287,7 +292,7 @@ public class UserController extends BaseController {
 
     @RequestUri(value = "/allRoleList", slave = "slave1")
     public JsonResponse allRoleList(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        List<RoleVO> allRoleList = SYS_ROLE_DAO.selectAllRoleVO(connection);
+        List<RoleVO> allRoleList = SysRoleDao.selectAllRoleVO(connection);
         return JsonResponse.getSuccessJson(allRoleList);
     }
 
@@ -295,7 +300,7 @@ public class UserController extends BaseController {
     public JsonResponse roleList(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         SysRoleVO vo = getRequestParam(request, SysRoleVO.class);
         if (vo != null) {
-            PageBean<SysRole> pageBean = SYS_ROLE_DAO.selectTableForCustomPage(connection, vo);
+            PageBean<SysRole> pageBean = SysRoleDao.selectTableForCustomPage(connection, vo);
             return JsonResponse.getSuccessJson(pageBean);
         }
         return JsonResponse.getFailedJson();
@@ -307,7 +312,7 @@ public class UserController extends BaseController {
         if (checkValid(bean)) {
             bean.setUpdateTime(DateUtil.getNow());
             bean.setCreateTime(bean.getUpdateTime());
-            SYS_ROLE_DAO.insertIntoTable(connection, bean);
+            SysRoleDao.insertIntoTable(connection, bean);
             return JsonResponse.getSuccessJson();
         }
         return JsonResponse.getFailedJson();
@@ -322,7 +327,7 @@ public class UserController extends BaseController {
         SysRole bean = getRequestParam(request, SysRole.class);
         if (checkValid(bean) && bean.getId() != null) {
             bean.setUpdateTime(DateUtil.getNow());
-            SYS_ROLE_DAO.updateTableById(connection, bean, false);
+            SysRoleDao.updateTableById(connection, bean, false);
             return JsonResponse.getSuccessJson();
         }
         return JsonResponse.getFailedJson();
@@ -332,7 +337,7 @@ public class UserController extends BaseController {
     public JsonResponse roleDetail(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         SysRole bean = getRequestParam(request, SysRole.class);
         if (bean != null && bean.getId() != null) {
-            SysRole detail = SYS_ROLE_DAO.selectTableById(connection, bean);
+            SysRole detail = SysRoleDao.selectTableById(connection, bean);
             return JsonResponse.getSuccessJson(detail);
         }
         return JsonResponse.getFailedJson();
@@ -343,7 +348,7 @@ public class UserController extends BaseController {
     public JsonResponse privilegeList(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         SysPrivilegeVO vo = getRequestParam(request, SysPrivilegeVO.class);
         if (vo != null) {
-            PageBean<SysPrivilege> pageBean = SYS_PRIVILEGE_DAO.selectTableForCustomPage(connection, vo);
+            PageBean<SysPrivilege> pageBean = SysPrivilegeDao.selectTableForCustomPage(connection, vo);
             return JsonResponse.getSuccessJson(pageBean);
         }
         return JsonResponse.getFailedJson();
@@ -355,7 +360,7 @@ public class UserController extends BaseController {
         if (checkValid(bean)) {
             bean.setUpdateTime(DateUtil.getNow());
             bean.setCreateTime(bean.getUpdateTime());
-            SYS_PRIVILEGE_DAO.insertIntoTable(connection, bean);
+            SysPrivilegeDao.insertIntoTable(connection, bean);
             return JsonResponse.getSuccessJson();
         }
         return JsonResponse.getFailedJson();
@@ -370,7 +375,7 @@ public class UserController extends BaseController {
         SysPrivilege bean = getRequestParam(request, SysPrivilege.class);
         if (checkValid(bean) && bean.getId() != null) {
             bean.setUpdateTime(DateUtil.getNow());
-            SYS_PRIVILEGE_DAO.updateTableById(connection, bean, false);
+            SysPrivilegeDao.updateTableById(connection, bean, false);
             return JsonResponse.getSuccessJson();
         }
         return JsonResponse.getFailedJson();
@@ -380,7 +385,7 @@ public class UserController extends BaseController {
     public JsonResponse privilegeDetail(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         SysPrivilege bean = getRequestParam(request, SysPrivilege.class);
         if (bean != null && bean.getId() != null) {
-            SysPrivilege detail = SYS_PRIVILEGE_DAO.selectTableById(connection, bean);
+            SysPrivilege detail = SysPrivilegeDao.selectTableById(connection, bean);
             return JsonResponse.getSuccessJson(detail);
         }
         return JsonResponse.getFailedJson();

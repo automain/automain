@@ -6,8 +6,8 @@ import java.util.List;
 
 public class VOGenerator {
 
-    public String generate(List<ColumnBean> columns, String upperTableName, boolean hasGlobalId, List<String> dictionaryColumnList) {
-        return getImportHead(upperTableName) + getClassHead(upperTableName) + getProperties(columns, upperTableName, hasGlobalId, dictionaryColumnList) + "\n}";
+    public String generate(List<ColumnBean> columns, String upperTableName, boolean hasGlobalId, List<String> dictionaryColumnList, boolean hasIsValid, List<String> keyColumns) {
+        return getImportHead(upperTableName) + getClassHead(upperTableName) + getProperties(columns, upperTableName, hasGlobalId, dictionaryColumnList, hasIsValid, keyColumns) + "\n}";
     }
 
     private String getImportHead(String upperTableName) {
@@ -20,7 +20,7 @@ public class VOGenerator {
         return "public class " + upperTableName + "VO extends " + upperTableName + " {";
     }
 
-    private String getProperties(List<ColumnBean> columns, String upperTableName, boolean hasGlobalId, List<String> dictionaryColumnList) {
+    private String getProperties(List<ColumnBean> columns, String upperTableName, boolean hasGlobalId, List<String> dictionaryColumnList, boolean hasIsValid, List<String> keyColumns) {
         StringBuilder properties = new StringBuilder();
         StringBuilder getterSetter = new StringBuilder();
         StringBuilder toString = new StringBuilder();
@@ -38,24 +38,26 @@ public class VOGenerator {
 
         toString.append("\n\n    @Override\n    public String toString() {\n        return \"").append(upperTableName)
                 .append("VO{\" +\n                \"page=\" + page +\n                \", size=\" + size +\n                \", sortLabel='\" + sortLabel + '\\'' +\n                \", sortOrder='\" + sortOrder + '\\'' +");
-        if (hasGlobalId) {
-            properties.append("\n    // 删除用GID集合\n    private List<String> gidList;");
-            getterSetter.append("\n\n    public List<String> getGidList() {\n        return gidList;\n    }\n\n")
-                    .append("    public ").append(upperTableName)
-                    .append("VO setGidList(List<String> gidList) {\n        this.gidList = gidList;\n        return this;\n    }");
-            toString.append("\n                \", gidList=\" + gidList +");
-        } else {
-            properties.append("\n    // 删除用ID集合\n    private List<Integer> idList;");
-            getterSetter.append("\n\n    public List<Integer> getIdList() {\n        return idList;\n    }\n\n")
-                    .append("    public ").append(upperTableName)
-                    .append("VO setIdList(List<Integer> idList) {\n        this.idList = idList;\n        return this;\n    }");
-            toString.append("\n                \", idList=\" + idList +");
+        if (hasIsValid) {
+            if (hasGlobalId) {
+                properties.append("\n    // 删除用GID集合\n    private List<String> gidList;");
+                getterSetter.append("\n\n    public List<String> getGidList() {\n        return gidList;\n    }\n\n")
+                        .append("    public ").append(upperTableName)
+                        .append("VO setGidList(List<String> gidList) {\n        this.gidList = gidList;\n        return this;\n    }");
+                toString.append("\n                \", gidList=\" + gidList +");
+            } else {
+                properties.append("\n    // 删除用ID集合\n    private List<Integer> idList;");
+                getterSetter.append("\n\n    public List<Integer> getIdList() {\n        return idList;\n    }\n\n")
+                        .append("    public ").append(upperTableName)
+                        .append("VO setIdList(List<Integer> idList) {\n        this.idList = idList;\n        return this;\n    }");
+                toString.append("\n                \", idList=\" + idList +");
+            }
         }
         for (ColumnBean column : columns) {
             String columnName = column.getColumnName();
             String upperColumnName = CommonGenerator.convertToJavaName(columnName, true);
             String lowerColumnName = CommonGenerator.convertToJavaName(columnName, false);
-            if (CommonGenerator.checkTimeTypeColumn(column)) {
+            if (CommonGenerator.checkTimeTypeColumn(column) && keyColumns.contains(columnName)) {
                 properties.append("\n    // ").append(column.getColumnComment())
                         .append("结束\n    private Integer ").append(lowerColumnName).append("End;");
                 getterSetter.append("\n\n    public Integer get").append(upperColumnName)

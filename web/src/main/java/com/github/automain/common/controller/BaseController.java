@@ -2,7 +2,9 @@ package com.github.automain.common.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.automain.bean.SysUser;
-import com.github.automain.common.container.ServiceDaoContainer;
+import com.github.automain.common.container.ServiceContainer;
+import com.github.automain.dao.SysPrivilegeDao;
+import com.github.automain.dao.SysUserDao;
 import com.github.automain.util.DateUtil;
 import com.github.automain.util.EncryptUtil;
 import com.github.automain.util.PropertiesUtil;
@@ -19,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class BaseController implements ServiceDaoContainer {
+public class BaseController implements ServiceContainer {
 
     private static final int SESSION_EXPIRE_SECONDS = PropertiesUtil.getIntProperty("app.sessionExpireSeconds", "1800");
     private static final int CACHE_EXPIRE_SECONDS = SESSION_EXPIRE_SECONDS + 600;
@@ -65,7 +67,7 @@ public class BaseController implements ServiceDaoContainer {
                     if (expireTime < now) {
                         return null;
                     } else {
-                        SysUser user = ServiceDaoContainer.SYS_USER_DAO.selectTableByGid(connection, new SysUser().setGid(userGid));
+                        SysUser user = SysUserDao.selectTableByGid(connection, new SysUser().setGid(userGid));
                         userCacheMap = new HashMap<String, String>();
                         userCacheMap.put("userName", user.getUserName());
                         userCacheMap.put("phone", user.getPhone());
@@ -85,7 +87,7 @@ public class BaseController implements ServiceDaoContainer {
                 }
                 if (isRefresh) {
                     userCacheMap.put("expireTime", String.valueOf(newCacheExpireTime));
-                    Set<String> privilegeSet = ServiceDaoContainer.SYS_PRIVILEGE_DAO.selectUserPrivilege(connection, userGid);
+                    Set<String> privilegeSet = SysPrivilegeDao.selectUserPrivilege(connection, userGid);
                     if (jedis != null) {
                         jedis.del(userCacheKey);
                         jedis.hmset(userCacheKey, userCacheMap);

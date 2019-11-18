@@ -384,6 +384,6 @@ public class ViewGenerator {
                 "            handleClear() {\n                for (let key in this." + lowerTableName + ") {\n                    if (this." + lowerTableName +
                 ".hasOwnProperty(key)) {\n                        this." + lowerTableName + "[key] = null;\n                    }\n                }\n            },\n" +
                 handleAddUpdateBlock.toString() + handleDeleteBlock.toString() +
-                "        },\n        mounted() {\n            this.handleSearch();\n        },\n       computed: {\n            fullHeight() {\n                return this.$store.state.fullHeight - 140;\n            }\n        }\n    }\n</script>";
+                "        },\n        mounted() {\n            this.handleSearch();\n        },\n        computed: {\n            fullHeight() {\n                return this.$store.state.fullHeight - 140;\n            }\n        }\n    }\n</script>";
     }
 }

@@ -13,72 +13,24 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SysMenuDao extends BaseDao<SysMenu> {
+public class SysMenuDao extends BaseDao {
 
     private static final SysMenu DEFAULT_BEAN = new SysMenu();
 
-    public int insertIntoTable(Connection connection, SysMenu bean) throws SQLException {
-        return super.insertIntoTable(connection, bean);
+    public static int deleteTableByIdList(Connection connection, List<Integer> idList) throws SQLException {
+        return deleteTableByIdList(connection, DEFAULT_BEAN, idList);
     }
 
-    public Integer insertIntoTableReturnId(Connection connection, SysMenu bean) throws SQLException {
-        return super.insertIntoTableReturnId(connection, bean);
+    public static List<SysMenu> selectTableByIdList(Connection connection, List<Integer> idList) throws SQLException {
+        return selectTableByIdList(connection, DEFAULT_BEAN, idList);
     }
 
-    public int batchInsertIntoTable(Connection connection, List<SysMenu> list) throws SQLException {
-        return super.batchInsertIntoTable(connection, list);
-    }
-
-    public int updateTableById(Connection connection, SysMenu bean, boolean all) throws SQLException {
-        return super.updateTableById(connection, bean, all);
-    }
-
-    public int updateTableByIdList(Connection connection, SysMenu bean, List<Integer> idList, boolean all) throws SQLException {
-        return super.updateTableByIdList(connection, bean, idList, all);
-    }
-
-    public int updateTable(Connection connection, SysMenu paramBean, SysMenu newBean, boolean insertWhenNotExist, boolean updateMulti, boolean all) throws SQLException {
-        return super.updateTable(connection, paramBean, newBean, insertWhenNotExist, updateMulti, all);
-    }
-
-    public int deleteTableById(Connection connection, SysMenu bean) throws SQLException {
-        return super.deleteTableById(connection, bean);
-    }
-
-    public int deleteTableByIdList(Connection connection, List<Integer> idList) throws SQLException {
-        return super.deleteTableByIdList(connection, DEFAULT_BEAN, idList);
-    }
-
-    public int countTableByBean(Connection connection, SysMenu bean) throws SQLException {
-        return super.countTableByBean(connection, bean);
-    }
-
-    public SysMenu selectTableById(Connection connection, SysMenu bean) throws SQLException {
-        return super.selectTableById(connection, bean);
-    }
-
-    public List<SysMenu> selectTableByIdList(Connection connection, List<Integer> idList) throws SQLException {
-        return super.selectTableByIdList(connection, DEFAULT_BEAN, idList);
-    }
-
-    public SysMenu selectOneTableByBean(Connection connection, SysMenu bean) throws SQLException {
-        return super.selectOneTableByBean(connection, bean);
-    }
-
-    public List<SysMenu> selectTableByBean(Connection connection, SysMenu bean) throws SQLException {
-        return super.selectTableByBean(connection, bean);
-    }
-
-    public List<SysMenu> selectAllTable(Connection connection) throws SQLException {
-        return super.selectAllTable(connection, DEFAULT_BEAN);
-    }
-
-    public PageBean<SysMenu> selectTableForPage(Connection connection, SysMenu bean, int page, int size) throws Exception {
-        return super.selectTableForPage(connection, bean, page, size);
+    public static List<SysMenu> selectAllTable(Connection connection) throws SQLException {
+        return selectAllTable(connection, DEFAULT_BEAN);
     }
 
     @SuppressWarnings("unchecked")
-    public PageBean<SysMenu> selectTableForCustomPage(Connection connection, SysMenuVO bean) throws Exception {
+    public static PageBean<SysMenu> selectTableForCustomPage(Connection connection, SysMenuVO bean) throws Exception {
         List<Object> countParamList = new ArrayList<Object>();
         List<Object> paramList = new ArrayList<Object>();
         String countSql = setSearchCondition(bean, countParamList, true);
@@ -95,7 +47,7 @@ public class SysMenuDao extends BaseDao<SysMenu> {
         return selectTableForPage(pageParamBean);
     }
 
-    private String setSearchCondition(SysMenuVO bean, List<Object> paramList, boolean isCountSql) {
+    private static String setSearchCondition(SysMenuVO bean, List<Object> paramList, boolean isCountSql) {
         StringBuilder sql = new StringBuilder("SELECT ");
         sql.append(isCountSql ? "COUNT(1)" : "*").append(" FROM sys_menu WHERE 1 = 1");
         if (StringUtils.isNotBlank(bean.getMenuName())) {
@@ -116,12 +68,12 @@ public class SysMenuDao extends BaseDao<SysMenu> {
         return sql.toString();
     }
 
-    public List<IdNameVO> allValidMenu(Connection connection) throws SQLException {
+    public static List<IdNameVO> allValidMenu(Connection connection) throws SQLException {
         String sql = "SELECT sm.id AS 'id', sm.menu_name AS 'name' FROM sys_menu sm";
         return executeSelectReturnList(connection, sql, null, new IdNameVO());
     }
 
-    public List<SysMenu> selectAuthorityMenu(Connection connection, String userGid) throws SQLException {
+    public static List<SysMenu> selectAuthorityMenu(Connection connection, String userGid) throws SQLException {
         String sql = "SELECT sm.* FROM sys_user_role sur INNER JOIN sys_role_menu srm ON sur.role_id = srm.role_id INNER JOIN sys_menu sm ON srm.menu_id = sm.id WHERE sur.is_valid = 1 AND sur.user_gid = ? AND srm.is_valid = 1";
         return executeSelectReturnList(connection, sql, List.of(userGid), new SysMenu());
     }

@@ -1,41 +1,43 @@
 package com.github.automain.dao;
 
-import com.github.automain.bean.SysRole;
-import com.github.automain.vo.RoleVO;
-import com.github.automain.vo.SysRoleVO;
+import com.github.automain.bean.SysSchedule;
+import com.github.automain.vo.SysScheduleVO;
 import com.github.fastjdbc.BaseDao;
 import com.github.fastjdbc.PageBean;
 import com.github.fastjdbc.PageParamBean;
-import org.apache.commons.lang3.StringUtils;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SysRoleDao extends BaseDao {
+public class SysScheduleDao extends BaseDao {
 
-    private static final SysRole DEFAULT_BEAN = new SysRole();
+    private static final SysSchedule DEFAULT_BEAN = new SysSchedule();
+
+    public static int softDeleteTableByIdList(Connection connection, List<Integer> idList) throws SQLException {
+        return softDeleteTableByIdList(connection, DEFAULT_BEAN, idList);
+    }
 
     public static int deleteTableByIdList(Connection connection, List<Integer> idList) throws SQLException {
         return deleteTableByIdList(connection, DEFAULT_BEAN, idList);
     }
 
-    public static List<SysRole> selectTableByIdList(Connection connection, List<Integer> idList) throws SQLException {
+    public static List<SysSchedule> selectTableByIdList(Connection connection, List<Integer> idList) throws SQLException {
         return selectTableByIdList(connection, DEFAULT_BEAN, idList);
     }
 
-    public static List<SysRole> selectAllTable(Connection connection) throws SQLException {
+    public static List<SysSchedule> selectAllTable(Connection connection) throws SQLException {
         return selectAllTable(connection, DEFAULT_BEAN);
     }
 
     @SuppressWarnings("unchecked")
-    public static PageBean<SysRole> selectTableForCustomPage(Connection connection, SysRoleVO bean) throws Exception {
+    public static PageBean<SysSchedule> selectTableForCustomPage(Connection connection, SysScheduleVO bean) throws Exception {
         List<Object> countParamList = new ArrayList<Object>();
         List<Object> paramList = new ArrayList<Object>();
         String countSql = setSearchCondition(bean, countParamList, true);
         String sql = setSearchCondition(bean, paramList, false);
-        PageParamBean<SysRole> pageParamBean = new PageParamBean<SysRole>()
+        PageParamBean<SysSchedule> pageParamBean = new PageParamBean<SysSchedule>()
                 .setConnection(connection)
                 .setBean(bean)
                 .setCountSql(countSql)
@@ -47,25 +49,12 @@ public class SysRoleDao extends BaseDao {
         return selectTableForPage(pageParamBean);
     }
 
-    private static String setSearchCondition(SysRoleVO bean, List<Object> paramList, boolean isCountSql) {
+    private static String setSearchCondition(SysScheduleVO bean, List<Object> paramList, boolean isCountSql) {
         StringBuilder sql = new StringBuilder("SELECT ");
-        sql.append(isCountSql ? "COUNT(1)" : "*").append(" FROM sys_role WHERE 1 = 1");
-        if (StringUtils.isNotBlank(bean.getRoleName())) {
-            sql.append(" AND role_name = ?");
-            paramList.add(bean.getRoleName());
-        }
-        if (StringUtils.isNotBlank(bean.getRoleLabel())) {
-            sql.append(" AND role_label = ?");
-            paramList.add(bean.getRoleLabel());
-        }
+        sql.append(isCountSql ? "COUNT(1)" : "*").append(" FROM sys_schedule WHERE is_valid = 1");
         if (!isCountSql && bean.getSortLabel() != null && bean.getSortOrder() != null && bean.columnMap(true).containsKey(bean.getSortLabel())) {
             sql.append(" ORDER BY ").append(bean.getSortLabel()).append("asc".equalsIgnoreCase(bean.getSortOrder()) ? " ASC" : " DESC");
         }
         return sql.toString();
-    }
-
-    public static List<RoleVO> selectAllRoleVO(Connection connection) throws SQLException {
-        String sql = "SELECT sr.role_name,sr.role_label FROM sys_role sr";
-        return executeSelectReturnList(connection, sql, null, new RoleVO());
     }
 }

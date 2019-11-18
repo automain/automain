@@ -4,6 +4,7 @@ import com.github.automain.bean.SysDictionary;
 import com.github.automain.common.annotation.RequestUri;
 import com.github.automain.common.bean.JsonResponse;
 import com.github.automain.common.controller.BaseController;
+import com.github.automain.dao.SysDictionaryDao;
 import com.github.automain.util.DateUtil;
 import com.github.automain.vo.DictionaryVO;
 import com.github.automain.vo.SysDictionaryVO;
@@ -19,7 +20,7 @@ public class DictionaryController extends BaseController {
 
     @RequestUri("/dictionaryAll")
     public JsonResponse dictionaryAll(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        List<DictionaryVO> allDictionary = SYS_DICTIONARY_DAO.selectAllDictionaryVO(connection);
+        List<DictionaryVO> allDictionary = SysDictionaryDao.selectAllDictionaryVO(connection);
         return JsonResponse.getSuccessJson(allDictionary);
     }
 
@@ -27,7 +28,7 @@ public class DictionaryController extends BaseController {
     public JsonResponse dictionaryList(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         SysDictionaryVO vo = getRequestParam(request, SysDictionaryVO.class);
         if (vo != null) {
-            PageBean<SysDictionary> pageBean = SYS_DICTIONARY_DAO.selectTableForCustomPage(connection, vo);
+            PageBean<SysDictionary> pageBean = SysDictionaryDao.selectTableForCustomPage(connection, vo);
             return JsonResponse.getSuccessJson(pageBean);
         }
         return JsonResponse.getFailedJson();
@@ -39,7 +40,7 @@ public class DictionaryController extends BaseController {
         if (checkValid(bean)) {
             bean.setUpdateTime(DateUtil.getNow());
             bean.setCreateTime(bean.getUpdateTime());
-            SYS_DICTIONARY_DAO.insertIntoTable(connection, bean);
+            SysDictionaryDao.insertIntoTable(connection, bean);
             return JsonResponse.getSuccessJson();
         }
         return JsonResponse.getFailedJson();
@@ -54,7 +55,7 @@ public class DictionaryController extends BaseController {
         SysDictionary bean = getRequestParam(request, SysDictionary.class);
         if (checkValid(bean) && bean.getId() != null) {
             bean.setUpdateTime(DateUtil.getNow());
-            SYS_DICTIONARY_DAO.updateTableById(connection, bean, false);
+            SysDictionaryDao.updateTableById(connection, bean, false);
             return JsonResponse.getSuccessJson();
         }
         return JsonResponse.getFailedJson();
@@ -64,7 +65,7 @@ public class DictionaryController extends BaseController {
     public JsonResponse dictionaryDetail(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         SysDictionary bean = getRequestParam(request, SysDictionary.class);
         if (bean != null && bean.getId() != null) {
-            SysDictionary detail = SYS_DICTIONARY_DAO.selectTableById(connection, bean);
+            SysDictionary detail = SysDictionaryDao.selectTableById(connection, bean);
             return JsonResponse.getSuccessJson(detail);
         }
         return JsonResponse.getFailedJson();
