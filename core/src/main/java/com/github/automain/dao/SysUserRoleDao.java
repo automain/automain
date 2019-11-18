@@ -1,14 +1,11 @@
 package com.github.automain.dao;
 
 import com.github.automain.bean.SysUserRole;
-import com.github.automain.vo.SysUserRoleVO;
 import com.github.fastjdbc.BaseDao;
 import com.github.fastjdbc.PageBean;
-import com.github.fastjdbc.PageParamBean;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class SysUserRoleDao extends BaseDao<SysUserRole> {
@@ -81,40 +78,5 @@ public class SysUserRoleDao extends BaseDao<SysUserRole> {
 
     public PageBean<SysUserRole> selectTableForPage(Connection connection, SysUserRole bean, int page, int size) throws Exception {
         return super.selectTableForPage(connection, bean, page, size);
-    }
-
-    @SuppressWarnings("unchecked")
-    public PageBean<SysUserRole> selectTableForCustomPage(Connection connection, SysUserRoleVO bean) throws Exception {
-        List<Object> countParamList = new ArrayList<Object>();
-        List<Object> paramList = new ArrayList<Object>();
-        String countSql = setSearchCondition(bean, countParamList, true);
-        String sql = setSearchCondition(bean, paramList, false);
-        PageParamBean<SysUserRole> pageParamBean = new PageParamBean<SysUserRole>()
-                .setConnection(connection)
-                .setBean(bean)
-                .setCountSql(countSql)
-                .setCountParamList(countParamList)
-                .setSql(sql)
-                .setParamList(paramList)
-                .setPage(bean.getPage())
-                .setSize(bean.getSize());
-        return selectTableForPage(pageParamBean);
-    }
-
-    private String setSearchCondition(SysUserRoleVO bean, List<Object> paramList, boolean isCountSql) {
-        StringBuilder sql = new StringBuilder("SELECT ");
-        sql.append(isCountSql ? "COUNT(1)" : "*").append(" FROM sys_user_role WHERE is_valid = 1");
-        if (bean.getUserGid() != null) {
-            sql.append(" AND user_gid = ?");
-            paramList.add(bean.getUserGid());
-        }
-        if (bean.getRoleId() != null) {
-            sql.append(" AND role_id = ?");
-            paramList.add(bean.getRoleId());
-        }
-        if (!isCountSql && bean.getSortLabel() != null && bean.getSortOrder() != null && bean.columnMap(true).containsKey(bean.getSortLabel())) {
-            sql.append(" ORDER BY ").append(bean.getSortLabel()).append("asc".equalsIgnoreCase(bean.getSortOrder()) ? " ASC" : " DESC");
-        }
-        return sql.toString();
     }
 }

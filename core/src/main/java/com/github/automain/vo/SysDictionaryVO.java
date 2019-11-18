@@ -70,4 +70,16 @@ public class SysDictionaryVO extends SysDictionary {
         this.updateTimeEnd = updateTimeEnd;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "SysDictionaryVO{" +
+                "page=" + page +
+                ", size=" + size +
+                ", sortLabel='" + sortLabel + '\'' +
+                ", sortOrder='" + sortOrder + '\'' +
+                ", createTimeEnd=" + createTimeEnd +
+                ", updateTimeEnd=" + updateTimeEnd +
+                '}';
+    }
 }

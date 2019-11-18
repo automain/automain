@@ -70,4 +70,16 @@ public class SysRoleVO extends SysRole {
         this.updateTimeEnd = updateTimeEnd;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "SysRoleVO{" +
+                "page=" + page +
+                ", size=" + size +
+                ", sortLabel='" + sortLabel + '\'' +
+                ", sortOrder='" + sortOrder + '\'' +
+                ", createTimeEnd=" + createTimeEnd +
+                ", updateTimeEnd=" + updateTimeEnd +
+                '}';
+    }
 }

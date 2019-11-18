@@ -118,8 +118,9 @@ public class ViewGenerator {
             operation.append("                </template>\n            </el-table-column>\n");
         }
         String deleteSelect = hasIsValid ? "            <el-table-column type=\"selection\" width=\"42\" fixed=\"left\"></el-table-column>\n" : "";
+        String deleteListener = hasIsValid ? "@selection-change=\"selectToDelete\"" : "";
         String sortChange = CollectionUtils.isNotEmpty(sortCheck) ? " @sort-change=\"handleSort\"" : "";
-        return "\n        <el-table ref=\"multipleTable\" :data=\"pageBean.data\" tooltip-effect=\"dark\" :height=\"fullHeight\" @selection-change=\"selectToDelete\"" +
+        return "\n        <el-table ref=\"multipleTable\" :data=\"pageBean.data\" tooltip-effect=\"dark\" :height=\"fullHeight\" " + deleteListener +
                 sortChange + " @filter-change=\"handleFilterChange\">\n" + deleteSelect + listBlock + operation +
                 "        </el-table>\n        <el-pagination @size-change=\"handleSizeChange\" @current-change=\"handlePageChange\" :page-sizes=\"[10, 20, 50, 100]\" :page-size=\"" +
                 table + "VO.size\" layout=\"->, total, prev, pager, next, jumper, sizes\" :total=\"pageBean.total\"></el-pagination>";
@@ -273,7 +274,7 @@ public class ViewGenerator {
             handleDeleteBlock.append(hasGlobalId ? "gidList" : "idList");
             handleDeleteBlock.append(".length > 0) {\n                    this.$confirm(\"确定删除选中的数据?\", \"提示\", {type: \"warning\"}).then(() => {\n                        this.$axios.post(\"/")
                     .append(prefix).append("Delete\", this.").append(lowerTableName)
-                    .append("VO).then(response => {\n                            let data = response.data;\n                            if (data.status === 0) {\n                                this.$message.success(\"操作成功\");\n                                this.handleSearch();\n                            } else {\n                                this.$message.error(\"操作失败\");\n                            }\n                        });\n                    }).catch(() => {\n                        this.$message.info(\"取消删除\");\n                    });\n                } else {\n                    this.$message.warning(\"请选择要删除的数据\");\n                }\n            }\n        },\n");
+                    .append("VO).then(response => {\n                            let data = response.data;\n                            if (data.status === 0) {\n                                this.$message.success(\"操作成功\");\n                                this.handleSearch();\n                            } else {\n                                this.$message.error(\"操作失败\");\n                            }\n                        });\n                    }).catch(() => {\n                        this.$message.info(\"取消删除\");\n                    });\n                } else {\n                    this.$message.warning(\"请选择要删除的数据\");\n                }\n            },\n");
         }
         if (hasAdd || hasUpdate) {
             handleAddUpdateBlock.append("            handleAddUpdate(uri, formName) {\n                this.$refs[formName].validate((valid) => {\n                    if (valid) {\n                        this.$axios.post(uri, this.").append(lowerTableName)
@@ -383,6 +384,6 @@ public class ViewGenerator {
                 "            handleClear() {\n                for (let key in this." + lowerTableName + ") {\n                    if (this." + lowerTableName +
                 ".hasOwnProperty(key)) {\n                        this." + lowerTableName + "[key] = null;\n                    }\n                }\n            },\n" +
                 handleAddUpdateBlock.toString() + handleDeleteBlock.toString() +
-                "        mounted() {\n            this.handleSearch();\n        },\n       computed: {\n            fullHeight() {\n                return this.$store.state.fullHeight - 140;\n            }\n        }\n    }\n</script>";
+                "        },\n        mounted() {\n            this.handleSearch();\n        },\n       computed: {\n            fullHeight() {\n                return this.$store.state.fullHeight - 140;\n            }\n        }\n    }\n</script>";
     }
 }

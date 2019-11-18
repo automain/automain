@@ -70,4 +70,16 @@ public class SysPrivilegeVO extends SysPrivilege {
         this.updateTimeEnd = updateTimeEnd;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "SysPrivilegeVO{" +
+                "page=" + page +
+                ", size=" + size +
+                ", sortLabel='" + sortLabel + '\'' +
+                ", sortOrder='" + sortOrder + '\'' +
+                ", createTimeEnd=" + createTimeEnd +
+                ", updateTimeEnd=" + updateTimeEnd +
+                '}';
+    }
 }

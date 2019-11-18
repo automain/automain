@@ -48,4 +48,14 @@ public class MenuVO {
         this.children = children;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "MenuVO{" +
+                "menuPath='" + menuPath + '\'' +
+                ", menuName='" + menuName + '\'' +
+                ", menuIcon='" + menuIcon + '\'' +
+                ", children=" + children +
+                '}';
+    }
 }

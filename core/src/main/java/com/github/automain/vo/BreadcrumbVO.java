@@ -23,4 +23,12 @@ public class BreadcrumbVO {
     public void setMenuName(String menuName) {
         this.menuName = menuName;
     }
+
+    @Override
+    public String toString() {
+        return "BreadcrumbVO{" +
+                "parentId=" + parentId +
+                ", menuName='" + menuName + '\'' +
+                '}';
+    }
 }

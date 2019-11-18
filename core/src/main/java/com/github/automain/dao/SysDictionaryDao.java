@@ -119,7 +119,7 @@ public class SysDictionaryDao extends BaseDao<SysDictionary> {
     }
 
     public List<DictionaryVO> selectAllDictionaryVO(Connection connection) throws Exception{
-        return executeSelectReturnList(connection, "SELECT sd.table_name, sd.column_name, sd.dictionary_key, sd.dictionary_value FROM sys_dictionary sd WHERE sd.is_valid = 1", null, new DictionaryVO());
+        return executeSelectReturnList(connection, "SELECT sd.table_name, sd.column_name, sd.dictionary_key, sd.dictionary_value FROM sys_dictionary sd", null, new DictionaryVO());
     }
 
     public List<String> selectDictionaryColumn(Connection connection, String tableName) throws Exception{

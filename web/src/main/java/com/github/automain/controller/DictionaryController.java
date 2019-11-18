@@ -8,7 +8,6 @@ import com.github.automain.util.DateUtil;
 import com.github.automain.vo.DictionaryVO;
 import com.github.automain.vo.SysDictionaryVO;
 import com.github.fastjdbc.PageBean;
-import org.apache.commons.collections4.CollectionUtils;
 import redis.clients.jedis.Jedis;
 
 import javax.servlet.http.HttpServletRequest;
@@ -67,16 +66,6 @@ public class DictionaryController extends BaseController {
         if (bean != null && bean.getId() != null) {
             SysDictionary detail = SYS_DICTIONARY_DAO.selectTableById(connection, bean);
             return JsonResponse.getSuccessJson(detail);
-        }
-        return JsonResponse.getFailedJson();
-    }
-
-    @RequestUri("/dictionaryDelete")
-    public JsonResponse dictionaryDelete(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        SysDictionaryVO vo = getRequestParam(request, SysDictionaryVO.class);
-        if (vo != null && CollectionUtils.isNotEmpty(vo.getIdList())) {
-            SYS_DICTIONARY_DAO.softDeleteTableByIdList(connection, vo.getIdList());
-            return JsonResponse.getSuccessJson();
         }
         return JsonResponse.getFailedJson();
     }
