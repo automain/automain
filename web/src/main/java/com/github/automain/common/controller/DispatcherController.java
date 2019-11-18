@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,7 +40,6 @@ public class DispatcherController extends HttpServlet {
     @Override
     public void init() throws ServletException {
         Connection connection = null;
-        Jedis jedis = null;
         try {
             // 初始化数据库连接池
             SystemUtil.initConnectionPool();
@@ -50,12 +50,6 @@ public class DispatcherController extends HttpServlet {
             REQUEST_MAPPING.putAll(initRequestMap());
             // 获取数据库连接
             connection = ConnectionPool.getConnection(null);
-            // 获取redis连接
-            jedis = RedisUtil.getJedis();
-            // 初始化字典表缓存
-//            DictionaryContainer.reloadDictionary(jedis, connection);
-//            // 初始化人员角色权限缓存
-//            RolePrivilegeDaoContainer.reloadRolePrivilege(jedis, connection);
             // 初始化定时任务
 //            SystemUtil.reloadSchedule(connection);
             LOGGER.info("===============================System Start Success===============================");
@@ -63,7 +57,11 @@ public class DispatcherController extends HttpServlet {
             e.printStackTrace();
             throw new ServletException(e);
         } finally {
-            SystemUtil.closeJedisAndConnection(jedis, connection);
+            try {
+                ConnectionPool.close(connection);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 

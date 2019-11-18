@@ -15,8 +15,6 @@ public class SysDictionary implements BaseBean<SysDictionary> {
     private Integer createTime;
     // 更新时间
     private Integer updateTime;
-    // 是否有效(0:否,1:是)
-    private Integer isValid;
     // 表名
     private String tableName;
     // 字段名
@@ -50,15 +48,6 @@ public class SysDictionary implements BaseBean<SysDictionary> {
 
     public SysDictionary setUpdateTime(Integer updateTime) {
         this.updateTime = updateTime;
-        return this;
-    }
-
-    public Integer getIsValid() {
-        return isValid;
-    }
-
-    public SysDictionary setIsValid(Integer isValid) {
-        this.isValid = isValid;
         return this;
     }
 
@@ -105,7 +94,7 @@ public class SysDictionary implements BaseBean<SysDictionary> {
 
     @Override
     public Map<String, Object> columnMap(boolean all) {
-        Map<String, Object> map = new HashMap<String, Object>(8);
+        Map<String, Object> map = new HashMap<String, Object>(7);
         if (all || this.getId() != null) {
             map.put("id", this.getId());
         }
@@ -114,9 +103,6 @@ public class SysDictionary implements BaseBean<SysDictionary> {
         }
         if (all || this.getUpdateTime() != null) {
             map.put("update_time", this.getUpdateTime());
-        }
-        if (all || this.getIsValid() != null) {
-            map.put("is_valid", this.getIsValid());
         }
         if (all || this.getTableName() != null) {
             map.put("table_name", this.getTableName());
@@ -139,7 +125,6 @@ public class SysDictionary implements BaseBean<SysDictionary> {
                 .setId(rs.getInt("id"))
                 .setCreateTime(rs.getInt("create_time"))
                 .setUpdateTime(rs.getInt("update_time"))
-                .setIsValid(rs.getInt("is_valid"))
                 .setTableName(rs.getString("table_name"))
                 .setColumnName(rs.getString("column_name"))
                 .setDictionaryKey(rs.getInt("dictionary_key"))
@@ -152,7 +137,6 @@ public class SysDictionary implements BaseBean<SysDictionary> {
                 "id=" + id +
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +
-                ", isValid=" + isValid +
                 ", tableName='" + tableName + '\'' +
                 ", columnName='" + columnName + '\'' +
                 ", dictionaryKey=" + dictionaryKey +

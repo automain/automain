@@ -2,8 +2,6 @@ package com.github.automain.vo;
 
 import com.github.automain.bean.SysRole;
 
-import java.util.List;
-
 public class SysRoleVO extends SysRole {
 
     // 页码
@@ -14,8 +12,6 @@ public class SysRoleVO extends SysRole {
     private String sortLabel;
     // 排序顺序
     private String sortOrder;
-    // 删除用ID集合
-    private List<Integer> idList;
     // 创建时间结束
     private Integer createTimeEnd;
     // 更新时间结束
@@ -54,15 +50,6 @@ public class SysRoleVO extends SysRole {
 
     public SysRoleVO setSortOrder(String sortOrder) {
         this.sortOrder = sortOrder;
-        return this;
-    }
-
-    public List<Integer> getIdList() {
-        return idList;
-    }
-
-    public SysRoleVO setIdList(List<Integer> idList) {
-        this.idList = idList;
         return this;
     }
 

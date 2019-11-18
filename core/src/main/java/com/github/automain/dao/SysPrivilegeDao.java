@@ -44,14 +44,6 @@ public class SysPrivilegeDao extends BaseDao<SysPrivilege> {
         return super.updateTable(connection, paramBean, newBean, insertWhenNotExist, updateMulti, all);
     }
 
-    public int softDeleteTableById(Connection connection, SysPrivilege bean) throws SQLException {
-        return super.softDeleteTableById(connection, bean);
-    }
-
-    public int softDeleteTableByIdList(Connection connection, List<Integer> idList) throws SQLException {
-        return super.softDeleteTableByIdList(connection, DEFAULT_BEAN, idList);
-    }
-
     public int deleteTableById(Connection connection, SysPrivilege bean) throws SQLException {
         return super.deleteTableById(connection, bean);
     }
@@ -108,7 +100,7 @@ public class SysPrivilegeDao extends BaseDao<SysPrivilege> {
 
     private String setSearchCondition(SysPrivilegeVO bean, List<Object> paramList, boolean isCountSql) {
         StringBuilder sql = new StringBuilder("SELECT ");
-        sql.append(isCountSql ? "COUNT(1)" : "*").append(" FROM sys_privilege WHERE is_valid = 1");
+        sql.append(isCountSql ? "COUNT(1)" : "*").append(" FROM sys_privilege WHERE 1 = 1");
         if (StringUtils.isNotBlank(bean.getPrivilegeLabel())) {
             sql.append(" AND privilege_label = ?");
             paramList.add(bean.getPrivilegeLabel());
@@ -128,7 +120,7 @@ public class SysPrivilegeDao extends BaseDao<SysPrivilege> {
     }
 
     public Set<String> selectUserPrivilege(Connection connection, String userGid) throws SQLException {
-        String sql = "SELECT sp.privilege_label FROM sys_user_role sur INNER JOIN sys_role_privilege srp ON sur.role_id = srp.role_id INNER JOIN sys_privilege sp ON srp.privilege_id = sp.id WHERE sur.is_valid = 1 AND srp.is_valid = 1 AND sp.is_valid = 1 AND sur.user_gid = ? GROUP BY sp.privilege_label";
+        String sql = "SELECT sp.privilege_label FROM sys_user_role sur INNER JOIN sys_role_privilege srp ON sur.role_id = srp.role_id INNER JOIN sys_privilege sp ON srp.privilege_id = sp.id WHERE sur.is_valid = 1 AND srp.is_valid = 1 AND sur.user_gid = ? GROUP BY sp.privilege_label";
         ResultSet rs = null;
         Set<String> result = new HashSet<String>();
         try {

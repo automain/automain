@@ -42,9 +42,7 @@ public class IdNameVO implements BaseBean<IdNameVO> {
 
     @Override
     public IdNameVO beanFromResultSet(ResultSet rs) throws SQLException {
-        return new IdNameVO()
-                .setId(rs.getInt("id"))
-                .setName(rs.getString("name"));
+        return new IdNameVO().setId(rs.getInt("id")).setName(rs.getString("name"));
     }
 
     @Override

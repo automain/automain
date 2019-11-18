@@ -43,14 +43,6 @@ public class SysDictionaryDao extends BaseDao<SysDictionary> {
         return super.updateTable(connection, paramBean, newBean, insertWhenNotExist, updateMulti, all);
     }
 
-    public int softDeleteTableById(Connection connection, SysDictionary bean) throws SQLException {
-        return super.softDeleteTableById(connection, bean);
-    }
-
-    public int softDeleteTableByIdList(Connection connection, List<Integer> idList) throws SQLException {
-        return super.softDeleteTableByIdList(connection, DEFAULT_BEAN, idList);
-    }
-
     public int deleteTableById(Connection connection, SysDictionary bean) throws SQLException {
         return super.deleteTableById(connection, bean);
     }
@@ -107,7 +99,7 @@ public class SysDictionaryDao extends BaseDao<SysDictionary> {
 
     private String setSearchCondition(SysDictionaryVO bean, List<Object> paramList, boolean isCountSql) {
         StringBuilder sql = new StringBuilder("SELECT ");
-        sql.append(isCountSql ? "COUNT(1)" : "*").append(" FROM sys_dictionary WHERE is_valid = 1");
+        sql.append(isCountSql ? "COUNT(1)" : "*").append(" FROM sys_dictionary WHERE 1 = 1");
         if (StringUtils.isNotBlank(bean.getTableName())) {
             sql.append(" AND table_name = ?");
             paramList.add(bean.getTableName());

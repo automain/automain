@@ -2,8 +2,6 @@ package com.github.automain.vo;
 
 import com.github.automain.bean.SysMenu;
 
-import java.util.List;
-
 public class SysMenuVO extends SysMenu {
 
     // 页码
@@ -14,8 +12,6 @@ public class SysMenuVO extends SysMenu {
     private String sortLabel;
     // 排序顺序
     private String sortOrder;
-    // 删除用ID集合
-    private List<Integer> idList;
     // 创建时间结束
     private Integer createTimeEnd;
     // 更新时间结束
@@ -54,15 +50,6 @@ public class SysMenuVO extends SysMenu {
 
     public SysMenuVO setSortOrder(String sortOrder) {
         this.sortOrder = sortOrder;
-        return this;
-    }
-
-    public List<Integer> getIdList() {
-        return idList;
-    }
-
-    public SysMenuVO setIdList(List<Integer> idList) {
-        this.idList = idList;
         return this;
     }
 

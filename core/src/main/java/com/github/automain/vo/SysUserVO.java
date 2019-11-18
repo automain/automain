@@ -24,6 +24,8 @@ public class SysUserVO extends SysUser {
     private String password;
     // 添加用确认密码
     private String password2;
+    // 权限标识
+    private String roleLabel;
 
     public int getPage() {
         return page;
@@ -104,5 +106,30 @@ public class SysUserVO extends SysUser {
     public SysUserVO setPassword2(String password2) {
         this.password2 = password2;
         return this;
+    }
+
+    public String getRoleLabel() {
+        return roleLabel;
+    }
+
+    public SysUserVO setRoleLabel(String roleLabel) {
+        this.roleLabel = roleLabel;
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return "SysUserVO{" +
+                "page=" + page +
+                ", size=" + size +
+                ", sortLabel='" + sortLabel + '\'' +
+                ", sortOrder='" + sortOrder + '\'' +
+                ", gidList=" + gidList +
+                ", createTimeEnd=" + createTimeEnd +
+                ", updateTimeEnd=" + updateTimeEnd +
+                ", password='" + password + '\'' +
+                ", password2='" + password2 + '\'' +
+                ", roleLabel='" + roleLabel + '\'' +
+                '}';
     }
 }

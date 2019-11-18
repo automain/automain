@@ -15,8 +15,6 @@ public class SysMenu implements BaseBean<SysMenu>, Comparable<SysMenu> {
     private Integer createTime;
     // 更新时间
     private Integer updateTime;
-    // 是否有效(0:否,1:是)
-    private Integer isValid;
     // 菜单路径
     private String menuPath;
     // 菜单名称
@@ -52,15 +50,6 @@ public class SysMenu implements BaseBean<SysMenu>, Comparable<SysMenu> {
 
     public SysMenu setUpdateTime(Integer updateTime) {
         this.updateTime = updateTime;
-        return this;
-    }
-
-    public Integer getIsValid() {
-        return isValid;
-    }
-
-    public SysMenu setIsValid(Integer isValid) {
-        this.isValid = isValid;
         return this;
     }
 
@@ -116,7 +105,7 @@ public class SysMenu implements BaseBean<SysMenu>, Comparable<SysMenu> {
 
     @Override
     public Map<String, Object> columnMap(boolean all) {
-        Map<String, Object> map = new HashMap<String, Object>(9);
+        Map<String, Object> map = new HashMap<String, Object>(8);
         if (all || this.getId() != null) {
             map.put("id", this.getId());
         }
@@ -125,9 +114,6 @@ public class SysMenu implements BaseBean<SysMenu>, Comparable<SysMenu> {
         }
         if (all || this.getUpdateTime() != null) {
             map.put("update_time", this.getUpdateTime());
-        }
-        if (all || this.getIsValid() != null) {
-            map.put("is_valid", this.getIsValid());
         }
         if (all || this.getMenuPath() != null) {
             map.put("menu_path", this.getMenuPath());
@@ -153,7 +139,6 @@ public class SysMenu implements BaseBean<SysMenu>, Comparable<SysMenu> {
                 .setId(rs.getInt("id"))
                 .setCreateTime(rs.getInt("create_time"))
                 .setUpdateTime(rs.getInt("update_time"))
-                .setIsValid(rs.getInt("is_valid"))
                 .setMenuPath(rs.getString("menu_path"))
                 .setMenuName(rs.getString("menu_name"))
                 .setMenuIcon(rs.getString("menu_icon"))
@@ -167,7 +152,6 @@ public class SysMenu implements BaseBean<SysMenu>, Comparable<SysMenu> {
                 "id=" + id +
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +
-                ", isValid=" + isValid +
                 ", menuPath='" + menuPath + '\'' +
                 ", menuName='" + menuName + '\'' +
                 ", menuIcon='" + menuIcon + '\'' +

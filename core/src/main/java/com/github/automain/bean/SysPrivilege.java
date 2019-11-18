@@ -15,8 +15,6 @@ public class SysPrivilege implements BaseBean<SysPrivilege> {
     private Integer createTime;
     // 更新时间
     private Integer updateTime;
-    // 是否有效(0:否,1:是)
-    private Integer isValid;
     // 权限标识
     private String privilegeLabel;
     // 权限名称
@@ -48,15 +46,6 @@ public class SysPrivilege implements BaseBean<SysPrivilege> {
 
     public SysPrivilege setUpdateTime(Integer updateTime) {
         this.updateTime = updateTime;
-        return this;
-    }
-
-    public Integer getIsValid() {
-        return isValid;
-    }
-
-    public SysPrivilege setIsValid(Integer isValid) {
-        this.isValid = isValid;
         return this;
     }
 
@@ -94,7 +83,7 @@ public class SysPrivilege implements BaseBean<SysPrivilege> {
 
     @Override
     public Map<String, Object> columnMap(boolean all) {
-        Map<String, Object> map = new HashMap<String, Object>(7);
+        Map<String, Object> map = new HashMap<String, Object>(6);
         if (all || this.getId() != null) {
             map.put("id", this.getId());
         }
@@ -103,9 +92,6 @@ public class SysPrivilege implements BaseBean<SysPrivilege> {
         }
         if (all || this.getUpdateTime() != null) {
             map.put("update_time", this.getUpdateTime());
-        }
-        if (all || this.getIsValid() != null) {
-            map.put("is_valid", this.getIsValid());
         }
         if (all || this.getPrivilegeLabel() != null) {
             map.put("privilege_label", this.getPrivilegeLabel());
@@ -125,7 +111,6 @@ public class SysPrivilege implements BaseBean<SysPrivilege> {
                 .setId(rs.getInt("id"))
                 .setCreateTime(rs.getInt("create_time"))
                 .setUpdateTime(rs.getInt("update_time"))
-                .setIsValid(rs.getInt("is_valid"))
                 .setPrivilegeLabel(rs.getString("privilege_label"))
                 .setPrivilegeName(rs.getString("privilege_name"))
                 .setParentId(rs.getInt("parent_id"));
@@ -137,7 +122,6 @@ public class SysPrivilege implements BaseBean<SysPrivilege> {
                 "id=" + id +
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +
-                ", isValid=" + isValid +
                 ", privilegeLabel='" + privilegeLabel + '\'' +
                 ", privilegeName='" + privilegeName + '\'' +
                 ", parentId=" + parentId +

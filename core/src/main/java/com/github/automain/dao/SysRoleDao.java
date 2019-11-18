@@ -1,6 +1,7 @@
 package com.github.automain.dao;
 
 import com.github.automain.bean.SysRole;
+import com.github.automain.vo.RoleVO;
 import com.github.automain.vo.SysRoleVO;
 import com.github.fastjdbc.BaseDao;
 import com.github.fastjdbc.PageBean;
@@ -38,14 +39,6 @@ public class SysRoleDao extends BaseDao<SysRole> {
 
     public int updateTable(Connection connection, SysRole paramBean, SysRole newBean, boolean insertWhenNotExist, boolean updateMulti, boolean all) throws SQLException {
         return super.updateTable(connection, paramBean, newBean, insertWhenNotExist, updateMulti, all);
-    }
-
-    public int softDeleteTableById(Connection connection, SysRole bean) throws SQLException {
-        return super.softDeleteTableById(connection, bean);
-    }
-
-    public int softDeleteTableByIdList(Connection connection, List<Integer> idList) throws SQLException {
-        return super.softDeleteTableByIdList(connection, DEFAULT_BEAN, idList);
     }
 
     public int deleteTableById(Connection connection, SysRole bean) throws SQLException {
@@ -104,7 +97,7 @@ public class SysRoleDao extends BaseDao<SysRole> {
 
     private String setSearchCondition(SysRoleVO bean, List<Object> paramList, boolean isCountSql) {
         StringBuilder sql = new StringBuilder("SELECT ");
-        sql.append(isCountSql ? "COUNT(1)" : "*").append(" FROM sys_role WHERE is_valid = 1");
+        sql.append(isCountSql ? "COUNT(1)" : "*").append(" FROM sys_role WHERE 1 = 1");
         if (StringUtils.isNotBlank(bean.getRoleName())) {
             sql.append(" AND role_name = ?");
             paramList.add(bean.getRoleName());
@@ -117,5 +110,10 @@ public class SysRoleDao extends BaseDao<SysRole> {
             sql.append(" ORDER BY ").append(bean.getSortLabel()).append("asc".equalsIgnoreCase(bean.getSortOrder()) ? " ASC" : " DESC");
         }
         return sql.toString();
+    }
+
+    public List<RoleVO> selectAllRoleVO(Connection connection) throws SQLException {
+        String sql = "SELECT sr.role_name,sr.role_label FROM sys_role sr";
+        return executeSelectReturnList(connection, sql, null, new RoleVO());
     }
 }

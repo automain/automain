@@ -10,7 +10,6 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -20,7 +19,6 @@ public class SystemUtil {
 
     private static ScheduledExecutorService SCHEDULE_THREAD_POOL = null;
     private static final boolean OPEN_SCHEDULE = PropertiesUtil.getBooleanProperty("app.openSchedule");
-    private static final DateTimeFormatter LOG_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss,SSS");
     public static final String PROJECT_HOST = PropertiesUtil.getStringProperty("app.projectHost");
     public static final Set<String> ALLOW_ORIGIN = Set.of(PropertiesUtil.getStringProperty("app.allowOrigin").split(","));
     private static final String JDBC_URL = PropertiesUtil.getStringProperty("db.master_jdbcUrl");

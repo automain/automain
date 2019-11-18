@@ -25,7 +25,7 @@ public class UploadController extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         BaseExecutor executor = new UploadExecutor();
         final AsyncContext asyncContext = req.startAsync(req, resp);
-        asyncContext.setTimeout(60000L);
+        asyncContext.setTimeout(600000L);
         executor.setAsyncContext(asyncContext);
         asyncContext.start(executor);
     }

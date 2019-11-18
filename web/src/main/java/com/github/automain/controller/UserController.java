@@ -15,6 +15,7 @@ import com.github.automain.util.RedisUtil;
 import com.github.automain.vo.IdNameVO;
 import com.github.automain.vo.LoginUserVO;
 import com.github.automain.vo.MenuVO;
+import com.github.automain.vo.RoleVO;
 import com.github.automain.vo.SysMenuVO;
 import com.github.automain.vo.SysPrivilegeVO;
 import com.github.automain.vo.SysRoleVO;
@@ -150,7 +151,7 @@ public class UserController extends BaseController {
     public JsonResponse checkUserExist(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
          String userName = request.getParameter("userName");
          if (StringUtils.isNotBlank(userName)) {
-             int count = SYS_USER_DAO.countTableByBean(connection, new SysUser().setUserName(userName));
+             int count = SYS_USER_DAO.countTableByBean(connection, new SysUser().setUserName(userName).setIsValid(1));
              if (count == 0) {
                  return JsonResponse.getSuccessJson();
              }
@@ -265,16 +266,6 @@ public class UserController extends BaseController {
         return JsonResponse.getFailedJson();
     }
 
-    @RequestUri("/menuDelete")
-    public JsonResponse menuDelete(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        SysMenuVO vo = getRequestParam(request, SysMenuVO.class);
-        if (vo != null && CollectionUtils.isNotEmpty(vo.getIdList())) {
-            SYS_MENU_DAO.softDeleteTableByIdList(connection, vo.getIdList());
-            return JsonResponse.getSuccessJson();
-        }
-        return JsonResponse.getFailedJson();
-    }
-
     @RequestUri(value = "/allValidMenu", slave = "slave1")
     public JsonResponse allValidMenu(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         List<IdNameVO> menuVOList = SYS_MENU_DAO.allValidMenu(connection);
@@ -282,6 +273,24 @@ public class UserController extends BaseController {
     }
 
     // role
+    @RequestUri(value = "/checkRoleExist", slave = "slave1")
+    public JsonResponse checkRoleExist(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String roleLabel = request.getParameter("roleLabel");
+        if (StringUtils.isNotBlank(roleLabel)) {
+            int count = SYS_ROLE_DAO.countTableByBean(connection, new SysRole().setRoleLabel(roleLabel));
+            if (count == 0) {
+                return JsonResponse.getSuccessJson();
+            }
+        }
+        return JsonResponse.getFailedJson();
+    }
+
+    @RequestUri(value = "/allRoleList", slave = "slave1")
+    public JsonResponse allRoleList(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        List<RoleVO> allRoleList = SYS_ROLE_DAO.selectAllRoleVO(connection);
+        return JsonResponse.getSuccessJson(allRoleList);
+    }
+
     @RequestUri(value = "/roleList", slave = "slave1")
     public JsonResponse roleList(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         SysRoleVO vo = getRequestParam(request, SysRoleVO.class);
@@ -325,16 +334,6 @@ public class UserController extends BaseController {
         if (bean != null && bean.getId() != null) {
             SysRole detail = SYS_ROLE_DAO.selectTableById(connection, bean);
             return JsonResponse.getSuccessJson(detail);
-        }
-        return JsonResponse.getFailedJson();
-    }
-
-    @RequestUri("/roleDelete")
-    public JsonResponse roleDelete(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        SysRoleVO vo = getRequestParam(request, SysRoleVO.class);
-        if (vo != null && CollectionUtils.isNotEmpty(vo.getIdList())) {
-            SYS_ROLE_DAO.softDeleteTableByIdList(connection, vo.getIdList());
-            return JsonResponse.getSuccessJson();
         }
         return JsonResponse.getFailedJson();
     }
@@ -383,16 +382,6 @@ public class UserController extends BaseController {
         if (bean != null && bean.getId() != null) {
             SysPrivilege detail = SYS_PRIVILEGE_DAO.selectTableById(connection, bean);
             return JsonResponse.getSuccessJson(detail);
-        }
-        return JsonResponse.getFailedJson();
-    }
-
-    @RequestUri("/privilegeDelete")
-    public JsonResponse privilegeDelete(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        SysPrivilegeVO vo = getRequestParam(request, SysPrivilegeVO.class);
-        if (vo != null && CollectionUtils.isNotEmpty(vo.getIdList())) {
-            SYS_PRIVILEGE_DAO.softDeleteTableByIdList(connection, vo.getIdList());
-            return JsonResponse.getSuccessJson();
         }
         return JsonResponse.getFailedJson();
     }

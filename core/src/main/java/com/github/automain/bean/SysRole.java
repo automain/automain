@@ -15,8 +15,6 @@ public class SysRole implements BaseBean<SysRole> {
     private Integer createTime;
     // 更新时间
     private Integer updateTime;
-    // 是否有效(0:否,1:是)
-    private Integer isValid;
     // 角色名称
     private String roleName;
     // 角色标识
@@ -49,15 +47,6 @@ public class SysRole implements BaseBean<SysRole> {
         return this;
     }
 
-    public Integer getIsValid() {
-        return isValid;
-    }
-
-    public SysRole setIsValid(Integer isValid) {
-        this.isValid = isValid;
-        return this;
-    }
-
     public String getRoleName() {
         return roleName;
     }
@@ -83,7 +72,7 @@ public class SysRole implements BaseBean<SysRole> {
 
     @Override
     public Map<String, Object> columnMap(boolean all) {
-        Map<String, Object> map = new HashMap<String, Object>(6);
+        Map<String, Object> map = new HashMap<String, Object>(5);
         if (all || this.getId() != null) {
             map.put("id", this.getId());
         }
@@ -92,9 +81,6 @@ public class SysRole implements BaseBean<SysRole> {
         }
         if (all || this.getUpdateTime() != null) {
             map.put("update_time", this.getUpdateTime());
-        }
-        if (all || this.getIsValid() != null) {
-            map.put("is_valid", this.getIsValid());
         }
         if (all || this.getRoleName() != null) {
             map.put("role_name", this.getRoleName());
@@ -111,7 +97,6 @@ public class SysRole implements BaseBean<SysRole> {
                 .setId(rs.getInt("id"))
                 .setCreateTime(rs.getInt("create_time"))
                 .setUpdateTime(rs.getInt("update_time"))
-                .setIsValid(rs.getInt("is_valid"))
                 .setRoleName(rs.getString("role_name"))
                 .setRoleLabel(rs.getString("role_label"));
     }
@@ -122,7 +107,6 @@ public class SysRole implements BaseBean<SysRole> {
                 "id=" + id +
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +
-                ", isValid=" + isValid +
                 ", roleName='" + roleName + '\'' +
                 ", roleLabel='" + roleLabel + '\'' +
                 '}';

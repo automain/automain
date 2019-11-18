@@ -23,12 +23,9 @@ public class VOGenerator {
     private String getProperties(List<ColumnBean> columns, String upperTableName, boolean hasGlobalId, List<String> dictionaryColumnList) {
         StringBuilder properties = new StringBuilder();
         StringBuilder getterSetter = new StringBuilder();
+        StringBuilder toString = new StringBuilder();
         properties.append("\n\n    // 页码\n    private int page;\n    // 页大小\n    private int size;\n    // 排序字段\n    private String sortLabel;\n    // 排序顺序\n    private String sortOrder;");
-        if (hasGlobalId) {
-            properties.append("\n    // 删除用GID集合\n    private List<String> gidList;");
-        } else {
-            properties.append("\n    // 删除用ID集合\n    private List<Integer> idList;");
-        }
+
         getterSetter.append("\n\n    public int getPage() {\n        return page;\n    }\n\n")
                 .append("    public ").append(upperTableName)
                 .append("VO setPage(int page) {\n        this.page = page;\n        return this;\n    }")
@@ -38,14 +35,21 @@ public class VOGenerator {
                 .append("\n\n    public String getSortLabel() {\n        return sortLabel;\n    }\n\n    public ").append(upperTableName)
                 .append("VO setSortLabel(String sortLabel) {\n        this.sortLabel = sortLabel;\n        return this;\n    }\n\n    public String getSortOrder() {\n        return sortOrder;\n    }\n\n    public ")
                 .append(upperTableName).append("VO setSortOrder(String sortOrder) {\n        this.sortOrder = sortOrder;\n        return this;\n    }");
+
+        toString.append("\n\n    @Override\n    public String toString() {\n        return \"").append(upperTableName)
+                .append("VO{\" +\n                \"page=\" + page +\n                \", size=\" + size +\n                \", sortLabel='\" + sortLabel + '\\'' +\n                \", sortOrder='\" + sortOrder + '\\'' +");
         if (hasGlobalId) {
+            properties.append("\n    // 删除用GID集合\n    private List<String> gidList;");
             getterSetter.append("\n\n    public List<String> getGidList() {\n        return gidList;\n    }\n\n")
                     .append("    public ").append(upperTableName)
                     .append("VO setGidList(List<String> gidList) {\n        this.gidList = gidList;\n        return this;\n    }");
+            toString.append("\n                \", gidList=\" + gidList +");
         } else {
+            properties.append("\n    // 删除用ID集合\n    private List<Integer> idList;");
             getterSetter.append("\n\n    public List<Integer> getIdList() {\n        return idList;\n    }\n\n")
                     .append("    public ").append(upperTableName)
                     .append("VO setIdList(List<Integer> idList) {\n        this.idList = idList;\n        return this;\n    }");
+            toString.append("\n                \", idList=\" + idList +");
         }
         for (ColumnBean column : columns) {
             String columnName = column.getColumnName();
@@ -60,6 +64,7 @@ public class VOGenerator {
                         .append(upperColumnName).append("End(Integer ").append(lowerColumnName)
                         .append("End) {\n        this.").append(lowerColumnName).append("End = ")
                         .append(lowerColumnName).append("End;\n        return this;\n    }");
+                toString.append("\n                \", ").append(lowerColumnName).append("End=\" + ").append(lowerColumnName).append("End +");
             }
             if (dictionaryColumnList.contains(columnName)) {
                 properties.append("\n    // ").append(column.getColumnComment())
@@ -70,9 +75,11 @@ public class VOGenerator {
                         .append(upperColumnName).append("List(List<Integer> ").append(lowerColumnName)
                         .append("List) {\n        this.").append(lowerColumnName).append("List = ")
                         .append(lowerColumnName).append("List;\n        return this;\n    }");
+                toString.append("\n                \", ").append(lowerColumnName).append("List=\" + ").append(lowerColumnName).append("List +");
             }
         }
-        return properties.append(getterSetter).toString();
+        toString.append("\n                '}';\n    }");
+        return properties.append(getterSetter).append(toString).toString();
     }
 
 }

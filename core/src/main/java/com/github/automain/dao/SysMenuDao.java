@@ -41,14 +41,6 @@ public class SysMenuDao extends BaseDao<SysMenu> {
         return super.updateTable(connection, paramBean, newBean, insertWhenNotExist, updateMulti, all);
     }
 
-    public int softDeleteTableById(Connection connection, SysMenu bean) throws SQLException {
-        return super.softDeleteTableById(connection, bean);
-    }
-
-    public int softDeleteTableByIdList(Connection connection, List<Integer> idList) throws SQLException {
-        return super.softDeleteTableByIdList(connection, DEFAULT_BEAN, idList);
-    }
-
     public int deleteTableById(Connection connection, SysMenu bean) throws SQLException {
         return super.deleteTableById(connection, bean);
     }
@@ -105,7 +97,7 @@ public class SysMenuDao extends BaseDao<SysMenu> {
 
     private String setSearchCondition(SysMenuVO bean, List<Object> paramList, boolean isCountSql) {
         StringBuilder sql = new StringBuilder("SELECT ");
-        sql.append(isCountSql ? "COUNT(1)" : "*").append(" FROM sys_menu WHERE is_valid = 1");
+        sql.append(isCountSql ? "COUNT(1)" : "*").append(" FROM sys_menu WHERE 1 = 1");
         if (StringUtils.isNotBlank(bean.getMenuName())) {
             sql.append(" AND menu_name LIKE ?");
             paramList.add(bean.getMenuName() + "%");
@@ -125,12 +117,12 @@ public class SysMenuDao extends BaseDao<SysMenu> {
     }
 
     public List<IdNameVO> allValidMenu(Connection connection) throws SQLException {
-        String sql = "SELECT sm.id AS 'id', sm.menu_name AS 'name' FROM sys_menu sm WHERE sm.is_valid = 1";
+        String sql = "SELECT sm.id AS 'id', sm.menu_name AS 'name' FROM sys_menu sm";
         return executeSelectReturnList(connection, sql, null, new IdNameVO());
     }
 
     public List<SysMenu> selectAuthorityMenu(Connection connection, String userGid) throws SQLException {
-        String sql = "SELECT sm.* FROM sys_user_role sur INNER JOIN sys_role_menu srm ON sur.role_id = srm.role_id INNER JOIN sys_menu sm ON srm.menu_id = sm.id WHERE sur.is_valid = 1 AND sur.user_gid = ? AND srm.is_valid = 1 AND sm.is_valid = 1";
+        String sql = "SELECT sm.* FROM sys_user_role sur INNER JOIN sys_role_menu srm ON sur.role_id = srm.role_id INNER JOIN sys_menu sm ON srm.menu_id = sm.id WHERE sur.is_valid = 1 AND sur.user_gid = ? AND srm.is_valid = 1";
         return executeSelectReturnList(connection, sql, List.of(userGid), new SysMenu());
     }
 }

@@ -136,21 +136,22 @@ public class SysUserDao extends BaseDao<SysUser> {
 
     private String setSearchCondition(SysUserVO bean, List<Object> paramList, boolean isCountSql) {
         StringBuilder sql = new StringBuilder("SELECT ");
-        sql.append(isCountSql ? "COUNT(1)" : "*").append(" FROM sys_user WHERE is_valid = 1");
-        if (StringUtils.isNotBlank(bean.getGid())) {
-            sql.append(" AND gid = ?");
-            paramList.add(bean.getGid());
-        }
+        sql.append(isCountSql ? "COUNT(1)" : "su.gid,su.create_time,su.update_time,su.user_name,su.real_name,su.phone,su.email,GROUP_CONCAT(sr.role_name) AS 'role_name'")
+                .append(" FROM sys_user su LEFT JOIN sys_user_role sur ON su.gid = sur.user_gid AND sur.is_valid = 1 LEFT JOIN sys_role sr ON sur.role_id = sr.id WHERE su.is_valid = 1");
         if (StringUtils.isNotBlank(bean.getUserName())) {
-            sql.append(" AND user_name = ?");
+            sql.append(" AND su.user_name = ?");
             paramList.add(bean.getUserName());
         }
         if (StringUtils.isNotBlank(bean.getPhone())) {
-            sql.append(" AND phone = ?");
+            sql.append(" AND su.phone = ?");
             paramList.add(bean.getPhone());
         }
+        if (StringUtils.isNotBlank(bean.getRoleLabel())) {
+            sql.append(" AND sr.role_label = ?");
+            paramList.add(bean.getRoleLabel());
+        }
         if (!isCountSql && bean.getSortLabel() != null && bean.getSortOrder() != null && bean.columnMap(true).containsKey(bean.getSortLabel())) {
-            sql.append(" ORDER BY ").append(bean.getSortLabel()).append("asc".equalsIgnoreCase(bean.getSortOrder()) ? " ASC" : " DESC");
+            sql.append(" ORDER BY su.").append(bean.getSortLabel()).append("asc".equalsIgnoreCase(bean.getSortOrder()) ? " ASC" : " DESC");
         }
         return sql.toString();
     }
