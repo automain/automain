@@ -1,4 +1,4 @@
-package com.github.automain.common.container;
+package com.github.automain.util;
 
 import com.github.automain.service.SysDictionaryService;
 import com.github.automain.service.SysUserService;

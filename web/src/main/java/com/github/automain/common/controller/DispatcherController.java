@@ -71,6 +71,11 @@ public class DispatcherController extends HttpServlet {
         File file = new File(controllerPath);
         File[] childClassList = file.listFiles();
         Map<String, BaseExecutor> requestMap = new HashMap<String, BaseExecutor>();
+        addInstance(childClassList, requestMap);
+        return requestMap;
+    }
+
+    private void addInstance(File[] childClassList, Map<String, BaseExecutor> requestMap) throws Exception {
         if (childClassList != null) {
             for (File childClass : childClassList) {
                 String classPath = childClass.getPath();
@@ -121,7 +126,6 @@ public class DispatcherController extends HttpServlet {
                 }
             }
         }
-        return requestMap;
     }
 
     @Override

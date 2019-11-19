@@ -1,7 +1,5 @@
 package com.github.automain.util;
 
-import com.github.automain.common.container.ServiceContainer;
-
 import java.util.List;
 
 public class UploadUtil implements ServiceContainer {

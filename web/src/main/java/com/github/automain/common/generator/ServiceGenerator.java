@@ -7,7 +7,7 @@ public class ServiceGenerator {
     }
 
     private String getImportHead() {
-        return "package com.github.automain.service;\n\nimport com.github.automain.common.container.ServiceContainer;\n\n";
+        return "package com.github.automain.service;\n\nimport com.github.automain.util.ServiceContainer;\n\n";
     }
 
     private String getClassHead(String upperTableName) {

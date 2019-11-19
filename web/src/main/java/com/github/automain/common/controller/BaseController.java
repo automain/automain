@@ -2,7 +2,7 @@ package com.github.automain.common.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.automain.bean.SysUser;
-import com.github.automain.common.container.ServiceContainer;
+import com.github.automain.util.ServiceContainer;
 import com.github.automain.dao.SysPrivilegeDao;
 import com.github.automain.dao.SysUserDao;
 import com.github.automain.util.DateUtil;

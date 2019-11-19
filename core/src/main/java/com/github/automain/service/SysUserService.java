@@ -1,7 +1,7 @@
 package com.github.automain.service;
 
 import com.github.automain.bean.SysMenu;
-import com.github.automain.common.container.ServiceContainer;
+import com.github.automain.util.ServiceContainer;
 import com.github.automain.dao.SysMenuDao;
 import com.github.automain.vo.MenuVO;
 import org.apache.commons.collections4.CollectionUtils;
