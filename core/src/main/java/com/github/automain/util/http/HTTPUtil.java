@@ -1,6 +1,5 @@
 package com.github.automain.util.http;
 
-import com.github.automain.util.EncryptUtil;
 import com.github.automain.util.PropertiesUtil;
 import com.github.automain.util.SystemUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -29,13 +28,11 @@ import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 public class HTTPUtil {
 
-    private static final int DEFAULT_CONNECTION_TIME_OUT = 5000;
+    private static final int DEFAULT_CONNECTION_TIME_OUT = 10000;
     public static final String POST_METHOD = "POST";
     public static final String GET_METHOD = "GET";
     private static final String TWO_HYPHENS = "--";
@@ -261,7 +258,7 @@ public class HTTPUtil {
      * @return
      * @throws Exception
      */
-    public static String downloadFile(HttpServletRequest request, HttpServletResponse response, String path) throws Exception {
+    public static void downloadFile(HttpServletRequest request, HttpServletResponse response, String path) throws Exception {
         File file = new File(path);
         if (SystemUtil.checkFileAvailable(file)) {
             try (InputStream is = new FileInputStream(file);
@@ -283,8 +280,6 @@ public class HTTPUtil {
                 os.flush();
             }
         }
-        return null;
-
     }
 
     /**
@@ -314,54 +309,4 @@ public class HTTPUtil {
         String realIP = request.getHeader("X-Real-IP");
         return StringUtils.isBlank(realIP) || "unknown".equalsIgnoreCase(realIP) ? request.getRemoteAddr() : realIP;
     }
-
-    /**
-     * 生成api接口签名
-     *
-     * @param accessKey
-     * @param apiUrl
-     * @param params
-     * @param expireTime
-     * @return
-     * @throws Exception
-     */
-    public static Map<String, String> generateAPIToken(String accessKey, String apiUrl, TreeMap<String, String> params, int expireTime) throws Exception {
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put("token", generateToken(accessKey, apiUrl, params, expireTime));
-        return headers;
-    }
-
-    private static String generateToken(String appKey, String apiUrl, TreeMap<String, String> params, int expireTime) throws Exception {
-        return expireTime + "_" + EncryptUtil.MD5((SystemUtil.API_KEY_MAP.get(appKey) + "_" + apiUrl + "_" + expireTime + "_" + getDataByParams(params)).getBytes(PropertiesUtil.DEFAULT_CHARSET));
-    }
-
-    /**
-     * 检查API接口签名
-     *
-     * @param request
-     * @param appkey
-     * @param params
-     * @return
-     */
-    public static boolean checkAPIToken(HttpServletRequest request, String appkey, TreeMap<String, String> params) {
-        boolean result = false;
-        String token = request.getHeader("token");
-        if (token.contains("_")) {
-            String expireTime = token.split("_")[0];
-            String generateToken = null;
-            try {
-                generateToken = HTTPUtil.generateToken(appkey, HTTPUtil.getRequestUri(request), params, Integer.parseInt(expireTime));
-            } catch (Exception e) {
-                e.printStackTrace();
-                return false;
-            }
-            result = token.equals(generateToken);
-        }
-        return result;
-    }
-
-    public static void setResponseHeader(HttpServletResponse response, String key, String Value) throws Exception {
-        response.setHeader(key, new String(HTTPUtil.urlEncode(Value.getBytes(PropertiesUtil.DEFAULT_CHARSET)), PropertiesUtil.DEFAULT_CHARSET));
-    }
-
 }

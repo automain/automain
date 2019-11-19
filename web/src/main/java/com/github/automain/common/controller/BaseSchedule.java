@@ -3,11 +3,15 @@ package com.github.automain.common.controller;
 import com.github.automain.util.RedisUtil;
 import com.github.automain.util.SystemUtil;
 import com.github.fastjdbc.ConnectionPool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 
 import java.sql.Connection;
 
 public abstract class BaseSchedule implements Runnable {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseSchedule.class);
 
     private String scheduleUrl;
 
@@ -38,13 +42,16 @@ public abstract class BaseSchedule implements Runnable {
         Jedis jedis = null;
         Connection connection = null;
         try {
+            LOGGER.info("schedule execute start uri = {}", scheduleUrl);
             int expireSeconds = period > 59 ? 50 : (int) (period / 2);
             String lockKey = "SCHEDULE_" + scheduleUrl;
             boolean lock = RedisUtil.getDistributeLock(lockKey, expireSeconds);
             if (lock) {
+                LOGGER.info("schedule get lock success uri = {}", scheduleUrl);
                 jedis = RedisUtil.getJedis();
                 connection = ConnectionPool.getConnection(DispatcherController.SLAVE_POOL_MAP.get(scheduleUrl));
                 execute(connection, jedis);
+                LOGGER.info("schedule execute end uri = {}", scheduleUrl);
             }
         } catch (Exception e) {
             e.printStackTrace();
