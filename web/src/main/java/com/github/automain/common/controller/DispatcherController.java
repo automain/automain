@@ -1,7 +1,11 @@
 package com.github.automain.common.controller;
 
+import com.github.automain.bean.SysSchedule;
 import com.github.automain.common.annotation.RequestUri;
 import com.github.automain.common.bean.JsonResponse;
+import com.github.automain.dao.SysScheduleDao;
+import com.github.automain.util.DateUtil;
+import com.github.automain.util.PropertiesUtil;
 import com.github.automain.util.RedisUtil;
 import com.github.automain.util.SystemUtil;
 import com.github.automain.util.http.HTTPUtil;
@@ -25,6 +29,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @WebServlet(urlPatterns = "/", asyncSupported = true, loadOnStartup = 2)
 public class DispatcherController extends HttpServlet {
@@ -32,6 +39,8 @@ public class DispatcherController extends HttpServlet {
     private static final Logger LOGGER = LoggerFactory.getLogger(DispatcherController.class);
 
     private static final Map<String, BaseExecutor> REQUEST_MAPPING = new HashMap<String, BaseExecutor>();
+
+    private static final Map<String, BaseSchedule> SCHEDULE_MAPPING = new HashMap<String, BaseSchedule>();
 
     static final Map<String, String> PRIVILEGE_LABEL_MAP = new HashMap<String, String>();
 
@@ -45,13 +54,10 @@ public class DispatcherController extends HttpServlet {
             SystemUtil.initConnectionPool();
             // 初始化redis连接池
             RedisUtil.initJedisPool();
-            // 初始化访问路径
-            REQUEST_MAPPING.clear();
-            REQUEST_MAPPING.putAll(initRequestMap());
             // 获取数据库连接
             connection = ConnectionPool.getConnection(null);
-            // 初始化定时任务
-//            SystemUtil.reloadSchedule(connection);
+            // 初始化访问路径和定时任务
+            initRequestMapAndSchedule(connection);
             LOGGER.info("===============================System Start Success===============================");
         } catch (Exception e) {
             e.printStackTrace();
@@ -66,16 +72,39 @@ public class DispatcherController extends HttpServlet {
     }
 
     @SuppressWarnings("unchecked")
-    private Map<String, BaseExecutor> initRequestMap() throws Exception {
+    private void initRequestMapAndSchedule(Connection connection) throws Exception {
         String controllerPath = DispatcherController.class.getResource("../../controller").getPath();
-        File file = new File(controllerPath);
-        File[] childClassList = file.listFiles();
-        Map<String, BaseExecutor> requestMap = new HashMap<String, BaseExecutor>();
-        addInstance(childClassList, requestMap);
-        return requestMap;
+        File controllers = new File(controllerPath);
+        addRequestMapping(controllers.listFiles());
+        String schedulePath = DispatcherController.class.getResource("../../schedule").getPath();
+        File schedules = new File(schedulePath);
+        addRequestMapping(schedules.listFiles());
+        boolean openSchedule = PropertiesUtil.getBooleanProperty("app.openSchedule");
+        if (openSchedule) {
+            Map<String, SysSchedule> map = SysScheduleDao.selectUriScheduleMap(connection);
+            addScheduleMapping(schedules.listFiles(), map);
+            if (!SCHEDULE_MAPPING.isEmpty()) {
+                ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(SCHEDULE_MAPPING.size());
+                int now = DateUtil.getNow();
+                for (BaseSchedule schedule : SCHEDULE_MAPPING.values()) {
+                    int initialDelay = 0;
+                    int period = schedule.getPeriod();
+                    int start = schedule.getStartExecuteTime();
+                    int diff = now - start;
+                    if (diff > 0) {
+                        if (diff > period) {
+                            initialDelay = period - (diff % period);
+                        } else {
+                            initialDelay = period - diff;
+                        }
+                        scheduledThreadPool.scheduleAtFixedRate(schedule, initialDelay, period, TimeUnit.SECONDS);
+                    }
+                }
+            }
+        }
     }
 
-    private void addInstance(File[] childClassList, Map<String, BaseExecutor> requestMap) throws Exception {
+    private void addRequestMapping(File[] childClassList) throws Exception {
         if (childClassList != null) {
             for (File childClass : childClassList) {
                 String classPath = childClass.getPath();
@@ -89,7 +118,7 @@ public class DispatcherController extends HttpServlet {
                             if (method.isAnnotationPresent(RequestUri.class)) {
                                 RequestUri requestUri = method.getAnnotation(RequestUri.class);
                                 String uri = requestUri.value();
-                                if (requestMap.containsKey(uri)) {
+                                if (REQUEST_MAPPING.containsKey(uri)) {
                                     throw new RuntimeException("uri conflict---------->" + uri);
                                 }
                                 Parameter[] parameters = method.getParameters();
@@ -110,7 +139,7 @@ public class DispatcherController extends HttpServlet {
                                         return (JsonResponse) method1.invoke(controller, connection, jedis, request, response);
                                     }
                                 };
-                                requestMap.put(uri, executor);
+                                REQUEST_MAPPING.put(uri, executor);
                                 LOGGER.info("mapping uri: " + uri);
                                 String label = requestUri.label();
                                 if (StringUtils.isNotBlank(label)) {
@@ -120,6 +149,41 @@ public class DispatcherController extends HttpServlet {
                                 if (StringUtils.isNotBlank(slavePoolName)) {
                                     SLAVE_POOL_MAP.put(uri, slavePoolName);
                                 }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void addScheduleMapping(File[] childClassList, Map<String, SysSchedule> map) throws Exception {
+        if (childClassList != null && map != null) {
+            for (File childClass : childClassList) {
+                String classPath = childClass.getPath();
+                if (classPath.endsWith(".class")) {
+                    classPath = classPath.substring(classPath.indexOf(File.separator + "classes") + 9, classPath.lastIndexOf(".")).replace(File.separator, ".");
+                    Class clazz = Class.forName(classPath);
+                    if (BaseController.class.isAssignableFrom(clazz)) {
+                        Method[] methods = clazz.getDeclaredMethods();
+                        Object schedule = clazz.getDeclaredConstructor().newInstance();
+                        for (Method method : methods) {
+                            if (method.isAnnotationPresent(RequestUri.class)) {
+                                RequestUri requestUri = method.getAnnotation(RequestUri.class);
+                                String uri = requestUri.value();
+                                SysSchedule s = map.get(uri);
+                                if (s == null) {
+                                    continue;
+                                }
+                                BaseSchedule executor = new BaseSchedule(uri, s.getPeriod(), s.getStartExecuteTime()) {
+                                    @Override
+                                    protected void execute(Connection connection, Jedis jedis) throws Exception {
+                                        Method method1 = schedule.getClass().getMethod(method.getName(), Connection.class, Jedis.class);
+                                        method1.invoke(schedule, connection, jedis);
+                                    }
+                                };
+                                SCHEDULE_MAPPING.put(uri, executor);
+                                LOGGER.info("mapping schedule uri: " + uri);
                             }
                         }
                     }

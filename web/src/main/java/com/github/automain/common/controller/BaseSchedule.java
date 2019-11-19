@@ -1,6 +1,5 @@
 package com.github.automain.common.controller;
 
-import com.github.automain.common.bean.JsonResponse;
 import com.github.automain.util.RedisUtil;
 import com.github.automain.util.SystemUtil;
 import com.github.fastjdbc.ConnectionPool;
@@ -12,11 +11,26 @@ public abstract class BaseSchedule implements Runnable {
 
     private String scheduleUrl;
 
-    private long period;
+    private Integer period;
 
-    public BaseSchedule(String scheduleUrl, long period) {
+    private Integer startExecuteTime;
+
+    public BaseSchedule(String scheduleUrl, Integer period, Integer startExecuteTime) {
         this.scheduleUrl = scheduleUrl;
         this.period = period;
+        this.startExecuteTime = startExecuteTime;
+    }
+
+    public String getScheduleUrl() {
+        return scheduleUrl;
+    }
+
+    public Integer getPeriod() {
+        return period;
+    }
+
+    public Integer getStartExecuteTime() {
+        return startExecuteTime;
     }
 
     @Override
@@ -39,5 +53,5 @@ public abstract class BaseSchedule implements Runnable {
         }
     }
 
-    protected abstract JsonResponse execute(Connection connection, Jedis jedis) throws Exception;
+    protected abstract void execute(Connection connection, Jedis jedis) throws Exception;
 }

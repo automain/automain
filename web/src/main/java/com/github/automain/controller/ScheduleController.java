@@ -40,7 +40,7 @@ public class ScheduleController extends BaseController {
     }
 
     private boolean checkValid(SysSchedule bean) {
-        return bean != null && bean.getScheduleName() != null && bean.getScheduleUrl() != null && bean.getStartExecuteTime() != null && bean.getDelayTime() != null;
+        return bean != null && bean.getScheduleName() != null && bean.getScheduleUrl() != null && bean.getStartExecuteTime() != null && bean.getPeriod() != null;
     }
 
     @RequestUri("/scheduleUpdate")

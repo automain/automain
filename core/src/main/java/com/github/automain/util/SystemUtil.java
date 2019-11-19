@@ -13,13 +13,9 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ScheduledExecutorService;
 
 public class SystemUtil {
 
-    private static ScheduledExecutorService SCHEDULE_THREAD_POOL = null;
-    private static final boolean OPEN_SCHEDULE = PropertiesUtil.getBooleanProperty("app.openSchedule");
-    public static final String PROJECT_HOST = PropertiesUtil.getStringProperty("app.projectHost");
     public static final Set<String> ALLOW_ORIGIN = Set.of(PropertiesUtil.getStringProperty("app.allowOrigin").split(","));
     private static final String JDBC_URL = PropertiesUtil.getStringProperty("db.master_jdbcUrl");
     public static final String DATABASE_NAME = JDBC_URL.substring(JDBC_URL.lastIndexOf("/") + 1, JDBC_URL.indexOf("?"));
@@ -103,46 +99,4 @@ public class SystemUtil {
             e.printStackTrace();
         }
     }
-
-    /**
-     * 刷新定时任务
-     *
-     * @param connection
-     * @throws SQLException
-     */
-//    public static synchronized void reloadSchedule(ConnectionBean connection) throws SQLException {
-//        if (OPEN_SCHEDULE) {
-//            if (SCHEDULE_THREAD_POOL != null) {
-//                SCHEDULE_THREAD_POOL.shutdown();
-//                SCHEDULE_THREAD_POOL = null;
-//            }
-//            TbSchedule bean = new TbSchedule();
-//            bean.setIsDelete(0);
-//            List<TbSchedule> scheduleList = ServiceContainer.TB_SCHEDULE_SERVICE.selectTableByBean(connection, bean);
-//            int size = scheduleList.size();
-//            if (size > 0) {
-//                SCHEDULE_THREAD_POOL = Executors.newScheduledThreadPool(size);
-//                for (TbSchedule schedule : scheduleList) {
-//                    startSchedule(schedule);
-//                }
-//            }
-//        }
-//    }
-//
-//    private static void startSchedule(TbSchedule schedule) {
-//        long initialDelay = 0L;
-//        long period = schedule.getDelayTime();
-//        long now = DateUtil.getNow();
-//        long start = schedule.getStartExecuteTime().getTime() / 1000;
-//        long diff = now - start;
-//        if (diff > 0) {
-//            if (diff > period) {
-//                initialDelay = period - (diff % period);
-//            } else {
-//                initialDelay = period - diff;
-//            }
-//            SCHEDULE_THREAD_POOL.scheduleAtFixedRate(new ScheduleThread(schedule.getScheduleUrl(), period), initialDelay, period, TimeUnit.SECONDS);
-//        }
-//    }
-
 }

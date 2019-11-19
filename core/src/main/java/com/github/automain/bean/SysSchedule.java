@@ -24,7 +24,7 @@ public class SysSchedule implements BaseBean<SysSchedule> {
     // 开始执行时间
     private Integer startExecuteTime;
     // 间隔时间(秒)
-    private Integer delayTime;
+    private Integer period;
     // 上次执行时间
     private Integer lastExecuteTime;
 
@@ -91,12 +91,12 @@ public class SysSchedule implements BaseBean<SysSchedule> {
         return this;
     }
 
-    public Integer getDelayTime() {
-        return delayTime;
+    public Integer getPeriod() {
+        return period;
     }
 
-    public SysSchedule setDelayTime(Integer delayTime) {
-        this.delayTime = delayTime;
+    public SysSchedule setPeriod(Integer period) {
+        this.period = period;
         return this;
     }
 
@@ -138,8 +138,8 @@ public class SysSchedule implements BaseBean<SysSchedule> {
         if (all || this.getStartExecuteTime() != null) {
             map.put("start_execute_time", this.getStartExecuteTime());
         }
-        if (all || this.getDelayTime() != null) {
-            map.put("delay_time", this.getDelayTime());
+        if (all || this.getPeriod() != null) {
+            map.put("period", this.getPeriod());
         }
         if (all || this.getLastExecuteTime() != null) {
             map.put("last_execute_time", this.getLastExecuteTime());
@@ -157,7 +157,7 @@ public class SysSchedule implements BaseBean<SysSchedule> {
                 .setScheduleName(rs.getString("schedule_name"))
                 .setScheduleUrl(rs.getString("schedule_url"))
                 .setStartExecuteTime(rs.getInt("start_execute_time"))
-                .setDelayTime(rs.getInt("delay_time"))
+                .setPeriod(rs.getInt("period"))
                 .setLastExecuteTime(rs.getInt("last_execute_time"));
     }
 
@@ -171,7 +171,7 @@ public class SysSchedule implements BaseBean<SysSchedule> {
                 ", scheduleName='" + scheduleName + '\'' +
                 ", scheduleUrl='" + scheduleUrl + '\'' +
                 ", startExecuteTime=" + startExecuteTime +
-                ", delayTime=" + delayTime +
+                ", period=" + period +
                 ", lastExecuteTime=" + lastExecuteTime +
                 '}';
     }

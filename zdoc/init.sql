@@ -216,7 +216,7 @@ CREATE TABLE `sys_schedule` (
   `schedule_name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '任务名称',
   `schedule_url` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '任务地址',
   `start_execute_time` int(10) unsigned NOT NULL COMMENT '开始执行时间',
-  `delay_time` int(10) unsigned NOT NULL COMMENT '间隔时间(秒)',
+  `period` int(10) unsigned NOT NULL COMMENT '间隔时间(秒)',
   `last_execute_time` int(10) unsigned DEFAULT NULL COMMENT '上次执行时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

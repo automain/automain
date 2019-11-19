@@ -3,13 +3,17 @@ package com.github.automain.dao;
 import com.github.automain.bean.SysSchedule;
 import com.github.automain.vo.SysScheduleVO;
 import com.github.fastjdbc.BaseDao;
+import com.github.fastjdbc.ConnectionPool;
 import com.github.fastjdbc.PageBean;
 import com.github.fastjdbc.PageParamBean;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SysScheduleDao extends BaseDao {
 
@@ -56,5 +60,20 @@ public class SysScheduleDao extends BaseDao {
             sql.append(" ORDER BY ").append(bean.getSortLabel()).append("asc".equalsIgnoreCase(bean.getSortOrder()) ? " ASC" : " DESC");
         }
         return sql.toString();
+    }
+
+    public static Map<String, SysSchedule> selectUriScheduleMap(Connection connection) throws SQLException {
+        String sql = "SELECT ss.schedule_url, ss.period, ss.start_execute_time FROM sys_schedule ss WHERE ss.is_valid = 1";
+        ResultSet rs = null;
+        Map<String, SysSchedule> result = new HashMap<String, SysSchedule>();
+        try {
+            rs = executeSelectReturnResultSet(connection, sql, null);
+            while (rs.next()) {
+                result.put(rs.getString("schedule_url"), new SysSchedule().setPeriod(rs.getInt("period")).setStartExecuteTime(rs.getInt("start_execute_time")));
+            }
+            return result;
+        } finally {
+            ConnectionPool.close(rs);
+        }
     }
 }
