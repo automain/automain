@@ -178,8 +178,8 @@ public class DispatcherController extends HttpServlet {
                                 BaseSchedule executor = new BaseSchedule(uri, s.getPeriod(), s.getStartExecuteTime()) {
                                     @Override
                                     protected void execute(Connection connection, Jedis jedis) throws Exception {
-                                        Method method1 = schedule.getClass().getMethod(method.getName(), Connection.class, Jedis.class);
-                                        method1.invoke(schedule, connection, jedis);
+                                        Method method1 = schedule.getClass().getMethod(method.getName(), Connection.class, Jedis.class, HttpServletRequest.class, HttpServletResponse.class);
+                                        method1.invoke(schedule, connection, jedis, null, null);
                                     }
                                 };
                                 SCHEDULE_MAPPING.put(uri, executor);

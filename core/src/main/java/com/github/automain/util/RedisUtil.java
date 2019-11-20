@@ -86,12 +86,12 @@ public class RedisUtil {
     /**
      * 获取分布式锁
      *
+     * @param jedis
      * @param lockKey
      * @param expireSeconds
      * @return
      */
-    public static boolean getDistributeLock(String lockKey, int expireSeconds) throws InterruptedException {
-        Jedis jedis = getJedis();
+    public static boolean getDistributeLock(Jedis jedis, String lockKey, int expireSeconds) throws InterruptedException {
         if (jedis != null) {
             return jedis.set(lockKey, lockKey,SetParams.setParams().ex(expireSeconds).nx()) != null;
         } else {
@@ -102,11 +102,11 @@ public class RedisUtil {
     /**
      * 释放分布式锁
      *
+     * @param jedis
      * @param lockKey
      * @return
      */
-    public static void releaseDistributeLock(String lockKey) {
-        Jedis jedis = getJedis();
+    public static void releaseDistributeLock(Jedis jedis, String lockKey) {
         if (jedis != null) {
             jedis.del(lockKey);
         } else {

@@ -45,10 +45,10 @@ public abstract class BaseSchedule implements Runnable {
             LOGGER.info("schedule execute start uri = {}", scheduleUrl);
             int expireSeconds = period > 59 ? 50 : (int) (period / 2);
             String lockKey = "SCHEDULE_" + scheduleUrl;
-            boolean lock = RedisUtil.getDistributeLock(lockKey, expireSeconds);
+            jedis = RedisUtil.getJedis();
+            boolean lock = RedisUtil.getDistributeLock(jedis,lockKey, expireSeconds);
             if (lock) {
                 LOGGER.info("schedule get lock success uri = {}", scheduleUrl);
-                jedis = RedisUtil.getJedis();
                 connection = ConnectionPool.getConnection(DispatcherController.SLAVE_POOL_MAP.get(scheduleUrl));
                 execute(connection, jedis);
                 LOGGER.info("schedule execute end uri = {}", scheduleUrl);

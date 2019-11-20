@@ -44,7 +44,7 @@ public class BaseController implements ServiceContainer {
 
     public static SysUser getSessionUser(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         String authorization = request.getHeader("Authorization");
-        if (StringUtils.isNotBlank(authorization)) {
+        if (StringUtils.isNotBlank(authorization) && !"null".equals(authorization)) {
             String decrypt = EncryptUtil.AESDecrypt(authorization.getBytes(PropertiesUtil.DEFAULT_CHARSET), AES_PASSWORD);
             String[] arr = decrypt.split("_");
             if (arr.length == 2) {

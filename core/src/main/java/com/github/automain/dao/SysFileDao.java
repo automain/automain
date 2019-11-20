@@ -56,7 +56,7 @@ public class SysFileDao extends BaseDao {
 
     private static String setSearchCondition(SysFileVO bean, List<Object> paramList, boolean isCountSql) {
         StringBuilder sql = new StringBuilder("SELECT ");
-        sql.append(isCountSql ? "COUNT(1)" : "*").append(" FROM sys_file WHERE 1 = 1");
+        sql.append(isCountSql ? "COUNT(1)" : "*").append(" FROM sys_file WHERE is_valid = 1");
         if (StringUtils.isNotBlank(bean.getFileMd5())) {
             sql.append(" AND file_md5 = ?");
             paramList.add(bean.getFileMd5());
