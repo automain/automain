@@ -73,7 +73,7 @@ public class DaoGenerator {
         List<ColumnBean> dictionaryColumns = new ArrayList<ColumnBean>();
         for (ColumnBean column : columns) {
             String columnName = column.getColumnName();
-            if ("PRI".equals(column.getColumnKey())) {
+            if ("PRI".equals(column.getColumnKey()) || "id".equals(columnName) || "gid".equals(columnName)) {
                 continue;
             }
             if (keyColumns.contains(columnName)) {

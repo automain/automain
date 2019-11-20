@@ -118,11 +118,11 @@ CREATE TABLE `sys_menu` (
   KEY `idx_parent_id` (`parent_id`),
   KEY `idx_sequence_number` (`sequence_number`),
   KEY `idx_menu_name` (`menu_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `sys_menu` */
 
-insert  into `sys_menu`(`id`,`create_time`,`update_time`,`menu_path`,`menu_name`,`menu_icon`,`parent_id`,`sequence_number`) values (1,1572792195,1572792195,NULL,'开发工具','el-icon-s-cooperation',0,1),(2,1572792223,1572792223,NULL,'系统管理','el-icon-setting',0,2),(3,1572792259,1572792259,'/dev/generator','生成器','el-icon-s-platform',1,1),(4,1572792298,1572792298,'/dev/test','测试','el-icon-s-flag',1,2),(5,1572792330,1572792330,'/system/dictionary','字典','el-icon-notebook-2',2,1),(6,1572792357,1572792357,'/system/menu','菜单','el-icon-menu',2,2);
+insert  into `sys_menu`(`id`,`create_time`,`update_time`,`menu_path`,`menu_name`,`menu_icon`,`parent_id`,`sequence_number`) values (1,1572792195,1572792195,NULL,'开发工具','el-icon-s-cooperation',0,1),(2,1572792223,1572792223,NULL,'系统管理','el-icon-setting',0,2),(3,1572792259,1572792259,'/dev/generator','生成器','el-icon-s-platform',1,1),(4,1572792298,1572792298,'/dev/test','测试','el-icon-s-flag',1,2),(5,1572792330,1572792330,'/system/dictionary','字典管理','el-icon-notebook-2',2,1),(6,1572792357,1572792357,'/system/menu','菜单管理','el-icon-menu',2,2),(7,1572792357,1572792357,'/system/user','人员管理','el-icon-user',2,3),(8,1572792357,1572792357,'/system/role','角色管理','el-icon-s-custom',2,4),(9,1572792357,1572792357,'/system/privilege','权限管理','el-icon-s-claim',2,5),(10,1572792357,1572792357,'/system/schedule','任务管理','el-icon-timer',2,6),(11,1572792357,1572792357,'/system/config','配置管理','el-icon-setting',2,7),(12,1572792357,1572792357,'/system/file','文件管理','el-icon-files',2,8);
 
 /*Table structure for table `sys_privilege` */
 
@@ -178,11 +178,11 @@ CREATE TABLE `sys_role_menu` (
   PRIMARY KEY (`id`),
   KEY `idx_role_id` (`role_id`),
   KEY `idx_menu_id` (`menu_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `sys_role_menu` */
 
-insert  into `sys_role_menu`(`id`,`create_time`,`update_time`,`is_valid`,`role_id`,`menu_id`) values (1,1,1,1,1,1),(2,1,1,1,1,2),(3,1,1,1,1,3),(4,1,1,1,1,4),(5,1,1,1,1,5),(6,1,1,1,1,6);
+insert  into `sys_role_menu`(`id`,`create_time`,`update_time`,`is_valid`,`role_id`,`menu_id`) values (1,1,1,1,1,1),(2,1,1,1,1,2),(3,1,1,1,1,3),(4,1,1,1,1,4),(5,1,1,1,1,5),(6,1,1,1,1,6),(7,1,1,1,1,7),(8,1,1,1,1,8),(9,1,1,1,1,9),(10,1,1,1,1,10),(11,1,1,1,1,11),(12,1,1,1,1,12);
 
 /*Table structure for table `sys_role_privilege` */
 
