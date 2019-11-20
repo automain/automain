@@ -29,6 +29,8 @@ public class SysUser implements BaseBean<SysUser> {
     private String phone;
     // 邮箱
     private String email;
+    // 头像文件GID
+    private String headImgGid;
 
     public Integer getId() {
         return id;
@@ -120,6 +122,15 @@ public class SysUser implements BaseBean<SysUser> {
         return this;
     }
 
+    public String getHeadImgGid() {
+        return headImgGid;
+    }
+
+    public SysUser setHeadImgGid(String headImgGid) {
+        this.headImgGid = headImgGid;
+        return this;
+    }
+
     @Override
     public String tableName() {
         return "sys_user";
@@ -127,7 +138,7 @@ public class SysUser implements BaseBean<SysUser> {
 
     @Override
     public Map<String, Object> columnMap(boolean all) {
-        Map<String, Object> map = new HashMap<String, Object>(10);
+        Map<String, Object> map = new HashMap<String, Object>(11);
         if (all || this.getId() != null) {
             map.put("id", this.getId());
         }
@@ -158,6 +169,9 @@ public class SysUser implements BaseBean<SysUser> {
         if (all || this.getEmail() != null) {
             map.put("email", this.getEmail());
         }
+        if (all || this.getHeadImgGid() != null) {
+            map.put("head_img_gid", this.getHeadImgGid());
+        }
         return map;
     }
 
@@ -173,7 +187,8 @@ public class SysUser implements BaseBean<SysUser> {
                 .setPasswordMd5(rs.getString("password_md5"))
                 .setRealName(rs.getString("real_name"))
                 .setPhone(rs.getString("phone"))
-                .setEmail(rs.getString("email"));
+                .setEmail(rs.getString("email"))
+                .setHeadImgGid(rs.getString("head_img_gid"));
     }
 
     @Override
@@ -189,6 +204,7 @@ public class SysUser implements BaseBean<SysUser> {
                 ", realName='" + realName + '\'' +
                 ", phone='" + phone + '\'' +
                 ", email='" + email + '\'' +
+                ", headImgGid='" + headImgGid + '\'' +
                 '}';
     }
 }

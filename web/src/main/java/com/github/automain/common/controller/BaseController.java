@@ -26,7 +26,6 @@ public class BaseController implements ServiceContainer {
     private static final int SESSION_EXPIRE_SECONDS = PropertiesUtil.getIntProperty("app.sessionExpireSeconds", "1800");
     private static final int CACHE_EXPIRE_SECONDS = SESSION_EXPIRE_SECONDS + 600;
     private static final String AES_PASSWORD = PropertiesUtil.getStringProperty("app.AESPassword");
-    private static final String AUTHORIZATION = "Authorization";
 
     public static <T> T getRequestParam(HttpServletRequest request, Class<T> clazz) {
         try (InputStreamReader isr = new InputStreamReader(request.getInputStream(), PropertiesUtil.DEFAULT_CHARSET);
@@ -44,7 +43,7 @@ public class BaseController implements ServiceContainer {
     }
 
     public static SysUser getSessionUser(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String authorization = request.getHeader(AUTHORIZATION);
+        String authorization = request.getHeader("Authorization");
         if (StringUtils.isNotBlank(authorization)) {
             String decrypt = EncryptUtil.AESDecrypt(authorization.getBytes(PropertiesUtil.DEFAULT_CHARSET), AES_PASSWORD);
             String[] arr = decrypt.split("_");
@@ -105,7 +104,7 @@ public class BaseController implements ServiceContainer {
                     }
                     String value = userGid + "_" + newExpireTime;
                     authorization = EncryptUtil.AESEncrypt(value.getBytes(PropertiesUtil.DEFAULT_CHARSET), AES_PASSWORD);
-                    response.setHeader(AUTHORIZATION, authorization);
+                    response.setHeader("Authorization", authorization);
                 }
                 return new SysUser().setGid(userGid).setUserName(userCacheMap.get("userName")).setPhone(userCacheMap.get("phone")).setEmail(userCacheMap.get("email")).setGid(userCacheMap.get("gid")).setRealName(userCacheMap.get("realName"));
             }

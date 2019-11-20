@@ -24,6 +24,8 @@ public class UserVO implements BaseBean<UserVO> {
     private String email;
     // 角色
     private String roleName;
+    // 头像地址
+    private String headImg;
 
     public String getGid() {
         return gid;
@@ -97,6 +99,15 @@ public class UserVO implements BaseBean<UserVO> {
         return this;
     }
 
+    public String getHeadImg() {
+        return headImg;
+    }
+
+    public UserVO setHeadImg(String headImg) {
+        this.headImg = headImg;
+        return this;
+    }
+
     @Override
     public String tableName() {
         return null;
@@ -117,7 +128,8 @@ public class UserVO implements BaseBean<UserVO> {
                 .setRealName(rs.getString("real_name"))
                 .setPhone(rs.getString("phone"))
                 .setEmail(rs.getString("email"))
-                .setRoleName(rs.getString("role_name"));
+                .setRoleName(rs.getString("role_name"))
+                .setHeadImg(rs.getString("head_img"));
     }
 
     @Override
@@ -131,6 +143,7 @@ public class UserVO implements BaseBean<UserVO> {
                 ", phone='" + phone + '\'' +
                 ", email='" + email + '\'' +
                 ", roleName='" + roleName + '\'' +
+                ", headImg='" + headImg + '\'' +
                 '}';
     }
 }

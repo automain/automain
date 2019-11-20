@@ -62,6 +62,8 @@ CREATE TABLE `sys_file` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
   `gid` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '文件GID',
   `create_time` int(10) unsigned NOT NULL COMMENT '创建时间',
+  `update_time` int(10) unsigned NOT NULL COMMENT '更新时间',
+  `is_valid` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '是否有效(0:否,1:是)',
   `file_extension` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '文件扩展名',
   `file_path` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '文件相对路径',
   `file_size` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '文件大小(字节)',
@@ -70,36 +72,10 @@ CREATE TABLE `sys_file` (
   `image_height` smallint(5) unsigned NOT NULL DEFAULT '0' COMMENT '图片高度',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_gid` (`gid`),
-  UNIQUE KEY `uk_file_md5` (`file_md5`)
+  KEY `idx_file_md5` (`file_md5`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `sys_file` */
-
-/*Table structure for table `sys_file_relation` */
-
-DROP TABLE IF EXISTS `sys_file_relation`;
-
-CREATE TABLE `sys_file_relation` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `create_time` int(10) unsigned NOT NULL COMMENT '创建时间',
-  `update_time` int(10) unsigned NOT NULL COMMENT '更新时间',
-  `is_valid` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '是否有效(0:否,1:是)',
-  `file_gid` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT 'sys_file表gid',
-  `record_table_name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '记录表名',
-  `record_id` int(11) DEFAULT NULL COMMENT '记录ID',
-  `record_gid` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '记录GID',
-  `record_label` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '记录标识',
-  `sequence_number` smallint(5) unsigned NOT NULL DEFAULT '1' COMMENT '展示顺序',
-  `file_table_name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '关联的文件表表名',
-  PRIMARY KEY (`id`),
-  KEY `idx_record_table_name` (`record_table_name`),
-  KEY `idx_record_id` (`record_id`),
-  KEY `idx_record_gid` (`record_gid`),
-  KEY `idx_sequence_number` (`sequence_number`),
-  KEY `idx_file_gid` (`file_gid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-/*Data for the table `sys_file_relation` */
 
 /*Table structure for table `sys_menu` */
 
@@ -238,6 +214,7 @@ CREATE TABLE `sys_user` (
   `real_name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '真实姓名',
   `phone` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '手机号',
   `email` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '邮箱',
+  `head_img_gid` char(36) DEFAULT NULL COMMENT '头像文件GID',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_gid` (`gid`),
   KEY `idx_user_name` (`user_name`),
@@ -246,7 +223,7 @@ CREATE TABLE `sys_user` (
 
 /*Data for the table `sys_user` */
 
-insert  into `sys_user`(`id`,`gid`,`create_time`,`update_time`,`is_valid`,`user_name`,`password_md5`,`real_name`,`phone`,`email`) values (1,'1',1,1,1,'admin','e10adc3949ba59abbe56e057f20f883e','管理员','1','1'),(2,'2',2,2,1,'guest','e10adc3949ba59abbe56e057f20f883e','访客','1','1');
+insert  into `sys_user`(`id`,`gid`,`create_time`,`update_time`,`is_valid`,`user_name`,`password_md5`,`real_name`,`phone`,`email`,`head_img_gid`) values (1,'1',1,1,1,'admin','e10adc3949ba59abbe56e057f20f883e','管理员','1','1',NULL),(2,'2',2,2,1,'guest','e10adc3949ba59abbe56e057f20f883e','访客','1','1',NULL);
 
 /*Table structure for table `sys_user_role` */
 

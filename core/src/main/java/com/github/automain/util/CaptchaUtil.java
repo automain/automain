@@ -100,8 +100,8 @@ public class CaptchaUtil {
     }
 
     private Color getRandColor(int fc, int bc) {
-        fc = fc > 255 ? 255 : fc;
-        bc = bc > 255 ? 255 : bc;
+        fc = Math.min(fc, 255);
+        bc = Math.min(bc, 255);
         int r = fc + getRandomNumber(bc - fc);
         int g = fc + getRandomNumber(bc - fc);
         int b = fc + getRandomNumber(bc - fc);

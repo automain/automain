@@ -30,79 +30,105 @@ public class Mail {
         return username;
     }
 
-    public void setUsername(String username) {
+    public Mail setUsername(String username) {
         this.username = username;
+        return this;
     }
 
     public String getNickname() {
         return nickname;
     }
 
-    public void setNickname(String nickname) {
+    public Mail setNickname(String nickname) {
         this.nickname = nickname;
+        return this;
     }
 
     public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
+    public Mail setPassword(String password) {
         this.password = password;
+        return this;
     }
 
     public String getSMTPHost() {
         return SMTPHost;
     }
 
-    public void setSMTPHost(String SMTPHost) {
+    public Mail setSMTPHost(String SMTPHost) {
         this.SMTPHost = SMTPHost;
+        return this;
     }
 
     public String getSubject() {
         return subject;
     }
 
-    public void setSubject(String subject) {
+    public Mail setSubject(String subject) {
         this.subject = subject;
+        return this;
     }
 
     public String getContent() {
         return content;
     }
 
-    public void setContent(String content) {
+    public Mail setContent(String content) {
         this.content = content;
+        return this;
     }
 
     public List<String> getToAddressList() {
         return toAddressList;
     }
 
-    public void setToAddressList(List<String> toAddressList) {
+    public Mail setToAddressList(List<String> toAddressList) {
         this.toAddressList = toAddressList;
+        return this;
     }
 
     public List<String> getCcAddressList() {
         return ccAddressList;
     }
 
-    public void setCcAddressList(List<String> ccAddressList) {
+    public Mail setCcAddressList(List<String> ccAddressList) {
         this.ccAddressList = ccAddressList;
+        return this;
     }
 
     public List<String> getBccAddressList() {
         return bccAddressList;
     }
 
-    public void setBccAddressList(List<String> bccAddressList) {
+    public Mail setBccAddressList(List<String> bccAddressList) {
         this.bccAddressList = bccAddressList;
+        return this;
     }
 
     public Map<String, String> getFileMap() {
         return fileMap;
     }
 
-    public void setFileMap(Map<String, String> fileMap) {
+    public Mail setFileMap(Map<String, String> fileMap) {
         this.fileMap = fileMap;
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return "Mail{" +
+                "username='" + username + '\'' +
+                ", nickname='" + nickname + '\'' +
+                ", password='" + password + '\'' +
+                ", SMTPHost='" + SMTPHost + '\'' +
+                ", subject='" + subject + '\'' +
+                ", content='" + content + '\'' +
+                ", toAddressList=" + toAddressList +
+                ", ccAddressList=" + ccAddressList +
+                ", bccAddressList=" + bccAddressList +
+                ", fileMap=" + fileMap +
+                '}';
     }
 }

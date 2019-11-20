@@ -14,10 +14,6 @@ public class PropertiesUtil {
     private static Map<String, String> PROPERTIES_MAP = null;
 
     static {
-        reloadProperties();
-    }
-
-    private static void reloadProperties() {
         Map<String, String> propertiesMap = new HashMap<String, String>();
         File parentDirectory = new File(PropertiesUtil.class.getResource("/").getPath().replace("test-classes", "classes"));
         if (parentDirectory.exists() && parentDirectory.isDirectory()) {

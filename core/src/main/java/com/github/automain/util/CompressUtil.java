@@ -88,6 +88,8 @@ public class CompressUtil {
      * zip解压
      *
      * @param zipFileName
+     * @param unCompressPath
+     * @throws IOException
      */
     public static void zipUnCompress(String zipFileName, String unCompressPath) throws IOException {
         try (FileInputStream fis = new FileInputStream(zipFileName);

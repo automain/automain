@@ -65,8 +65,8 @@ public class SysUserDao extends BaseDao {
 
     private static String setSearchCondition(SysUserVO bean, List<Object> paramList, boolean isCountSql) {
         StringBuilder sql = new StringBuilder("SELECT ");
-        sql.append(isCountSql ? "COUNT(1)" : "su.gid,su.create_time,su.update_time,su.user_name,su.real_name,su.phone,su.email,GROUP_CONCAT(sr.role_name) AS 'role_name'")
-                .append(" FROM sys_user su LEFT JOIN sys_user_role sur ON su.gid = sur.user_gid AND sur.is_valid = 1 LEFT JOIN sys_role sr ON sur.role_id = sr.id WHERE su.is_valid = 1");
+        sql.append(isCountSql ? "COUNT(1)" : "su.gid,su.create_time,su.update_time,su.user_name,su.real_name,su.phone,su.email,GROUP_CONCAT(sr.role_name) AS 'role_name',CONCAT('/uploads', sf.file_path) AS 'head_img'")
+                .append(" FROM sys_user su LEFT JOIN sys_user_role sur ON su.gid = sur.user_gid AND sur.is_valid = 1 LEFT JOIN sys_role sr ON sur.role_id = sr.id LEFT JOIN sys_file sf ON su.head_img_gid = sf.gid WHERE su.is_valid = 1");
         if (StringUtils.isNotBlank(bean.getUserName())) {
             sql.append(" AND su.user_name = ?");
             paramList.add(bean.getUserName());

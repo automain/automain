@@ -21,8 +21,8 @@ import java.util.Map;
  */
 public class QRCodeUtil {
 
-    public static final int QR_CODE_DEFAULT_HEIGHT = 300;
-    public static final int QR_CODE_DEFAULT_WIDTH = 300;
+    private static final int QR_CODE_DEFAULT_HEIGHT = 300;
+    private static final int QR_CODE_DEFAULT_WIDTH = 300;
 
     private static final int BLACK = 0xFF000000;
     private static final int WHITE = 0xFFFFFFFF;

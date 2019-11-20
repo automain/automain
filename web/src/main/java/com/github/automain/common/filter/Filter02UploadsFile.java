@@ -1,6 +1,6 @@
 package com.github.automain.common.filter;
 
-import com.github.automain.util.UploadUtil;
+import com.github.automain.util.SystemUtil;
 import com.github.automain.util.http.HTTPUtil;
 
 import javax.servlet.Filter;
@@ -29,7 +29,7 @@ public class Filter02UploadsFile implements Filter {
         String uri = HTTPUtil.getRequestUri(request);
         uri = uri.substring(uri.indexOf("/uploads") + 8);
         try {
-            HTTPUtil.downloadFile(request, response, UploadUtil.UPLOADS_PATH + uri);
+            HTTPUtil.downloadFile(request, response, SystemUtil.UPLOADS_PATH + uri);
         } catch (Exception e) {
             e.printStackTrace();
         }

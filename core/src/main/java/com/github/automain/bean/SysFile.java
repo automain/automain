@@ -15,6 +15,10 @@ public class SysFile implements BaseBean<SysFile> {
     private String gid;
     // 创建时间
     private Integer createTime;
+    // 更新时间
+    private Integer updateTime;
+    // 是否有效(0:无效,1:有效)
+    private Integer isValid;
     // 文件扩展名
     private String fileExtension;
     // 文件相对路径
@@ -52,6 +56,24 @@ public class SysFile implements BaseBean<SysFile> {
 
     public SysFile setCreateTime(Integer createTime) {
         this.createTime = createTime;
+        return this;
+    }
+
+    public Integer getUpdateTime() {
+        return updateTime;
+    }
+
+    public SysFile setUpdateTime(Integer updateTime) {
+        this.updateTime = updateTime;
+        return this;
+    }
+
+    public Integer getIsValid() {
+        return isValid;
+    }
+
+    public SysFile setIsValid(Integer isValid) {
+        this.isValid = isValid;
         return this;
     }
 
@@ -116,7 +138,7 @@ public class SysFile implements BaseBean<SysFile> {
 
     @Override
     public Map<String, Object> columnMap(boolean all) {
-        Map<String, Object> map = new HashMap<String, Object>(9);
+        Map<String, Object> map = new HashMap<String, Object>(11);
         if (all || this.getId() != null) {
             map.put("id", this.getId());
         }
@@ -125,6 +147,12 @@ public class SysFile implements BaseBean<SysFile> {
         }
         if (all || this.getCreateTime() != null) {
             map.put("create_time", this.getCreateTime());
+        }
+        if (all || this.getUpdateTime() != null) {
+            map.put("update_time", this.getUpdateTime());
+        }
+        if (all || this.getIsValid() != null) {
+            map.put("is_valid", this.getIsValid());
         }
         if (all || this.getFileExtension() != null) {
             map.put("file_extension", this.getFileExtension());
@@ -153,6 +181,8 @@ public class SysFile implements BaseBean<SysFile> {
                 .setId(rs.getInt("id"))
                 .setGid(rs.getString("gid"))
                 .setCreateTime(rs.getInt("create_time"))
+                .setUpdateTime(rs.getInt("update_time"))
+                .setIsValid(rs.getInt("is_valid"))
                 .setFileExtension(rs.getString("file_extension"))
                 .setFilePath(rs.getString("file_path"))
                 .setFileSize(rs.getInt("file_size"))
@@ -167,6 +197,8 @@ public class SysFile implements BaseBean<SysFile> {
                 "id=" + id +
                 ", gid='" + gid + '\'' +
                 ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", isValid=" + isValid +
                 ", fileExtension='" + fileExtension + '\'' +
                 ", filePath='" + filePath + '\'' +
                 ", fileSize=" + fileSize +

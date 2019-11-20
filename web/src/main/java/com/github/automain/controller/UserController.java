@@ -1,5 +1,6 @@
 package com.github.automain.controller;
 
+import com.github.automain.bean.SysFile;
 import com.github.automain.bean.SysMenu;
 import com.github.automain.bean.SysPrivilege;
 import com.github.automain.bean.SysRole;
@@ -7,6 +8,7 @@ import com.github.automain.bean.SysUser;
 import com.github.automain.common.annotation.RequestUri;
 import com.github.automain.common.bean.JsonResponse;
 import com.github.automain.common.controller.BaseController;
+import com.github.automain.dao.SysFileDao;
 import com.github.automain.dao.SysMenuDao;
 import com.github.automain.dao.SysPrivilegeDao;
 import com.github.automain.dao.SysRoleDao;
@@ -93,6 +95,7 @@ public class UserController extends BaseController {
                             userCacheMap.put("email", sysUser.getEmail());
                             userCacheMap.put("gid", sysUser.getGid());
                             userCacheMap.put("realName", sysUser.getRealName());
+                            userCacheMap.put("headImgGid", sysUser.getHeadImgGid());
                             userCacheMap.put("expireTime", String.valueOf(cacheExpireTime));
                             String userPrivilegeKey = "userPrivilege:" + userGid;
                             Set<String> privilegeSet = SysPrivilegeDao.selectUserPrivilege(connection, userGid);
@@ -197,7 +200,15 @@ public class UserController extends BaseController {
         SysUser bean = getRequestParam(request, SysUser.class);
         if (checkValid(bean) && bean.getGid() != null) {
             bean.setUpdateTime(DateUtil.getNow());
-            SysUserDao.updateTableByGid(connection, bean, false);
+            SysUser sysUser = SysUserDao.selectTableByGid(connection, bean);
+            if (sysUser != null) {
+                bean.setId(sysUser.getId()).setCreateTime(sysUser.getCreateTime()).setPasswordMd5(sysUser.getPasswordMd5()).setIsValid(sysUser.getIsValid());
+                SysUserDao.updateTableByGid(connection, bean, true);
+                String oldHeadImgGid = sysUser.getHeadImgGid();
+                if (oldHeadImgGid != null && !oldHeadImgGid.equals(bean.getHeadImgGid())) {
+                    SysFileDao.softDeleteTableByGid(connection, new SysFile().setGid(oldHeadImgGid));
+                }
+            }
             return JsonResponse.getSuccessJson();
         }
         return JsonResponse.getFailedJson();
