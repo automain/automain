@@ -1,11 +1,30 @@
 package com.github.automain.vo;
 
-import com.github.automain.bean.SysUser;
+import com.github.fastjdbc.BaseBean;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
-public class SysUserAddVO extends SysUser {
+public class SysUserAddVO implements BaseBean<SysUserAddVO> {
 
+    // 用户GID
+    private String gid;
+    // 创建时间
+    private Integer createTime;
+    // 更新时间
+    private Integer updateTime;
+    // 用户名
+    private String userName;
+    // 真实姓名
+    private String realName;
+    // 手机号
+    private String phone;
+    // 邮箱
+    private String email;
+    // 头像文件GID
+    private String headImgGid;
     // 角色
     private String roleName;
     // 头像地址
@@ -17,58 +36,75 @@ public class SysUserAddVO extends SysUser {
     // 角色标识
     private List<String> userRoleList;
 
-    public SysUserAddVO setId(Integer id) {
-        super.setId(id);
-        return this;
+    public String getGid() {
+        return gid;
     }
 
     public SysUserAddVO setGid(String gid) {
-        super.setGid(gid);
+        this.gid = gid;
         return this;
+    }
+
+    public Integer getCreateTime() {
+        return createTime;
     }
 
     public SysUserAddVO setCreateTime(Integer createTime) {
-        super.setCreateTime(createTime);
+        this.createTime = createTime;
         return this;
+    }
+
+    public Integer getUpdateTime() {
+        return updateTime;
     }
 
     public SysUserAddVO setUpdateTime(Integer updateTime) {
-        super.setUpdateTime(updateTime);
+        this.updateTime = updateTime;
         return this;
     }
 
-    public SysUserAddVO setIsValid(Integer isValid) {
-        super.setIsValid(isValid);
-        return this;
+    public String getUserName() {
+        return userName;
     }
 
     public SysUserAddVO setUserName(String userName) {
-        super.setUserName(userName);
+        this.userName = userName;
         return this;
     }
 
-    public SysUserAddVO setPasswordMd5(String passwordMd5) {
-        super.setPasswordMd5(passwordMd5);
-        return this;
+    public String getRealName() {
+        return realName;
     }
 
     public SysUserAddVO setRealName(String realName) {
-        super.setRealName(realName);
+        this.realName = realName;
         return this;
+    }
+
+    public String getPhone() {
+        return phone;
     }
 
     public SysUserAddVO setPhone(String phone) {
-        super.setPhone(phone);
+        this.phone = phone;
         return this;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public SysUserAddVO setEmail(String email) {
-        super.setEmail(email);
+        this.email = email;
         return this;
     }
 
+    public String getHeadImgGid() {
+        return headImgGid;
+    }
+
     public SysUserAddVO setHeadImgGid(String headImgGid) {
-        super.setHeadImgGid(headImgGid);
+        this.headImgGid = headImgGid;
         return this;
     }
 
@@ -118,9 +154,42 @@ public class SysUserAddVO extends SysUser {
     }
 
     @Override
+    public String tableName() {
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> columnMap(boolean all) {
+        return null;
+    }
+
+    @Override
+    public SysUserAddVO beanFromResultSet(ResultSet rs) throws SQLException {
+        return new SysUserAddVO()
+                .setGid(rs.getString("gid"))
+                .setCreateTime(rs.getInt("create_time"))
+                .setUpdateTime(rs.getInt("update_time"))
+                .setUserName(rs.getString("user_name"))
+                .setRealName(rs.getString("real_name"))
+                .setPhone(rs.getString("phone"))
+                .setEmail(rs.getString("email"))
+                .setHeadImgGid(rs.getString("head_img_gid"))
+                .setHeadImg(rs.getString("head_img"))
+                .setRoleName(rs.getString("role_name"));
+    }
+
+    @Override
     public String toString() {
         return "SysUserAddVO{" +
-                "roleName='" + roleName + '\'' +
+                "gid='" + gid + '\'' +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", userName='" + userName + '\'' +
+                ", realName='" + realName + '\'' +
+                ", phone='" + phone + '\'' +
+                ", email='" + email + '\'' +
+                ", headImgGid='" + headImgGid + '\'' +
+                ", roleName='" + roleName + '\'' +
                 ", headImg='" + headImg + '\'' +
                 ", password='" + password + '\'' +
                 ", password2='" + password2 + '\'' +

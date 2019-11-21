@@ -26,7 +26,7 @@ import java.util.Set;
 
 public abstract class BaseExecutor implements Runnable {
 
-    private static final List<String> WHITE_LIST_URL = List.of("/getCaptcha", "/login");
+    private static final List<String> WHITE_LIST_URL = List.of("/getCaptcha", "/login", "/upload");
 
     private AsyncContext asyncContext;
 

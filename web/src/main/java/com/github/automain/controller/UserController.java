@@ -162,9 +162,9 @@ public class UserController extends BaseController {
     @RequestUri(value = "/checkUserExist", slave = "slave1")
     public JsonResponse checkUserExist(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
          String userName = request.getParameter("userName");
+         String gid = request.getParameter("gid");
          if (StringUtils.isNotBlank(userName)) {
-             int count = SysUserDao.countTableByBean(connection, new SysUser().setUserName(userName).setIsValid(1));
-             if (count == 0) {
+             if (SysUserDao.checkUserNameUseable(connection, userName, gid)) {
                  return JsonResponse.getSuccessJson();
              }
          }
@@ -186,14 +186,21 @@ public class UserController extends BaseController {
         SysUserAddVO bean = getRequestParam(request, SysUserAddVO.class);
         if (checkValid(bean) && bean.getPassword() != null && bean.getPassword().equals(bean.getPassword2())) {
             String gid = UUID.randomUUID().toString();
-            bean.setPasswordMd5(EncryptUtil.MD5(bean.getPassword().getBytes(PropertiesUtil.DEFAULT_CHARSET)));
-            bean.setUpdateTime(DateUtil.getNow());
-            bean.setCreateTime(bean.getUpdateTime());
-            bean.setGid(gid);
-            SysUserDao.insertIntoTable(connection, bean);
+            int now = DateUtil.getNow();
+            SysUser user = new SysUser()
+                    .setGid(gid)
+                    .setPasswordMd5(EncryptUtil.MD5(bean.getPassword().getBytes(PropertiesUtil.DEFAULT_CHARSET)))
+                    .setUpdateTime(now)
+                    .setCreateTime(now)
+                    .setIsValid(1)
+                    .setUserName(bean.getUserName())
+                    .setEmail(bean.getEmail())
+                    .setPhone(bean.getPhone())
+                    .setRealName(bean.getRealName())
+                    .setHeadImgGid(bean.getHeadImgGid());
+            SysUserDao.insertIntoTable(connection, user);
             List<Integer> idList = SysRoleDao.selectRoleIdByLabelList(connection, bean.getUserRoleList());
             List<SysUserRole> userRoleList = new ArrayList<SysUserRole>(idList.size());
-            int now = DateUtil.getNow();
             for (Integer id : idList) {
                 userRoleList.add(new SysUserRole().setUserGid(gid).setRoleId(id).setIsValid(1).setCreateTime(now).setUpdateTime(now));
             }
@@ -203,7 +210,7 @@ public class UserController extends BaseController {
         return JsonResponse.getFailedJson();
     }
 
-    private boolean checkValid(SysUser bean) {
+    private boolean checkValid(SysUserAddVO bean) {
         return bean != null && bean.getUserName() != null && bean.getRealName() != null && bean.getPhone() != null && bean.getEmail() != null;
     }
 
@@ -211,17 +218,21 @@ public class UserController extends BaseController {
     public JsonResponse userUpdate(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         SysUserAddVO bean = getRequestParam(request, SysUserAddVO.class);
         if (checkValid(bean) && bean.getGid() != null) {
-            bean.setUpdateTime(DateUtil.getNow());
-            SysUser sysUser = SysUserDao.selectTableByGid(connection, bean);
+            String gid = bean.getGid();
+            SysUser sysUser = SysUserDao.selectTableByGid(connection, new SysUser().setGid(gid));
             if (sysUser != null) {
-                bean.setId(sysUser.getId()).setCreateTime(sysUser.getCreateTime()).setPasswordMd5(sysUser.getPasswordMd5()).setIsValid(sysUser.getIsValid());
-                SysUserDao.updateTableByGid(connection, bean, true);
+                sysUser.setUpdateTime(DateUtil.getNow())
+                        .setUserName(bean.getUserName())
+                        .setEmail(bean.getEmail())
+                        .setPhone(bean.getPhone())
+                        .setRealName(bean.getRealName())
+                        .setHeadImgGid(bean.getHeadImgGid());
+                SysUserDao.updateTableByGid(connection, sysUser, true);
                 String oldHeadImgGid = sysUser.getHeadImgGid();
                 if (oldHeadImgGid != null && !oldHeadImgGid.equals(bean.getHeadImgGid())) {
                     SysFileDao.softDeleteTableByGid(connection, new SysFile().setGid(oldHeadImgGid));
                 }
 
-                String gid = sysUser.getGid();
                 SysUserRoleDao.softDeleteRoleByUserGid(connection, gid);
                 List<Integer> idList = SysRoleDao.selectRoleIdByLabelList(connection, bean.getUserRoleList());
                 List<SysUserRole> userRoleList = new ArrayList<SysUserRole>(idList.size());

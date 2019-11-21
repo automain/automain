@@ -1,8 +1,8 @@
 package com.github.automain.dao;
 
 import com.github.automain.bean.SysUser;
-import com.github.automain.vo.SysUserVO;
 import com.github.automain.vo.SysUserAddVO;
+import com.github.automain.vo.SysUserVO;
 import com.github.fastjdbc.BaseDao;
 import com.github.fastjdbc.ConnectionPool;
 import com.github.fastjdbc.PageBean;
@@ -67,7 +67,7 @@ public class SysUserDao extends BaseDao {
 
     private static String setSearchCondition(SysUserVO bean, List<Object> paramList, boolean isCountSql) {
         StringBuilder sql = new StringBuilder("SELECT ");
-        sql.append(isCountSql ? "COUNT(1)" : "su.gid,su.create_time,su.update_time,su.user_name,su.real_name,su.phone,su.email,GROUP_CONCAT(sr.role_name) AS 'role_name',su.head_img_gid,CONCAT('/uploads', sf.file_path) AS 'head_img'")
+        sql.append(isCountSql ? "COUNT(1)" : "su.gid,su.create_time,su.update_time,su.user_name,su.real_name,su.phone,su.email,su.head_img_gid,GROUP_CONCAT(sr.role_name) AS 'role_name',CONCAT('/uploads', sf.file_path) AS 'head_img'")
                 .append(" FROM sys_user su LEFT JOIN sys_user_role sur ON su.gid = sur.user_gid AND sur.is_valid = 1 LEFT JOIN sys_role sr ON sur.role_id = sr.id LEFT JOIN sys_file sf ON su.head_img_gid = sf.gid WHERE su.is_valid = 1");
         if (StringUtils.isNotBlank(bean.getUserName())) {
             sql.append(" AND su.user_name = ?");
@@ -87,24 +87,23 @@ public class SysUserDao extends BaseDao {
         return sql.toString();
     }
 
-    public static SysUserAddVO selectUserVOByGid(Connection connection, String gid) throws SQLException {
-        String sql = "SELECT su.gid,su.user_name,su.real_name,su.phone,su.email,su.head_img_gid,CONCAT('/uploads', sf.file_path) AS 'head_img' FROM sys_user su LEFT JOIN sys_file sf ON su.head_img_gid = sf.gid WHERE su.gid = ?";
+    public static boolean checkUserNameUseable(Connection connection, String userName, String gid) throws SQLException {
+        String sql = "SELECT su.gid FROM sys_user su WHERE su.user_name = ? AND su.is_valid = 1 LIMIT 1";
         ResultSet rs = null;
         try {
-            rs = executeSelectReturnResultSet(connection, sql, List.of(gid));
+            rs = executeSelectReturnResultSet(connection, sql, List.of(userName));
             if (rs.next()) {
-                return new SysUserAddVO()
-                        .setGid(rs.getString("gid"))
-                        .setUserName(rs.getString("user_name"))
-                        .setRealName(rs.getString("real_name"))
-                        .setPhone(rs.getString("phone"))
-                        .setEmail(rs.getString("email"))
-                        .setHeadImgGid(rs.getString("head_img_gid"))
-                        .setHeadImg(rs.getString("head_img"));
+                return rs.getString("gid").equals(gid);
+            } else {
+                return true;
             }
         } finally {
             ConnectionPool.close(rs);
         }
-        return null;
+    }
+
+    public static SysUserAddVO selectUserVOByGid(Connection connection, String gid) throws SQLException {
+        String sql = "SELECT su.gid,su.create_time,su.update_time,su.user_name,su.real_name,su.phone,su.email,su.head_img_gid,CONCAT('/uploads', sf.file_path) AS 'head_img', '' AS 'role_name' FROM sys_user su LEFT JOIN sys_file sf ON su.head_img_gid = sf.gid WHERE su.gid = ?";
+        return executeSelectReturnBean(connection, sql, List.of(gid), new SysUserAddVO());
     }
 }
