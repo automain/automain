@@ -12,10 +12,6 @@ public class SysMenuVO extends SysMenu {
     private String sortLabel;
     // 排序顺序
     private String sortOrder;
-    // 创建时间结束
-    private Integer createTimeEnd;
-    // 更新时间结束
-    private Integer updateTimeEnd;
 
     public int getPage() {
         return page;
@@ -53,21 +49,13 @@ public class SysMenuVO extends SysMenu {
         return this;
     }
 
-    public Integer getCreateTimeEnd() {
-        return createTimeEnd;
-    }
-
-    public SysMenuVO setCreateTimeEnd(Integer createTimeEnd) {
-        this.createTimeEnd = createTimeEnd;
-        return this;
-    }
-
-    public Integer getUpdateTimeEnd() {
-        return updateTimeEnd;
-    }
-
-    public SysMenuVO setUpdateTimeEnd(Integer updateTimeEnd) {
-        this.updateTimeEnd = updateTimeEnd;
-        return this;
+    @Override
+    public String toString() {
+        return "SysMenuVO{" +
+                "page=" + page +
+                ", size=" + size +
+                ", sortLabel='" + sortLabel + '\'' +
+                ", sortOrder='" + sortOrder + '\'' +
+                '}';
     }
 }

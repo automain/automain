@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SysPrivilege implements BaseBean<SysPrivilege> {
+public class SysPrivilege implements BaseBean<SysPrivilege>, Comparable<SysPrivilege> {
 
     // 主键
     private Integer id;
@@ -126,5 +126,10 @@ public class SysPrivilege implements BaseBean<SysPrivilege> {
                 ", privilegeName='" + privilegeName + '\'' +
                 ", parentId=" + parentId +
                 '}';
+    }
+
+    @Override
+    public int compareTo(SysPrivilege o) {
+        return o == null ? 0 : this.getId().compareTo(o.getId());
     }
 }

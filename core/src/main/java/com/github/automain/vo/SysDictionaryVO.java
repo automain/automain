@@ -12,10 +12,6 @@ public class SysDictionaryVO extends SysDictionary {
     private String sortLabel;
     // 排序顺序
     private String sortOrder;
-    // 创建时间结束
-    private Integer createTimeEnd;
-    // 更新时间结束
-    private Integer updateTimeEnd;
 
     public int getPage() {
         return page;
@@ -53,24 +49,6 @@ public class SysDictionaryVO extends SysDictionary {
         return this;
     }
 
-    public Integer getCreateTimeEnd() {
-        return createTimeEnd;
-    }
-
-    public SysDictionaryVO setCreateTimeEnd(Integer createTimeEnd) {
-        this.createTimeEnd = createTimeEnd;
-        return this;
-    }
-
-    public Integer getUpdateTimeEnd() {
-        return updateTimeEnd;
-    }
-
-    public SysDictionaryVO setUpdateTimeEnd(Integer updateTimeEnd) {
-        this.updateTimeEnd = updateTimeEnd;
-        return this;
-    }
-
     @Override
     public String toString() {
         return "SysDictionaryVO{" +
@@ -78,8 +56,6 @@ public class SysDictionaryVO extends SysDictionary {
                 ", size=" + size +
                 ", sortLabel='" + sortLabel + '\'' +
                 ", sortOrder='" + sortOrder + '\'' +
-                ", createTimeEnd=" + createTimeEnd +
-                ", updateTimeEnd=" + updateTimeEnd +
                 '}';
     }
 }

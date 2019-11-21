@@ -69,7 +69,7 @@ public class SysMenuDao extends BaseDao {
     }
 
     public static List<IdNameVO> allValidMenu(Connection connection) throws SQLException {
-        String sql = "SELECT sm.id AS 'id', sm.menu_name AS 'name' FROM sys_menu sm";
+        String sql = "SELECT sm.id, sm.menu_name AS 'name' FROM sys_menu sm";
         return executeSelectReturnList(connection, sql, null, new IdNameVO());
     }
 

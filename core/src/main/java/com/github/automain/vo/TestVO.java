@@ -18,8 +18,6 @@ public class TestVO extends Test {
     private List<String> gidList;
     // 创建时间结束
     private Integer createTimeEnd;
-    // 更新时间结束
-    private Integer updateTimeEnd;
     // 测试字典集合
     private List<Integer> testDictionaryList;
 
@@ -77,15 +75,6 @@ public class TestVO extends Test {
         return this;
     }
 
-    public Integer getUpdateTimeEnd() {
-        return updateTimeEnd;
-    }
-
-    public TestVO setUpdateTimeEnd(Integer updateTimeEnd) {
-        this.updateTimeEnd = updateTimeEnd;
-        return this;
-    }
-
     public List<Integer> getTestDictionaryList() {
         return testDictionaryList;
     }
@@ -104,7 +93,6 @@ public class TestVO extends Test {
                 ", sortOrder='" + sortOrder + '\'' +
                 ", gidList=" + gidList +
                 ", createTimeEnd=" + createTimeEnd +
-                ", updateTimeEnd=" + updateTimeEnd +
                 ", testDictionaryList=" + testDictionaryList +
                 '}';
     }

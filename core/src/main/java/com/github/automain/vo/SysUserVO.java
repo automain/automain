@@ -16,14 +16,6 @@ public class SysUserVO extends SysUser {
     private String sortOrder;
     // 删除用GID集合
     private List<String> gidList;
-    // 创建时间结束
-    private Integer createTimeEnd;
-    // 更新时间结束
-    private Integer updateTimeEnd;
-    // 添加用密码
-    private String password;
-    // 添加用确认密码
-    private String password2;
     // 权限标识
     private String roleLabel;
 
@@ -72,42 +64,6 @@ public class SysUserVO extends SysUser {
         return this;
     }
 
-    public Integer getCreateTimeEnd() {
-        return createTimeEnd;
-    }
-
-    public SysUserVO setCreateTimeEnd(Integer createTimeEnd) {
-        this.createTimeEnd = createTimeEnd;
-        return this;
-    }
-
-    public Integer getUpdateTimeEnd() {
-        return updateTimeEnd;
-    }
-
-    public SysUserVO setUpdateTimeEnd(Integer updateTimeEnd) {
-        this.updateTimeEnd = updateTimeEnd;
-        return this;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public SysUserVO setPassword(String password) {
-        this.password = password;
-        return this;
-    }
-
-    public String getPassword2() {
-        return password2;
-    }
-
-    public SysUserVO setPassword2(String password2) {
-        this.password2 = password2;
-        return this;
-    }
-
     public String getRoleLabel() {
         return roleLabel;
     }
@@ -125,10 +81,6 @@ public class SysUserVO extends SysUser {
                 ", sortLabel='" + sortLabel + '\'' +
                 ", sortOrder='" + sortOrder + '\'' +
                 ", gidList=" + gidList +
-                ", createTimeEnd=" + createTimeEnd +
-                ", updateTimeEnd=" + updateTimeEnd +
-                ", password='" + password + '\'' +
-                ", password2='" + password2 + '\'' +
                 ", roleLabel='" + roleLabel + '\'' +
                 '}';
     }

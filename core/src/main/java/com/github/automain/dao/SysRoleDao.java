@@ -4,11 +4,13 @@ import com.github.automain.bean.SysRole;
 import com.github.automain.vo.RoleVO;
 import com.github.automain.vo.SysRoleVO;
 import com.github.fastjdbc.BaseDao;
+import com.github.fastjdbc.ConnectionPool;
 import com.github.fastjdbc.PageBean;
 import com.github.fastjdbc.PageParamBean;
 import org.apache.commons.lang3.StringUtils;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,5 +69,20 @@ public class SysRoleDao extends BaseDao {
     public static List<RoleVO> selectAllRoleVO(Connection connection) throws SQLException {
         String sql = "SELECT sr.role_name,sr.role_label FROM sys_role sr";
         return executeSelectReturnList(connection, sql, null, new RoleVO());
+    }
+
+    public static List<Integer> selectRoleIdByLabelList(Connection connection, List<String> labelList) throws SQLException {
+        String sql = "SELECT sr.id FROM sys_role sr WHERE sr.role_label" + makeInStr(labelList);
+        ResultSet rs = null;
+        List<Integer> idList = new ArrayList<Integer>();
+        try {
+            rs = executeSelectReturnResultSet(connection, sql, labelList);
+            while (rs.next()) {
+                idList.add(rs.getInt("id"));
+            }
+        } finally {
+            ConnectionPool.close(rs);
+        }
+        return idList;
     }
 }
