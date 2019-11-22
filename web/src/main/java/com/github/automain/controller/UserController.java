@@ -130,6 +130,10 @@ public class UserController extends BaseController {
                             map.put("menuData", menuData);
                             map.put("privilege", privilegeSet);
                             map.put("realName", sysUser.getRealName());
+                            SysFile file = SysFileDao.selectTableByGid(connection, new SysFile().setGid(sysUser.getHeadImgGid()));
+                            if (file != null) {
+                                map.put("headImg", "/uploads" + file.getFilePath());
+                            }
                             return JsonResponse.getSuccessJson("登录成功", map);
                         } else {
                             return JsonResponse.getFailedJson("用户名或密码错误");

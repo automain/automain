@@ -73,6 +73,7 @@ public class BaseController implements ServiceContainer {
                         userCacheMap.put("email", user.getEmail());
                         userCacheMap.put("gid", user.getGid());
                         userCacheMap.put("realName", user.getRealName());
+                        userCacheMap.put("headImgGid", user.getHeadImgGid());
                         isRefresh = true;
                     }
                 } else {
@@ -106,7 +107,7 @@ public class BaseController implements ServiceContainer {
                     authorization = EncryptUtil.AESEncrypt(value.getBytes(PropertiesUtil.DEFAULT_CHARSET), AES_PASSWORD);
                     response.setHeader("Authorization", authorization);
                 }
-                return new SysUser().setGid(userGid).setUserName(userCacheMap.get("userName")).setPhone(userCacheMap.get("phone")).setEmail(userCacheMap.get("email")).setGid(userCacheMap.get("gid")).setRealName(userCacheMap.get("realName"));
+                return new SysUser().setGid(userGid).setUserName(userCacheMap.get("userName")).setPhone(userCacheMap.get("phone")).setEmail(userCacheMap.get("email")).setGid(userCacheMap.get("gid")).setRealName(userCacheMap.get("realName")).setHeadImgGid(userCacheMap.get("headImgGid"));
             }
         }
         return null;
