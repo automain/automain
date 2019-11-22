@@ -4,6 +4,8 @@ import com.github.automain.bean.SysFile;
 import com.github.automain.bean.SysMenu;
 import com.github.automain.bean.SysPrivilege;
 import com.github.automain.bean.SysRole;
+import com.github.automain.bean.SysRoleMenu;
+import com.github.automain.bean.SysRolePrivilege;
 import com.github.automain.bean.SysUser;
 import com.github.automain.bean.SysUserRole;
 import com.github.automain.common.annotation.RequestUri;
@@ -13,6 +15,8 @@ import com.github.automain.dao.SysFileDao;
 import com.github.automain.dao.SysMenuDao;
 import com.github.automain.dao.SysPrivilegeDao;
 import com.github.automain.dao.SysRoleDao;
+import com.github.automain.dao.SysRoleMenuDao;
+import com.github.automain.dao.SysRolePrivilegeDao;
 import com.github.automain.dao.SysUserDao;
 import com.github.automain.dao.SysUserRoleDao;
 import com.github.automain.util.CaptchaUtil;
@@ -23,12 +27,13 @@ import com.github.automain.util.RedisUtil;
 import com.github.automain.vo.IdNameVO;
 import com.github.automain.vo.LoginUserVO;
 import com.github.automain.vo.MenuVO;
+import com.github.automain.vo.RoleDistributeVO;
 import com.github.automain.vo.RoleVO;
 import com.github.automain.vo.SysMenuVO;
 import com.github.automain.vo.SysPrivilegeVO;
 import com.github.automain.vo.SysRoleVO;
-import com.github.automain.vo.SysUserVO;
 import com.github.automain.vo.SysUserAddVO;
+import com.github.automain.vo.SysUserVO;
 import com.github.automain.vo.TreeVO;
 import com.github.fastjdbc.PageBean;
 import org.apache.commons.collections4.CollectionUtils;
@@ -329,9 +334,9 @@ public class UserController extends BaseController {
     @RequestUri(value = "/checkRoleExist", slave = "slave1")
     public JsonResponse checkRoleExist(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         String roleLabel = request.getParameter("roleLabel");
+        Integer id = Integer.valueOf(request.getParameter("id"));
         if (StringUtils.isNotBlank(roleLabel)) {
-            int count = SysRoleDao.countTableByBean(connection, new SysRole().setRoleLabel(roleLabel));
-            if (count == 0) {
+            if (SysRoleDao.checkRoleLabelUseable(connection, roleLabel, id)) {
                 return JsonResponse.getSuccessJson();
             }
         }
@@ -445,22 +450,60 @@ public class UserController extends BaseController {
         return JsonResponse.getSuccessJson(privilegeVOList);
     }
 
-    @RequestUri(value = "/getPrivilegeTree", slave = "slave1")
+    @RequestUri(value = "/getPrivilegeTree", label = "admin", slave = "slave1")
     public JsonResponse getPrivilegeTree(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        SysUser user = getSessionUser(connection, jedis, request, response);
-        if (user != null) {
-            List<TreeVO> privilegeTree = SYS_USER_SERVICE.selectAuthorityPrivilegeTree(connection, user.getGid());
-            return JsonResponse.getSuccessJson(privilegeTree);
+        Integer id = Integer.valueOf(request.getParameter("id"));
+        List<TreeVO> privilegeTree = SYS_USER_SERVICE.selectPrivilegeTree(connection);
+        List<Integer> privilegeList = SysRolePrivilegeDao.selectCheckedPrivilegeList(connection, id);
+        Map<String, Object> result = new HashMap<String, Object>(2);
+        result.put("privilegeTree", privilegeTree);
+        result.put("privilegeList", privilegeList);
+        return JsonResponse.getSuccessJson(result);
+    }
+
+    @RequestUri(value = "/getMenuTree", label = "admin", slave = "slave1")
+    public JsonResponse getMenuTree(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Integer id = Integer.valueOf(request.getParameter("id"));
+        List<TreeVO> menuTree = SYS_USER_SERVICE.selectMenuTree(connection);
+        List<Integer> menuList = SysRoleMenuDao.selectCheckedMenuList(connection, id);
+        Map<String, Object> result = new HashMap<String, Object>(2);
+        result.put("menuTree", menuTree);
+        result.put("menuList", menuList);
+        return JsonResponse.getSuccessJson(result);
+    }
+
+    @RequestUri("/setRolePrivilege")
+    public JsonResponse setRolePrivilege(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        RoleDistributeVO vo = getRequestParam(request, RoleDistributeVO.class);
+        if (vo != null && vo.getRoleId() != null) {
+            Integer roleId = vo.getRoleId();
+            SysRolePrivilegeDao.softDeleteByRoleId(connection, roleId);
+            List<Integer> privilegeList = vo.getDistributeIdList();
+            List<SysRolePrivilege> rolePrivilegeList = new ArrayList<SysRolePrivilege>(privilegeList.size());
+            int now = DateUtil.getNow();
+            for (Integer id : privilegeList) {
+                rolePrivilegeList.add(new SysRolePrivilege().setPrivilegeId(id).setRoleId(roleId).setIsValid(1).setCreateTime(now).setUpdateTime(now));
+            }
+            SysRolePrivilegeDao.batchInsertIntoTable(connection, rolePrivilegeList);
+            return JsonResponse.getSuccessJson();
         }
         return JsonResponse.getFailedJson();
     }
 
-    @RequestUri(value = "/getMenuTree", slave = "slave1")
-    public JsonResponse getMenuTree(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        SysUser user = getSessionUser(connection, jedis, request, response);
-        if (user != null) {
-            List<TreeVO> menuTree = SYS_USER_SERVICE.selectAuthorityMenuTree(connection, user.getGid());
-            return JsonResponse.getSuccessJson(menuTree);
+    @RequestUri("/setRoleMenu")
+    public JsonResponse setRoleMenu(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        RoleDistributeVO vo = getRequestParam(request, RoleDistributeVO.class);
+        if (vo != null && vo.getRoleId() != null) {
+            Integer roleId = vo.getRoleId();
+            SysRoleMenuDao.softDeleteByRoleId(connection, roleId);
+            List<Integer> menuList = vo.getDistributeIdList();
+            List<SysRoleMenu> roleMenuList = new ArrayList<SysRoleMenu>(menuList.size());
+            int now = DateUtil.getNow();
+            for (Integer id : menuList) {
+                roleMenuList.add(new SysRoleMenu().setMenuId(id).setRoleId(roleId).setIsValid(1).setCreateTime(now).setUpdateTime(now));
+            }
+            SysRoleMenuDao.batchInsertIntoTable(connection, roleMenuList);
+            return JsonResponse.getSuccessJson();
         }
         return JsonResponse.getFailedJson();
     }

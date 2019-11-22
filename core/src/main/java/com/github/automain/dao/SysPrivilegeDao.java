@@ -91,9 +91,4 @@ public class SysPrivilegeDao extends BaseDao {
         String sql = "SELECT sp.id, sp.privilege_name AS 'name' FROM sys_privilege sp";
         return executeSelectReturnList(connection, sql, null, new IdNameVO());
     }
-
-    public static List<SysPrivilege> selectAuthorityPrivilege(Connection connection, String userGid) throws SQLException {
-        String sql = "SELECT sp.* FROM sys_user_role sur INNER JOIN sys_role_privilege srp ON sur.role_id = srp.role_id INNER JOIN sys_privilege sp ON srp.privilege_id = sp.id WHERE sur.is_valid = 1 AND sur.user_gid = ? AND srp.is_valid = 1";
-        return executeSelectReturnList(connection, sql, List.of(userGid), new SysPrivilege());
-    }
 }

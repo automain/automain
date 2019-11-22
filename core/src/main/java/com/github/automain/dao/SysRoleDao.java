@@ -85,4 +85,19 @@ public class SysRoleDao extends BaseDao {
         }
         return idList;
     }
+
+    public static boolean checkRoleLabelUseable(Connection connection, String roleLabel, Integer id) throws SQLException {
+        String sql = "SELECT sr.id FROM sys_role sr WHERE sr.role_label = ? LIMIT 1";
+        ResultSet rs = null;
+        try {
+            rs = executeSelectReturnResultSet(connection, sql, List.of(roleLabel));
+            if (rs.next()) {
+                return Integer.valueOf(rs.getInt("id")).equals(id);
+            } else {
+                return true;
+            }
+        } finally {
+            ConnectionPool.close(rs);
+        }
+    }
 }
