@@ -52,7 +52,7 @@ CREATE TABLE `sys_dictionary` (
 
 /*Data for the table `sys_dictionary` */
 
-insert  into `sys_dictionary`(`id`,`create_time`,`update_time`,`table_name`,`column_name`,`dictionary_key`,`dictionary_value`) values (1,1567839156,1567839156,'test','test_dictionary',0,'字典0'),(2,1567839156,1567839156,'test','test_dictionary',1,'字典1'),(3,1567839156,1567839156,'test','test_dictionary',2,'字典2');
+insert  into `sys_dictionary`(`id`,`create_time`,`update_time`,`table_name`,`column_name`,`dictionary_key`,`dictionary_value`) values (1,0,0,'test','test_dictionary',0,'字典0'),(2,0,0,'test','test_dictionary',1,'字典1'),(3,0,0,'test','test_dictionary',2,'字典2');
 
 /*Table structure for table `sys_file` */
 
@@ -98,7 +98,7 @@ CREATE TABLE `sys_menu` (
 
 /*Data for the table `sys_menu` */
 
-insert  into `sys_menu`(`id`,`create_time`,`update_time`,`menu_path`,`menu_name`,`menu_icon`,`parent_id`,`sequence_number`) values (1,1572792195,1572792195,NULL,'开发工具','el-icon-s-cooperation',0,1),(2,1572792223,1572792223,NULL,'系统管理','el-icon-setting',0,2),(3,1572792259,1572792259,'/dev/generator','生成器','el-icon-s-platform',1,1),(4,1572792298,1572792298,'/dev/test','测试','el-icon-s-flag',1,2),(5,1572792330,1572792330,'/system/dictionary','字典管理','el-icon-notebook-2',2,1),(6,1572792357,1572792357,'/system/menu','菜单管理','el-icon-menu',2,2),(7,1572792357,1572792357,'/system/user','人员管理','el-icon-user',2,3),(8,1572792357,1572792357,'/system/role','角色管理','el-icon-s-custom',2,4),(9,1572792357,1572792357,'/system/privilege','权限管理','el-icon-s-claim',2,5),(10,1572792357,1572792357,'/system/schedule','任务管理','el-icon-timer',2,6),(11,1572792357,1572792357,'/system/config','配置管理','el-icon-setting',2,7),(12,1572792357,1572792357,'/system/file','文件管理','el-icon-files',2,8);
+insert  into `sys_menu`(`id`,`create_time`,`update_time`,`menu_path`,`menu_name`,`menu_icon`,`parent_id`,`sequence_number`) values (1,0,0,NULL,'开发工具','el-icon-s-cooperation',0,1),(2,0,0,NULL,'系统管理','el-icon-s-tools',0,2),(3,0,0,'/dev/generator','生成器','el-icon-s-platform',1,1),(4,0,0,'/dev/test','测试','el-icon-s-flag',1,2),(5,0,0,'/system/dictionary','字典管理','el-icon-notebook-2',2,1),(6,0,0,'/system/menu','菜单管理','el-icon-menu',2,2),(7,0,0,'/system/user','人员管理','el-icon-user',2,3),(8,0,0,'/system/role','角色管理','el-icon-s-custom',2,4),(9,0,0,'/system/privilege','权限管理','el-icon-s-claim',2,5),(10,0,0,'/system/schedule','任务管理','el-icon-timer',2,6),(11,0,0,'/system/config','配置管理','el-icon-setting',2,7),(12,0,0,'/system/file','文件管理','el-icon-files',2,8);
 
 /*Table structure for table `sys_privilege` */
 
@@ -119,7 +119,7 @@ CREATE TABLE `sys_privilege` (
 
 /*Data for the table `sys_privilege` */
 
-insert  into `sys_privilege`(`id`,`create_time`,`update_time`,`privilege_label`,`privilege_name`,`parent_id`) values (1,1,1,'admin','所有权限',0);
+insert  into `sys_privilege`(`id`,`create_time`,`update_time`,`privilege_label`,`privilege_name`,`parent_id`) values (1,0,0,'admin','所有权限',0);
 
 /*Table structure for table `sys_role` */
 
@@ -138,7 +138,7 @@ CREATE TABLE `sys_role` (
 
 /*Data for the table `sys_role` */
 
-insert  into `sys_role`(`id`,`create_time`,`update_time`,`role_name`,`role_label`) values (1,1,1,'admin','admin'),(2,1,1,'guest','guest');
+insert  into `sys_role`(`id`,`create_time`,`update_time`,`role_name`,`role_label`) values (1,0,0,'admin','admin'),(2,0,0,'guest','guest');
 
 /*Table structure for table `sys_role_menu` */
 
@@ -158,7 +158,7 @@ CREATE TABLE `sys_role_menu` (
 
 /*Data for the table `sys_role_menu` */
 
-insert  into `sys_role_menu`(`id`,`create_time`,`update_time`,`is_valid`,`role_id`,`menu_id`) values (1,1,1,1,1,1),(2,1,1,1,1,2),(3,1,1,1,1,3),(4,1,1,1,1,4),(5,1,1,1,1,5),(6,1,1,1,1,6),(7,1,1,1,1,7),(8,1,1,1,1,8),(9,1,1,1,1,9),(10,1,1,1,1,10),(11,1,1,1,1,11),(12,1,1,1,1,12);
+insert  into `sys_role_menu`(`id`,`create_time`,`update_time`,`is_valid`,`role_id`,`menu_id`) values (1,0,0,1,1,1),(2,0,0,1,1,2),(3,0,0,1,1,3),(4,0,0,1,1,4),(5,0,0,1,1,5),(6,0,0,1,1,6),(7,0,0,1,1,7),(8,0,0,1,1,8),(9,0,0,1,1,9),(10,0,0,1,1,10),(11,0,0,1,1,11),(12,0,0,1,1,12);
 
 /*Table structure for table `sys_role_privilege` */
 
@@ -178,7 +178,7 @@ CREATE TABLE `sys_role_privilege` (
 
 /*Data for the table `sys_role_privilege` */
 
-insert  into `sys_role_privilege`(`id`,`create_time`,`update_time`,`is_valid`,`role_id`,`privilege_id`) values (1,1,1,1,1,1);
+insert  into `sys_role_privilege`(`id`,`create_time`,`update_time`,`is_valid`,`role_id`,`privilege_id`) values (1,0,0,1,1,1);
 
 /*Table structure for table `sys_schedule` */
 
@@ -225,7 +225,7 @@ CREATE TABLE `sys_user` (
 
 /*Data for the table `sys_user` */
 
-insert  into `sys_user`(`id`,`gid`,`create_time`,`update_time`,`is_valid`,`user_name`,`password_md5`,`real_name`,`phone`,`email`,`head_img_gid`) values (1,'1',1,1,1,'admin','e10adc3949ba59abbe56e057f20f883e','管理员','1','1',NULL),(2,'2',2,2,1,'guest','e10adc3949ba59abbe56e057f20f883e','访客','1','1',NULL);
+insert  into `sys_user`(`id`,`gid`,`create_time`,`update_time`,`is_valid`,`user_name`,`password_md5`,`real_name`,`phone`,`email`,`head_img_gid`) values (1,'1',0,0,1,'admin','e10adc3949ba59abbe56e057f20f883e','管理员','1','1',NULL),(2,'2',0,0,1,'guest','e10adc3949ba59abbe56e057f20f883e','访客','1','1',NULL);
 
 /*Table structure for table `sys_user_role` */
 
@@ -241,11 +241,11 @@ CREATE TABLE `sys_user_role` (
   PRIMARY KEY (`id`),
   KEY `idx_role_id` (`role_id`),
   KEY `idx_user_gid` (`user_gid`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `sys_user_role` */
 
-insert  into `sys_user_role`(`id`,`create_time`,`update_time`,`is_valid`,`user_gid`,`role_id`) values (1,1,1,1,'1',1),(2,1,1,1,'1',2);
+insert  into `sys_user_role`(`id`,`create_time`,`update_time`,`is_valid`,`user_gid`,`role_id`) values (1,0,0,1,'1',1);
 
 /*Table structure for table `test` */
 

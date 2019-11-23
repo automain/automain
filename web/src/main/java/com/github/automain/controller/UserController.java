@@ -230,6 +230,7 @@ public class UserController extends BaseController {
             String gid = bean.getGid();
             SysUser sysUser = SysUserDao.selectTableByGid(connection, new SysUser().setGid(gid));
             if (sysUser != null) {
+                String oldHeadImgGid = sysUser.getHeadImgGid();
                 sysUser.setUpdateTime(DateUtil.getNow())
                         .setUserName(bean.getUserName())
                         .setEmail(bean.getEmail())
@@ -237,7 +238,6 @@ public class UserController extends BaseController {
                         .setRealName(bean.getRealName())
                         .setHeadImgGid(bean.getHeadImgGid());
                 SysUserDao.updateTableByGid(connection, sysUser, true);
-                String oldHeadImgGid = sysUser.getHeadImgGid();
                 if (oldHeadImgGid != null && !oldHeadImgGid.equals(bean.getHeadImgGid())) {
                     SysFileDao.softDeleteTableByGid(connection, new SysFile().setGid(oldHeadImgGid));
                 }
