@@ -69,12 +69,10 @@ public class SysMenuDao extends BaseDao {
     }
 
     public static List<IdNameVO> allValidMenu(Connection connection) throws SQLException {
-        String sql = "SELECT sm.id, sm.menu_name AS 'name' FROM sys_menu sm";
-        return executeSelectReturnList(connection, sql, null, new IdNameVO());
+        return executeSelectReturnList(connection, "SELECT sm.id, sm.menu_name AS 'name' FROM sys_menu sm", null, new IdNameVO());
     }
 
     public static List<SysMenu> selectAuthorityMenu(Connection connection, String userGid) throws SQLException {
-        String sql = "SELECT sm.* FROM sys_user_role sur INNER JOIN sys_role_menu srm ON sur.role_id = srm.role_id INNER JOIN sys_menu sm ON srm.menu_id = sm.id WHERE sur.is_valid = 1 AND sur.user_gid = ? AND srm.is_valid = 1";
-        return executeSelectReturnList(connection, sql, List.of(userGid), new SysMenu());
+        return executeSelectReturnList(connection, "SELECT sm.* FROM sys_user_role sur INNER JOIN sys_role_menu srm ON sur.role_id = srm.role_id INNER JOIN sys_menu sm ON srm.menu_id = sm.id WHERE sur.is_valid = 1 AND sur.user_gid = ? AND srm.is_valid = 1", List.of(userGid), new SysMenu());
     }
 }

@@ -19,6 +19,7 @@ import com.github.automain.vo.SysFileVO;
 import com.github.automain.vo.SysScheduleVO;
 import com.github.fastjdbc.PageBean;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import redis.clients.jedis.Jedis;
 
 import javax.servlet.http.HttpServletRequest;
@@ -152,6 +153,19 @@ public class SystemController extends BaseController {
     }
 
     // schedule
+    @RequestUri(value = "/checkScheduleExist", slave = "slave1")
+    public JsonResponse checkScheduleExist(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String scheduleUrl = request.getParameter("scheduleUrl");
+        String idStr = request.getParameter("id");
+        Integer id = Integer.valueOf("null".equals(idStr) ? "0" : idStr);
+        if (StringUtils.isNotBlank(scheduleUrl)) {
+            if (SysScheduleDao.checkScheduleUrlUseable(connection, scheduleUrl, id)) {
+                return JsonResponse.getSuccessJson();
+            }
+        }
+        return JsonResponse.getFailedJson();
+    }
+
     @RequestUri(value = "/scheduleList", slave = "slave1")
     public JsonResponse scheduleList(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         SysScheduleVO vo = getRequestParam(request, SysScheduleVO.class);
@@ -199,13 +213,17 @@ public class SystemController extends BaseController {
         return JsonResponse.getFailedJson();
     }
 
-    @RequestUri("/scheduleDelete")
-    public JsonResponse scheduleDelete(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        SysScheduleVO vo = getRequestParam(request, SysScheduleVO.class);
-        if (vo != null && CollectionUtils.isNotEmpty(vo.getIdList())) {
-            SysScheduleDao.softDeleteTableByIdList(connection, vo.getIdList());
-            return JsonResponse.getSuccessJson();
-        }
-        return JsonResponse.getFailedJson();
+    @RequestUri("/scheduleInValid")
+    public JsonResponse scheduleInValid(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Integer id = Integer.valueOf(request.getParameter("id"));
+        SysScheduleDao.softDeleteTableById(connection, new SysSchedule().setId(id));
+        return JsonResponse.getSuccessJson();
+    }
+
+    @RequestUri("/scheduleValid")
+    public JsonResponse scheduleValid(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Integer id = Integer.valueOf(request.getParameter("id"));
+        SysScheduleDao.updateTableById(connection, new SysSchedule().setId(id).setIsValid(1), false);
+        return JsonResponse.getSuccessJson();
     }
 }

@@ -1,5 +1,7 @@
 package com.github.automain.common.controller;
 
+import com.github.automain.dao.SysScheduleDao;
+import com.github.automain.util.DateUtil;
 import com.github.automain.util.RedisUtil;
 import com.github.automain.util.SystemUtil;
 import com.github.fastjdbc.ConnectionPool;
@@ -51,6 +53,17 @@ public abstract class BaseSchedule implements Runnable {
                 LOGGER.info("schedule get lock success uri = {}", scheduleUrl);
                 connection = ConnectionPool.getConnection(DispatcherController.SLAVE_POOL_MAP.get(scheduleUrl));
                 execute(connection, jedis);
+                if (connection.isReadOnly()) {
+                    Connection writeConnection = null;
+                    try {
+                        writeConnection = ConnectionPool.getConnection(null);
+                        SysScheduleDao.updateLastExecuteTime(writeConnection, scheduleUrl, DateUtil.getNow());
+                    } finally {
+                        ConnectionPool.close(writeConnection);
+                    }
+                } else {
+                    SysScheduleDao.updateLastExecuteTime(connection, scheduleUrl, DateUtil.getNow());
+                }
                 LOGGER.info("schedule execute end uri = {}", scheduleUrl);
             }
         } catch (Exception e) {

@@ -4,13 +4,11 @@ import com.github.automain.bean.SysDictionary;
 import com.github.automain.vo.DictionaryVO;
 import com.github.automain.vo.SysDictionaryVO;
 import com.github.fastjdbc.BaseDao;
-import com.github.fastjdbc.ConnectionPool;
 import com.github.fastjdbc.PageBean;
 import com.github.fastjdbc.PageParamBean;
 import org.apache.commons.lang3.StringUtils;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,16 +73,6 @@ public class SysDictionaryDao extends BaseDao {
     }
 
     public static List<String> selectDictionaryColumn(Connection connection, String tableName) throws Exception{
-        ResultSet rs = null;
-        List<String> result = new ArrayList<String>();
-        try {
-            rs = executeSelectReturnResultSet(connection, "SELECT sd.column_name FROM sys_dictionary sd WHERE sd.table_name = ? GROUP BY sd.column_name", List.of(tableName));
-            while (rs.next()) {
-                result.add(rs.getString("column_name"));
-            }
-        } finally {
-            ConnectionPool.close(rs);
-        }
-        return result;
+        return executeSelectReturnStringList(connection, "SELECT sd.column_name FROM sys_dictionary sd WHERE sd.table_name = ? GROUP BY sd.column_name", List.of(tableName));
     }
 }

@@ -194,7 +194,9 @@ CREATE TABLE `sys_schedule` (
   `start_execute_time` int(10) unsigned NOT NULL COMMENT '开始执行时间',
   `period` int(10) unsigned NOT NULL COMMENT '间隔时间(秒)',
   `last_execute_time` int(10) unsigned DEFAULT NULL COMMENT '上次执行时间',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_schedule_url` (`schedule_url`),
+  KEY `idx_schedule_name` (`schedule_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `sys_schedule` */

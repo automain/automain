@@ -153,9 +153,9 @@ public class UserController extends BaseController {
     public JsonResponse logout(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         SysUser user = getSessionUser(connection, jedis, request, response);
         if (user != null) {
-            Integer userId = user.getId();
-            String userCacheKey = "user:" + userId;
-            String userPrivilegeKey = "userPrivilege:" + userId;
+            String userGid = user.getGid();
+            String userCacheKey = "user:" + userGid;
+            String userPrivilegeKey = "userPrivilege:" + userGid;
             if (jedis != null) {
                 jedis.del(userCacheKey);
                 jedis.del(userPrivilegeKey);
@@ -338,7 +338,8 @@ public class UserController extends BaseController {
     @RequestUri(value = "/checkRoleExist", slave = "slave1")
     public JsonResponse checkRoleExist(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         String roleLabel = request.getParameter("roleLabel");
-        Integer id = Integer.valueOf(request.getParameter("id"));
+        String idStr = request.getParameter("id");
+        Integer id = Integer.valueOf("null".equals(idStr) ? "0" : idStr);
         if (StringUtils.isNotBlank(roleLabel)) {
             if (SysRoleDao.checkRoleLabelUseable(connection, roleLabel, id)) {
                 return JsonResponse.getSuccessJson();

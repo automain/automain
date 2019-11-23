@@ -6,6 +6,7 @@ import com.github.fastjdbc.BaseDao;
 import com.github.fastjdbc.ConnectionPool;
 import com.github.fastjdbc.PageBean;
 import com.github.fastjdbc.PageParamBean;
+import org.apache.commons.lang3.StringUtils;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -55,7 +56,15 @@ public class SysScheduleDao extends BaseDao {
 
     private static String setSearchCondition(SysScheduleVO bean, List<Object> paramList, boolean isCountSql) {
         StringBuilder sql = new StringBuilder("SELECT ");
-        sql.append(isCountSql ? "COUNT(1)" : "*").append(" FROM sys_schedule WHERE is_valid = 1");
+        sql.append(isCountSql ? "COUNT(1)" : "*").append(" FROM sys_schedule WHERE 1 = 1");
+        if (StringUtils.isNotBlank(bean.getScheduleName())) {
+            sql.append(" AND schedule_name LIKE ?");
+            paramList.add(bean.getScheduleName() + "%");
+        }
+        if (StringUtils.isNotBlank(bean.getScheduleUrl())) {
+            sql.append(" AND schedule_url = ?");
+            paramList.add(bean.getScheduleUrl());
+        }
         if (!isCountSql && bean.getSortLabel() != null && bean.getSortOrder() != null && bean.columnMap(true).containsKey(bean.getSortLabel())) {
             sql.append(" ORDER BY ").append(bean.getSortLabel()).append("asc".equalsIgnoreCase(bean.getSortOrder()) ? " ASC" : " DESC");
         }
@@ -75,5 +84,14 @@ public class SysScheduleDao extends BaseDao {
         } finally {
             ConnectionPool.close(rs);
         }
+    }
+
+    public static boolean checkScheduleUrlUseable(Connection connection, String scheduleUrl, Integer id) throws SQLException {
+        Integer existId = executeSelectReturnInteger(connection, "SELECT ss.id FROM sys_schedule ss WHERE ss.schedule_url = ? LIMIT 1", List.of(scheduleUrl));
+        return existId == null || existId.equals(id);
+    }
+
+    public static int updateLastExecuteTime(Connection connection, String scheduleUrl, Integer lastExecuteTime) throws SQLException {
+        return executeUpdate(connection, "UPDATE sys_schedule ss SET ss.last_execute_time = ? WHERE ss.schedule_url = ?", List.of(lastExecuteTime, scheduleUrl));
     }
 }

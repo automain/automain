@@ -125,9 +125,8 @@ public abstract class BaseExecutor implements Runnable {
         if (label == null) {
             return true;
         }
-        Integer userId = user.getId();
         Set<String> privilegeSet = null;
-        String userPrivilegeKey = "userPrivilege:" + userId;
+        String userPrivilegeKey = "userPrivilege:" + user.getGid();
         if (jedis != null) {
             privilegeSet = jedis.smembers(userPrivilegeKey);
         } else {

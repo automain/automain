@@ -2,8 +2,6 @@ package com.github.automain.vo;
 
 import com.github.automain.bean.SysSchedule;
 
-import java.util.List;
-
 public class SysScheduleVO extends SysSchedule {
 
     // 页码
@@ -14,8 +12,6 @@ public class SysScheduleVO extends SysSchedule {
     private String sortLabel;
     // 排序顺序
     private String sortOrder;
-    // 删除用ID集合
-    private List<Integer> idList;
 
     public int getPage() {
         return page;
@@ -53,15 +49,6 @@ public class SysScheduleVO extends SysSchedule {
         return this;
     }
 
-    public List<Integer> getIdList() {
-        return idList;
-    }
-
-    public SysScheduleVO setIdList(List<Integer> idList) {
-        this.idList = idList;
-        return this;
-    }
-
     @Override
     public String toString() {
         return "SysScheduleVO{" +
@@ -69,7 +56,6 @@ public class SysScheduleVO extends SysSchedule {
                 ", size=" + size +
                 ", sortLabel='" + sortLabel + '\'' +
                 ", sortOrder='" + sortOrder + '\'' +
-                ", idList=" + idList +
                 '}';
     }
 }
