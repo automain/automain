@@ -24,6 +24,7 @@ import com.github.automain.util.DateUtil;
 import com.github.automain.util.EncryptUtil;
 import com.github.automain.util.PropertiesUtil;
 import com.github.automain.util.RedisUtil;
+import com.github.automain.vo.ChangePasswordVO;
 import com.github.automain.vo.IdNameVO;
 import com.github.automain.vo.LoginUserVO;
 import com.github.automain.vo.MenuVO;
@@ -130,9 +131,11 @@ public class UserController extends BaseController {
                             map.put("menuData", menuData);
                             map.put("privilege", privilegeSet);
                             map.put("realName", sysUser.getRealName());
-                            SysFile file = SysFileDao.selectTableByGid(connection, new SysFile().setGid(sysUser.getHeadImgGid()));
-                            if (file != null) {
-                                map.put("headImg", "/uploads" + file.getFilePath());
+                            if (sysUser.getHeadImgGid() != null) {
+                                SysFile file = SysFileDao.selectTableByGid(connection, new SysFile().setGid(sysUser.getHeadImgGid()));
+                                if (file != null) {
+                                    map.put("headImg", "/uploads" + file.getFilePath());
+                                }
                             }
                             return JsonResponse.getSuccessJson("登录成功", map);
                         } else {
@@ -193,7 +196,7 @@ public class UserController extends BaseController {
     @RequestUri("/userAdd")
     public JsonResponse userAdd(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         SysUserAddVO bean = getRequestParam(request, SysUserAddVO.class);
-        if (checkValid(bean) && bean.getPassword() != null && bean.getPassword().equals(bean.getPassword2())) {
+        if (checkValid(bean) && bean.getUserName() != null && bean.getPassword() != null && bean.getPassword().equals(bean.getPassword2())) {
             String gid = UUID.randomUUID().toString();
             int now = DateUtil.getNow();
             SysUser user = new SysUser()
@@ -220,7 +223,7 @@ public class UserController extends BaseController {
     }
 
     private boolean checkValid(SysUserAddVO bean) {
-        return bean != null && bean.getUserName() != null && bean.getRealName() != null && bean.getPhone() != null && bean.getEmail() != null;
+        return bean != null && bean.getRealName() != null && bean.getPhone() != null && bean.getEmail() != null;
     }
 
     @RequestUri("/userUpdate")
@@ -268,6 +271,60 @@ public class UserController extends BaseController {
             return JsonResponse.getSuccessJson(detail);
         }
         return JsonResponse.getFailedJson();
+    }
+
+    @RequestUri(value = "/userBaseInfo", slave = "slave1")
+    public JsonResponse userBaseInfo(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        SysUser user = getSessionUser(connection, jedis, request, response);
+        if (user != null) {
+            SysUserAddVO detail = SysUserDao.selectUserVOByGid(connection, user.getGid());
+            return JsonResponse.getSuccessJson(detail);
+        }
+        return JsonResponse.getFailedJson();
+    }
+
+    @RequestUri("/userBaseInfoUpdate")
+    public JsonResponse userBaseInfoUpdate(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        SysUserAddVO bean = getRequestParam(request, SysUserAddVO.class);
+        SysUser user = getSessionUser(connection, jedis, request, response);
+        if (checkValid(bean) && bean.getGid() != null && user != null) {
+            SysUser sysUser = SysUserDao.selectTableByGid(connection, user);
+            if (sysUser != null) {
+                String oldHeadImgGid = sysUser.getHeadImgGid();
+                sysUser.setUpdateTime(DateUtil.getNow())
+                        .setUserName(bean.getUserName())
+                        .setEmail(bean.getEmail())
+                        .setPhone(bean.getPhone())
+                        .setRealName(bean.getRealName())
+                        .setHeadImgGid(bean.getHeadImgGid());
+                SysUserDao.updateTableByGid(connection, sysUser, true);
+                if (oldHeadImgGid != null && !oldHeadImgGid.equals(bean.getHeadImgGid())) {
+                    SysFileDao.softDeleteTableByGid(connection, new SysFile().setGid(oldHeadImgGid));
+                }
+                return JsonResponse.getSuccessJson();
+            }
+        }
+        return JsonResponse.getFailedJson();
+    }
+
+    @RequestUri("/userChangePassword")
+    public JsonResponse userChangePassword(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        ChangePasswordVO vo = getRequestParam(request, ChangePasswordVO.class);
+        SysUser user = getSessionUser(connection, jedis, request, response);
+        if (vo != null && vo.getOriPassword() != null && vo.getPassword() != null && vo.getPassword().equals(vo.getPassword2()) && user != null) {
+            SysUser sysUser = SysUserDao.selectTableByGid(connection, user);
+            if (sysUser != null) {
+                if (sysUser.getPasswordMd5().equals(EncryptUtil.MD5(vo.getOriPassword().getBytes(PropertiesUtil.DEFAULT_CHARSET)))) {
+                    SysUserDao.updateTableByGid(connection, new SysUser().setGid(sysUser.getGid()).setPasswordMd5(EncryptUtil.MD5(vo.getPassword().getBytes(PropertiesUtil.DEFAULT_CHARSET))), false);
+                    return JsonResponse.getSuccessJson();
+                } else {
+                    return JsonResponse.getFailedJson("原密码错误");
+                }
+            } else {
+                return JsonResponse.getFailedJson("未找到用户");
+            }
+        }
+        return JsonResponse.getFailedJson("操作失败");
     }
 
     @RequestUri("/userDelete")
