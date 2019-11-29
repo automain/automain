@@ -19,21 +19,33 @@ public class PropertiesUtil {
         if (parentDirectory.exists() && parentDirectory.isDirectory()) {
             File[] files = parentDirectory.listFiles();
             if (files != null) {
+                File productionFile = null;
                 for (File file : files) {
-                    if (SystemUtil.checkFileAvailable(file)) {
-                        try (InputStream is = new FileInputStream(file)) {
-                            Properties properties = new Properties();
-                            properties.load(is);
-                            for (Map.Entry<Object, Object> entry : properties.entrySet()) {
-                                propertiesMap.put(entry.getKey().toString(), entry.getValue().toString());
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                    if ("production.properties".equals(file.getName())) {
+                        productionFile = file;
+                        continue;
                     }
+                    loadProperties(file, propertiesMap);
+                }
+                if (productionFile != null) {
+                    loadProperties(productionFile, propertiesMap);
                 }
             }
             PROPERTIES_MAP = propertiesMap;
+        }
+    }
+
+    private static void loadProperties(File file, Map<String, String> propertiesMap) {
+        if (SystemUtil.checkFileAvailable(file)) {
+            try (InputStream is = new FileInputStream(file)) {
+                Properties properties = new Properties();
+                properties.load(is);
+                for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+                    propertiesMap.put(entry.getKey().toString(), entry.getValue().toString());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
