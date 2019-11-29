@@ -73,7 +73,7 @@ public class BaseController implements ServiceContainer {
                         userCacheMap.put("email", user.getEmail());
                         userCacheMap.put("gid", user.getGid());
                         userCacheMap.put("realName", user.getRealName());
-                        userCacheMap.put("headImgGid", user.getHeadImgGid());
+                        userCacheMap.put("headImgGid", user.getHeadImgGid() == null ? "" : user.getHeadImgGid());
                         isRefresh = true;
                     }
                 } else {

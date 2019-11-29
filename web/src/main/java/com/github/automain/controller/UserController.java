@@ -105,7 +105,7 @@ public class UserController extends BaseController {
                             userCacheMap.put("email", sysUser.getEmail());
                             userCacheMap.put("gid", sysUser.getGid());
                             userCacheMap.put("realName", sysUser.getRealName());
-                            userCacheMap.put("headImgGid", sysUser.getHeadImgGid());
+                            userCacheMap.put("headImgGid", sysUser.getHeadImgGid() == null ? "" : sysUser.getHeadImgGid());
                             userCacheMap.put("expireTime", String.valueOf(cacheExpireTime));
                             String userPrivilegeKey = "userPrivilege:" + userGid;
                             Set<String> privilegeSet = SysPrivilegeDao.selectUserPrivilege(connection, userGid);
