@@ -9,33 +9,27 @@ import com.github.automain.util.DateUtil;
 import com.github.automain.vo.TestVO;
 import com.github.fastjdbc.PageBean;
 import org.apache.commons.collections4.CollectionUtils;
-import redis.clients.jedis.Jedis;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.sql.Connection;
 import java.util.UUID;
 
 public class TestController extends BaseController {
 
     @RequestUri(value = "/testList", slave = "slave1")
-    public JsonResponse testList(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        TestVO vo = getRequestParam(request, TestVO.class);
+    public JsonResponse testList(TestVO vo) throws Exception {
         if (vo != null) {
-            PageBean<Test> pageBean = TestDao.selectTableForCustomPage(connection, vo);
+            PageBean<Test> pageBean = TestDao.selectTableForCustomPage(vo);
             return JsonResponse.getSuccessJson(pageBean);
         }
         return JsonResponse.getFailedJson();
     }
 
     @RequestUri("/testAdd")
-    public JsonResponse testAdd(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        Test bean = getRequestParam(request, Test.class);
+    public JsonResponse testAdd(Test bean) throws Exception {
         if (checkValid(bean)) {
             bean.setUpdateTime(DateUtil.getNow());
             bean.setCreateTime(bean.getUpdateTime());
             bean.setGid(UUID.randomUUID().toString());
-            TestDao.insertIntoTable(connection, bean);
+            TestDao.insertIntoTable(bean);
             return JsonResponse.getSuccessJson();
         }
         return JsonResponse.getFailedJson();
@@ -46,40 +40,37 @@ public class TestController extends BaseController {
     }
 
     @RequestUri("/testUpdate")
-    public JsonResponse testUpdate(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        Test bean = getRequestParam(request, Test.class);
+    public JsonResponse testUpdate(Test bean) throws Exception {
         if (checkValid(bean) && bean.getGid() != null) {
             bean.setUpdateTime(DateUtil.getNow());
-            TestDao.updateTableByGid(connection, bean, false);
-//            TestDao.updateTableById(connection, bean, false);
+            TestDao.updateTableByGid(bean, false);
+//            TestDao.updateTableById(bean, false);
             return JsonResponse.getSuccessJson();
         }
         return JsonResponse.getFailedJson();
     }
 
     @RequestUri(value = "/testDetail", slave = "slave1")
-    public JsonResponse testDetail(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        Test bean = getRequestParam(request, Test.class);
+    public JsonResponse testDetail(Test bean) throws Exception {
         if (bean != null && bean.getGid() != null) {
-            Test detail = TestDao.selectTableByGid(connection, bean);
+            Test detail = TestDao.selectTableByGid(bean);
             return JsonResponse.getSuccessJson(detail);
         }
 //        if (bean != null && bean.getId() != null) {
-//            Test detail = TestDao.selectTableById(connection, bean);
+//            Test detail = TestDao.selectTableById(bean);
 //            return JsonResponse.getSuccessJson("success", detail);
 //        }
         return JsonResponse.getFailedJson();
     }
 
     @RequestUri("/testDelete")
-    public JsonResponse testDelete(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        TestVO vo = getRequestParam(request, TestVO.class);
+    public JsonResponse testDelete(TestVO vo) throws Exception {
         if (vo != null && CollectionUtils.isNotEmpty(vo.getGidList())) {
-            TestDao.softDeleteTableByGidList(connection, vo.getGidList());
+            TestDao.softDeleteTableByGidList(vo.getGidList());
             return JsonResponse.getSuccessJson();
         }
 //        if (vo != null && CollectionUtils.isNotEmpty(vo.getIdList())) {
-//            TestDao.softDeleteTableByIdList(connection, vo.getIdList());
+//            TestDao.softDeleteTableByIdList(vo.getIdList());
 //            return JsonResponse.getSuccessJson("success");
 //        }
         return JsonResponse.getFailedJson();

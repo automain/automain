@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.sql.Connection;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -24,7 +23,7 @@ import java.util.UUID;
 public class UploadExecutor extends BaseExecutor {
 
     @Override
-    protected JsonResponse execute(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    protected JsonResponse execute(Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         try {
             Collection<Part> parts = request.getParts();
             if (parts == null) {
@@ -70,7 +69,7 @@ public class UploadExecutor extends BaseExecutor {
                                 .setFileMd5(fileMd5)
                                 .setImageHeight(imageHeight)
                                 .setImageWidth(imageWidth);
-                        SysFileDao.insertIntoTable(connection, uploadFile);
+                        SysFileDao.insertIntoTable(uploadFile);
                         Map<String, String> map = new HashMap<String, String>(2);
                         map.put("uploadFileGid", uploadFile.getGid());
                         if (imageWidth > 0 && imageHeight > 0) {

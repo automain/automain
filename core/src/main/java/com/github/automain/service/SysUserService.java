@@ -2,14 +2,13 @@ package com.github.automain.service;
 
 import com.github.automain.bean.SysMenu;
 import com.github.automain.bean.SysPrivilege;
+import com.github.automain.dao.SysMenuDao;
 import com.github.automain.dao.SysPrivilegeDao;
 import com.github.automain.util.ServiceContainer;
-import com.github.automain.dao.SysMenuDao;
 import com.github.automain.vo.MenuVO;
 import com.github.automain.vo.TreeVO;
 import org.apache.commons.collections4.CollectionUtils;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,8 +19,8 @@ import java.util.TreeSet;
 
 public class SysUserService implements ServiceContainer {
 
-    public List<MenuVO> selectAuthorityMenu(Connection connection, String userGid) throws SQLException {
-        List<SysMenu> menuList = SysMenuDao.selectAuthorityMenu(connection, userGid);
+    public List<MenuVO> selectAuthorityMenu(String userGid) throws SQLException {
+        List<SysMenu> menuList = SysMenuDao.selectAuthorityMenu(userGid);
         Map<Integer, Set<SysMenu>> menuMap = new HashMap<Integer, Set<SysMenu>>();
         for (SysMenu menu : menuList) {
             Integer parentId = menu.getParentId();
@@ -50,8 +49,8 @@ public class SysUserService implements ServiceContainer {
         return null;
     }
 
-    public List<TreeVO> selectMenuTree(Connection connection) throws SQLException {
-        List<SysMenu> allMenuList = SysMenuDao.selectAllTable(connection);
+    public List<TreeVO> selectMenuTree() throws SQLException {
+        List<SysMenu> allMenuList = SysMenuDao.selectAllTable();
         Map<Integer, Set<SysMenu>> menuMap = new HashMap<Integer, Set<SysMenu>>();
         for (SysMenu menu : allMenuList) {
             Integer parentId = menu.getParentId();
@@ -79,8 +78,8 @@ public class SysUserService implements ServiceContainer {
         return null;
     }
 
-    public List<TreeVO> selectPrivilegeTree(Connection connection) throws SQLException {
-        List<SysPrivilege> allPrivilegeList = SysPrivilegeDao.selectAllTable(connection);
+    public List<TreeVO> selectPrivilegeTree() throws SQLException {
+        List<SysPrivilege> allPrivilegeList = SysPrivilegeDao.selectAllTable();
         Map<Integer, Set<SysPrivilege>> privilegeMap = new HashMap<Integer, Set<SysPrivilege>>();
         for (SysPrivilege privilege : allPrivilegeList) {
             Integer parentId = privilege.getParentId();

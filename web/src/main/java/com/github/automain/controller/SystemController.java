@@ -20,21 +20,17 @@ import com.github.automain.vo.SysScheduleVO;
 import com.github.fastjdbc.PageBean;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import redis.clients.jedis.Jedis;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.sql.Connection;
 import java.util.List;
 
 public class SystemController extends BaseController {
 
     // file
     @RequestUri(value = "/fileList", slave = "slave1")
-    public JsonResponse fileList(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        SysFileVO vo = getRequestParam(request, SysFileVO.class);
+    public JsonResponse fileList(SysFileVO vo) throws Exception {
         if (vo != null) {
-            PageBean<SysFile> pageBean = SysFileDao.selectTableForCustomPage(connection, vo);
+            PageBean<SysFile> pageBean = SysFileDao.selectTableForCustomPage(vo);
             return JsonResponse.getSuccessJson(pageBean);
         }
         return JsonResponse.getFailedJson();
@@ -42,22 +38,20 @@ public class SystemController extends BaseController {
 
     // config
     @RequestUri(value = "/configList", slave = "slave1")
-    public JsonResponse configList(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        SysConfigVO vo = getRequestParam(request, SysConfigVO.class);
+    public JsonResponse configList(SysConfigVO vo) throws Exception {
         if (vo != null) {
-            PageBean<SysConfig> pageBean = SysConfigDao.selectTableForCustomPage(connection, vo);
+            PageBean<SysConfig> pageBean = SysConfigDao.selectTableForCustomPage(vo);
             return JsonResponse.getSuccessJson(pageBean);
         }
         return JsonResponse.getFailedJson();
     }
 
     @RequestUri("/configAdd")
-    public JsonResponse configAdd(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        SysConfig bean = getRequestParam(request, SysConfig.class);
+    public JsonResponse configAdd(SysConfig bean) throws Exception {
         if (checkValid(bean)) {
             bean.setUpdateTime(DateUtil.getNow());
             bean.setCreateTime(bean.getUpdateTime());
-            SysConfigDao.insertIntoTable(connection, bean);
+            SysConfigDao.insertIntoTable(bean);
             return JsonResponse.getSuccessJson();
         }
         return JsonResponse.getFailedJson();
@@ -68,31 +62,28 @@ public class SystemController extends BaseController {
     }
 
     @RequestUri("/configUpdate")
-    public JsonResponse configUpdate(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        SysConfig bean = getRequestParam(request, SysConfig.class);
+    public JsonResponse configUpdate(SysConfig bean) throws Exception {
         if (checkValid(bean) && bean.getId() != null) {
             bean.setUpdateTime(DateUtil.getNow());
-            SysConfigDao.updateTableById(connection, bean, false);
+            SysConfigDao.updateTableById(bean, false);
             return JsonResponse.getSuccessJson();
         }
         return JsonResponse.getFailedJson();
     }
 
     @RequestUri(value = "/configDetail", slave = "slave1")
-    public JsonResponse configDetail(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        SysConfig bean = getRequestParam(request, SysConfig.class);
+    public JsonResponse configDetail(SysConfig bean) throws Exception {
         if (bean != null && bean.getId() != null) {
-            SysConfig detail = SysConfigDao.selectTableById(connection, bean);
+            SysConfig detail = SysConfigDao.selectTableById(bean);
             return JsonResponse.getSuccessJson(detail);
         }
         return JsonResponse.getFailedJson();
     }
 
     @RequestUri("/configDelete")
-    public JsonResponse configDelete(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        SysConfigVO vo = getRequestParam(request, SysConfigVO.class);
+    public JsonResponse configDelete(SysConfigVO vo) throws Exception {
         if (vo != null && CollectionUtils.isNotEmpty(vo.getIdList())) {
-            SysConfigDao.softDeleteTableByIdList(connection, vo.getIdList());
+            SysConfigDao.softDeleteTableByIdList(vo.getIdList());
             return JsonResponse.getSuccessJson();
         }
         return JsonResponse.getFailedJson();
@@ -100,28 +91,26 @@ public class SystemController extends BaseController {
 
     // dictionary
     @RequestUri("/dictionaryAll")
-    public JsonResponse dictionaryAll(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        List<DictionaryVO> allDictionary = SysDictionaryDao.selectAllDictionaryVO(connection);
+    public JsonResponse dictionaryAll() throws Exception {
+        List<DictionaryVO> allDictionary = SysDictionaryDao.selectAllDictionaryVO();
         return JsonResponse.getSuccessJson(allDictionary);
     }
 
     @RequestUri(value = "/dictionaryList", slave = "slave1")
-    public JsonResponse dictionaryList(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        SysDictionaryVO vo = getRequestParam(request, SysDictionaryVO.class);
+    public JsonResponse dictionaryList(SysDictionaryVO vo) throws Exception {
         if (vo != null) {
-            PageBean<SysDictionary> pageBean = SysDictionaryDao.selectTableForCustomPage(connection, vo);
+            PageBean<SysDictionary> pageBean = SysDictionaryDao.selectTableForCustomPage(vo);
             return JsonResponse.getSuccessJson(pageBean);
         }
         return JsonResponse.getFailedJson();
     }
 
     @RequestUri("/dictionaryAdd")
-    public JsonResponse dictionaryAdd(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        SysDictionary bean = getRequestParam(request, SysDictionary.class);
+    public JsonResponse dictionaryAdd(SysDictionary bean) throws Exception {
         if (checkValid(bean)) {
             bean.setUpdateTime(DateUtil.getNow());
             bean.setCreateTime(bean.getUpdateTime());
-            SysDictionaryDao.insertIntoTable(connection, bean);
+            SysDictionaryDao.insertIntoTable(bean);
             return JsonResponse.getSuccessJson();
         }
         return JsonResponse.getFailedJson();
@@ -132,21 +121,19 @@ public class SystemController extends BaseController {
     }
 
     @RequestUri("/dictionaryUpdate")
-    public JsonResponse dictionaryUpdate(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        SysDictionary bean = getRequestParam(request, SysDictionary.class);
+    public JsonResponse dictionaryUpdate(SysDictionary bean) throws Exception {
         if (checkValid(bean) && bean.getId() != null) {
             bean.setUpdateTime(DateUtil.getNow());
-            SysDictionaryDao.updateTableById(connection, bean, false);
+            SysDictionaryDao.updateTableById(bean, false);
             return JsonResponse.getSuccessJson();
         }
         return JsonResponse.getFailedJson();
     }
 
     @RequestUri(value = "/dictionaryDetail", slave = "slave1")
-    public JsonResponse dictionaryDetail(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        SysDictionary bean = getRequestParam(request, SysDictionary.class);
+    public JsonResponse dictionaryDetail(SysDictionary bean) throws Exception {
         if (bean != null && bean.getId() != null) {
-            SysDictionary detail = SysDictionaryDao.selectTableById(connection, bean);
+            SysDictionary detail = SysDictionaryDao.selectTableById(bean);
             return JsonResponse.getSuccessJson(detail);
         }
         return JsonResponse.getFailedJson();
@@ -154,12 +141,12 @@ public class SystemController extends BaseController {
 
     // schedule
     @RequestUri(value = "/checkScheduleExist", slave = "slave1")
-    public JsonResponse checkScheduleExist(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public JsonResponse checkScheduleExist(HttpServletRequest request) throws Exception {
         String scheduleUrl = request.getParameter("scheduleUrl");
         String idStr = request.getParameter("id");
         Integer id = Integer.valueOf("null".equals(idStr) ? "0" : idStr);
         if (StringUtils.isNotBlank(scheduleUrl)) {
-            if (SysScheduleDao.checkScheduleUrlUseable(connection, scheduleUrl, id)) {
+            if (SysScheduleDao.checkScheduleUrlUseable(scheduleUrl, id)) {
                 return JsonResponse.getSuccessJson();
             }
         }
@@ -167,22 +154,20 @@ public class SystemController extends BaseController {
     }
 
     @RequestUri(value = "/scheduleList", slave = "slave1")
-    public JsonResponse scheduleList(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        SysScheduleVO vo = getRequestParam(request, SysScheduleVO.class);
+    public JsonResponse scheduleList(SysScheduleVO vo) throws Exception {
         if (vo != null) {
-            PageBean<SysSchedule> pageBean = SysScheduleDao.selectTableForCustomPage(connection, vo);
+            PageBean<SysSchedule> pageBean = SysScheduleDao.selectTableForCustomPage(vo);
             return JsonResponse.getSuccessJson(pageBean);
         }
         return JsonResponse.getFailedJson();
     }
 
     @RequestUri("/scheduleAdd")
-    public JsonResponse scheduleAdd(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        SysSchedule bean = getRequestParam(request, SysSchedule.class);
+    public JsonResponse scheduleAdd(SysSchedule bean) throws Exception {
         if (checkValid(bean)) {
             bean.setUpdateTime(DateUtil.getNow());
             bean.setCreateTime(bean.getUpdateTime());
-            SysScheduleDao.insertIntoTable(connection, bean);
+            SysScheduleDao.insertIntoTable(bean);
             return JsonResponse.getSuccessJson();
         }
         return JsonResponse.getFailedJson();
@@ -193,37 +178,35 @@ public class SystemController extends BaseController {
     }
 
     @RequestUri("/scheduleUpdate")
-    public JsonResponse scheduleUpdate(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        SysSchedule bean = getRequestParam(request, SysSchedule.class);
+    public JsonResponse scheduleUpdate(SysSchedule bean) throws Exception {
         if (checkValid(bean) && bean.getId() != null) {
             bean.setUpdateTime(DateUtil.getNow());
-            SysScheduleDao.updateTableById(connection, bean, false);
+            SysScheduleDao.updateTableById(bean, false);
             return JsonResponse.getSuccessJson();
         }
         return JsonResponse.getFailedJson();
     }
 
     @RequestUri(value = "/scheduleDetail", slave = "slave1")
-    public JsonResponse scheduleDetail(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        SysSchedule bean = getRequestParam(request, SysSchedule.class);
+    public JsonResponse scheduleDetail(SysSchedule bean) throws Exception {
         if (bean != null && bean.getId() != null) {
-            SysSchedule detail = SysScheduleDao.selectTableById(connection, bean);
+            SysSchedule detail = SysScheduleDao.selectTableById(bean);
             return JsonResponse.getSuccessJson(detail);
         }
         return JsonResponse.getFailedJson();
     }
 
     @RequestUri("/scheduleInValid")
-    public JsonResponse scheduleInValid(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public JsonResponse scheduleInValid(HttpServletRequest request) throws Exception {
         Integer id = Integer.valueOf(request.getParameter("id"));
-        SysScheduleDao.softDeleteTableById(connection, new SysSchedule().setId(id));
+        SysScheduleDao.softDeleteTableById(new SysSchedule().setId(id));
         return JsonResponse.getSuccessJson();
     }
 
     @RequestUri("/scheduleValid")
-    public JsonResponse scheduleValid(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public JsonResponse scheduleValid(HttpServletRequest request) throws Exception {
         Integer id = Integer.valueOf(request.getParameter("id"));
-        SysScheduleDao.updateTableById(connection, new SysSchedule().setId(id).setIsValid(1), false);
+        SysScheduleDao.updateTableById(new SysSchedule().setId(id).setIsValid(1), false);
         return JsonResponse.getSuccessJson();
     }
 }

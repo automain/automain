@@ -7,7 +7,6 @@ import com.github.fastjdbc.PageBean;
 import com.github.fastjdbc.PageParamBean;
 import org.apache.commons.lang3.StringUtils;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,30 +15,29 @@ public class SysConfigDao extends BaseDao {
 
     private static final SysConfig DEFAULT_BEAN = new SysConfig();
 
-    public static int softDeleteTableByIdList(Connection connection, List<Integer> idList) throws SQLException {
-        return softDeleteTableByIdList(connection, DEFAULT_BEAN, idList);
+    public static int softDeleteTableByIdList(List<Integer> idList) throws SQLException {
+        return softDeleteTableByIdList(DEFAULT_BEAN, idList);
     }
 
-    public static int deleteTableByIdList(Connection connection, List<Integer> idList) throws SQLException {
-        return deleteTableByIdList(connection, DEFAULT_BEAN, idList);
+    public static int deleteTableByIdList(List<Integer> idList) throws SQLException {
+        return deleteTableByIdList(DEFAULT_BEAN, idList);
     }
 
-    public static List<SysConfig> selectTableByIdList(Connection connection, List<Integer> idList) throws SQLException {
-        return selectTableByIdList(connection, DEFAULT_BEAN, idList);
+    public static List<SysConfig> selectTableByIdList(List<Integer> idList) throws SQLException {
+        return selectTableByIdList(DEFAULT_BEAN, idList);
     }
 
-    public static List<SysConfig> selectAllTable(Connection connection) throws SQLException {
-        return selectAllTable(connection, DEFAULT_BEAN);
+    public static List<SysConfig> selectAllTable() throws SQLException {
+        return selectAllTable(DEFAULT_BEAN);
     }
 
     @SuppressWarnings("unchecked")
-    public static PageBean<SysConfig> selectTableForCustomPage(Connection connection, SysConfigVO bean) throws Exception {
+    public static PageBean<SysConfig> selectTableForCustomPage(SysConfigVO bean) throws Exception {
         List<Object> countParamList = new ArrayList<Object>();
         List<Object> paramList = new ArrayList<Object>();
         String countSql = setSearchCondition(bean, countParamList, true);
         String sql = setSearchCondition(bean, paramList, false);
         PageParamBean<SysConfig> pageParamBean = new PageParamBean<SysConfig>()
-                .setConnection(connection)
                 .setBean(bean)
                 .setCountSql(countSql)
                 .setCountParamList(countParamList)

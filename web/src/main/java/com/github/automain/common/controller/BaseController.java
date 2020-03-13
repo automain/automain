@@ -1,6 +1,5 @@
 package com.github.automain.common.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.github.automain.bean.SysUser;
 import com.github.automain.dao.SysPrivilegeDao;
 import com.github.automain.util.DateUtil;
@@ -13,9 +12,6 @@ import redis.clients.jedis.Jedis;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.sql.Connection;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,22 +21,7 @@ public class BaseController implements ServiceContainer {
     private static final int CACHE_EXPIRE_SECONDS = SESSION_EXPIRE_SECONDS + 600;
     private static final String AES_PASSWORD = PropertiesUtil.getStringProperty("app.AESPassword");
 
-    public static <T> T getRequestParam(HttpServletRequest request, Class<T> clazz) {
-        try (InputStreamReader isr = new InputStreamReader(request.getInputStream(), PropertiesUtil.DEFAULT_CHARSET);
-             BufferedReader br = new BufferedReader(isr)) {
-            StringBuilder sb = new StringBuilder();
-            String temp = null;
-            while ((temp = br.readLine()) != null) {
-                sb.append(temp);
-            }
-            return JSONObject.parseObject(sb.toString(), clazz);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public static SysUser getSessionUser(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public static SysUser getSessionUser(Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         String authorization = request.getHeader("Authorization");
         if (StringUtils.isNotBlank(authorization) && !"null".equals(authorization)) {
             String decrypt = EncryptUtil.AESDecrypt(authorization.getBytes(PropertiesUtil.DEFAULT_CHARSET), AES_PASSWORD);
@@ -68,7 +49,7 @@ public class BaseController implements ServiceContainer {
                         return null;
                     } else if (expireTime < now) {
                         userCacheMap.put("expireTime", String.valueOf(newCacheExpireTime));
-                        Set<String> privilegeSet = SysPrivilegeDao.selectUserPrivilege(connection, userGid);
+                        Set<String> privilegeSet = SysPrivilegeDao.selectUserPrivilege(userGid);
                         if (jedis != null) {
                             jedis.del(userCacheKey);
                             jedis.hmset(userCacheKey, userCacheMap);

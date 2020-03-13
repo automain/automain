@@ -21,7 +21,6 @@ public class DaoGenerator {
                 "import com.github.fastjdbc.PageParamBean;\n" +
                 collectionUtilImport +
                 "import org.apache.commons.lang3.StringUtils;\n\n" +
-                "import java.sql.Connection;\n" +
                 "import java.sql.SQLException;\n" +
                 "import java.util.ArrayList;\n" +
                 "import java.util.List;\n\n";
@@ -36,26 +35,25 @@ public class DaoGenerator {
     }
 
     private String getBaseDaoFunction(String upperTableName, boolean hasIsValid, boolean hasGlobalId) {
-        String softDeleteTableByIdList = hasIsValid ? "\n\n    public static int softDeleteTableByIdList(Connection connection, List<Integer> idList) throws SQLException {\n        return softDeleteTableByIdList(connection, DEFAULT_BEAN, idList);\n    }" : "";
-        String softDeleteTableByGidList = hasIsValid && hasGlobalId ? "\n\n    public static int softDeleteTableByGidList(Connection connection, List<String> gidList) throws SQLException {\n        return softDeleteTableByGidList(connection, DEFAULT_BEAN, gidList);\n    }" : "";
-        String deleteTableByGidList = hasGlobalId ? "\n\n    public static int deleteTableByGidList(Connection connection, List<String> gidList) throws SQLException {\n        return deleteTableByGidList(connection, DEFAULT_BEAN, gidList);\n    }" : "";
-        String selectTableByGidList = hasGlobalId ? "\n\n    public static List<" + upperTableName + "> selectTableByGidList(Connection connection, List<String> gidList) throws SQLException {\n        return selectTableByGidList(connection, DEFAULT_BEAN, gidList);\n    }" : "";
+        String softDeleteTableByIdList = hasIsValid ? "\n\n    public static int softDeleteTableByIdList(List<Integer> idList) throws SQLException {\n        return softDeleteTableByIdList(DEFAULT_BEAN, idList);\n    }" : "";
+        String softDeleteTableByGidList = hasIsValid && hasGlobalId ? "\n\n    public static int softDeleteTableByGidList(List<String> gidList) throws SQLException {\n        return softDeleteTableByGidList(DEFAULT_BEAN, gidList);\n    }" : "";
+        String deleteTableByGidList = hasGlobalId ? "\n\n    public static int deleteTableByGidList(List<String> gidList) throws SQLException {\n        return deleteTableByGidList(DEFAULT_BEAN, gidList);\n    }" : "";
+        String selectTableByGidList = hasGlobalId ? "\n\n    public static List<" + upperTableName + "> selectTableByGidList(List<String> gidList) throws SQLException {\n        return selectTableByGidList(DEFAULT_BEAN, gidList);\n    }" : "";
         return softDeleteTableByIdList + softDeleteTableByGidList +
-                "\n\n    public static int deleteTableByIdList(Connection connection, List<Integer> idList) throws SQLException {\n        return deleteTableByIdList(connection, DEFAULT_BEAN, idList);\n    }" +
-                deleteTableByGidList + "\n\n    public static List<" + upperTableName + "> selectTableByIdList(Connection connection, List<Integer> idList) throws SQLException {\n        return selectTableByIdList(connection, DEFAULT_BEAN, idList);\n    }" +
-                selectTableByGidList + "\n\n    public static List<" +upperTableName + "> selectAllTable(Connection connection) throws SQLException {\n        return selectAllTable(connection, DEFAULT_BEAN);\n    }";
+                "\n\n    public static int deleteTableByIdList(List<Integer> idList) throws SQLException {\n        return deleteTableByIdList(DEFAULT_BEAN, idList);\n    }" +
+                deleteTableByGidList + "\n\n    public static List<" + upperTableName + "> selectTableByIdList(List<Integer> idList) throws SQLException {\n        return selectTableByIdList(DEFAULT_BEAN, idList);\n    }" +
+                selectTableByGidList + "\n\n    public static List<" +upperTableName + "> selectAllTable() throws SQLException {\n        return selectAllTable(DEFAULT_BEAN);\n    }";
     }
 
     private String getSelectTableForCustomPage(String upperTableName) {
         return "\n\n    @SuppressWarnings(\"unchecked\")\n" +
-                "    public static PageBean<" + upperTableName + "> selectTableForCustomPage(Connection connection, " +
+                "    public static PageBean<" + upperTableName + "> selectTableForCustomPage(" +
                 upperTableName + "VO bean) throws Exception {\n" +
                 "        List<Object> countParamList = new ArrayList<Object>();\n" +
                 "        List<Object> paramList = new ArrayList<Object>();\n" +
                 "        String countSql = setSearchCondition(bean, countParamList, true);\n" +
                 "        String sql = setSearchCondition(bean, paramList, false);\n" +
                 "        PageParamBean<" + upperTableName + "> pageParamBean = new PageParamBean<" + upperTableName + ">()\n" +
-                "                .setConnection(connection)\n" +
                 "                .setBean(bean)\n" +
                 "                .setCountSql(countSql)\n" +
                 "                .setCountParamList(countParamList)\n" +

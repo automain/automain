@@ -8,7 +8,6 @@ import com.github.fastjdbc.PageBean;
 import com.github.fastjdbc.PageParamBean;
 import org.apache.commons.lang3.StringUtils;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,26 +16,25 @@ public class SysDictionaryDao extends BaseDao {
 
     private static final SysDictionary DEFAULT_BEAN = new SysDictionary();
 
-    public static int deleteTableByIdList(Connection connection, List<Integer> idList) throws SQLException {
-        return deleteTableByIdList(connection, DEFAULT_BEAN, idList);
+    public static int deleteTableByIdList(List<Integer> idList) throws SQLException {
+        return deleteTableByIdList(DEFAULT_BEAN, idList);
     }
 
-    public static List<SysDictionary> selectTableByIdList(Connection connection, List<Integer> idList) throws SQLException {
-        return selectTableByIdList(connection, DEFAULT_BEAN, idList);
+    public static List<SysDictionary> selectTableByIdList(List<Integer> idList) throws SQLException {
+        return selectTableByIdList(DEFAULT_BEAN, idList);
     }
 
-    public static List<SysDictionary> selectAllTable(Connection connection) throws SQLException {
-        return selectAllTable(connection, DEFAULT_BEAN);
+    public static List<SysDictionary> selectAllTable() throws SQLException {
+        return selectAllTable(DEFAULT_BEAN);
     }
 
     @SuppressWarnings("unchecked")
-    public static PageBean<SysDictionary> selectTableForCustomPage(Connection connection, SysDictionaryVO bean) throws Exception {
+    public static PageBean<SysDictionary> selectTableForCustomPage(SysDictionaryVO bean) throws Exception {
         List<Object> countParamList = new ArrayList<Object>();
         List<Object> paramList = new ArrayList<Object>();
         String countSql = setSearchCondition(bean, countParamList, true);
         String sql = setSearchCondition(bean, paramList, false);
         PageParamBean<SysDictionary> pageParamBean = new PageParamBean<SysDictionary>()
-                .setConnection(connection)
                 .setBean(bean)
                 .setCountSql(countSql)
                 .setCountParamList(countParamList)
@@ -68,11 +66,11 @@ public class SysDictionaryDao extends BaseDao {
         return sql.toString();
     }
 
-    public static List<DictionaryVO> selectAllDictionaryVO(Connection connection) throws Exception{
-        return executeSelectReturnList(connection, "SELECT sd.table_name, sd.column_name, sd.dictionary_key, sd.dictionary_value FROM sys_dictionary sd", null, new DictionaryVO());
+    public static List<DictionaryVO> selectAllDictionaryVO() throws Exception{
+        return executeSelectReturnList("SELECT sd.table_name, sd.column_name, sd.dictionary_key, sd.dictionary_value FROM sys_dictionary sd", null, new DictionaryVO());
     }
 
-    public static List<String> selectDictionaryColumn(Connection connection, String tableName) throws Exception{
-        return executeSelectReturnStringList(connection, "SELECT sd.column_name FROM sys_dictionary sd WHERE sd.table_name = ? GROUP BY sd.column_name", List.of(tableName));
+    public static List<String> selectDictionaryColumn(String tableName) throws Exception{
+        return executeSelectReturnStringList("SELECT sd.column_name FROM sys_dictionary sd WHERE sd.table_name = ? GROUP BY sd.column_name", List.of(tableName));
     }
 }

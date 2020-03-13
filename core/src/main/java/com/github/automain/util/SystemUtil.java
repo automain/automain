@@ -16,7 +16,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -99,14 +98,13 @@ public class SystemUtil {
      * 关闭redis连接和数据库连接
      *
      * @param jedis
-     * @param connection
      */
-    public static void closeJedisAndConnection(Jedis jedis, Connection connection) {
+    public static void closeJedisAndConnection(Jedis jedis) {
         try {
             if (jedis != null) {
                 jedis.close();
             }
-            ConnectionPool.close(connection);
+            ConnectionPool.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -115,13 +113,12 @@ public class SystemUtil {
     /**
      * 保存base64到文件
      *
-     * @param connection
      * @param base64
      * @param fileExtension
      * @return
      * @throws SQLException
      */
-    public static Integer saveFileByBase64(Connection connection, String base64, String fileExtension) throws Exception {
+    public static Integer saveFileByBase64(String base64, String fileExtension) throws Exception {
         if (fileExtension != null) {
             String newFileName = UUID.randomUUID().toString() + "." + fileExtension;
             String filePath = "/" + DateUtil.getNow(DateUtil.DATE_FORMATTER) + "/" + newFileName;
@@ -151,7 +148,7 @@ public class SystemUtil {
                     .setFileMd5(fileMd5)
                     .setImageHeight(imageHeight)
                     .setImageWidth(imageWidth);
-            return SysFileDao.insertIntoTableReturnId(connection, uploadFile);
+            return SysFileDao.insertIntoTableReturnId(uploadFile);
         }
         return 0;
     }

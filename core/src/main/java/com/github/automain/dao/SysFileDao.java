@@ -7,7 +7,6 @@ import com.github.fastjdbc.PageBean;
 import com.github.fastjdbc.PageParamBean;
 import org.apache.commons.lang3.StringUtils;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,34 +15,33 @@ public class SysFileDao extends BaseDao {
 
     private static final SysFile DEFAULT_BEAN = new SysFile();
 
-    public static int deleteTableByIdList(Connection connection, List<Integer> idList) throws SQLException {
-        return deleteTableByIdList(connection, DEFAULT_BEAN, idList);
+    public static int deleteTableByIdList(List<Integer> idList) throws SQLException {
+        return deleteTableByIdList(DEFAULT_BEAN, idList);
     }
 
-    public static int deleteTableByGidList(Connection connection, List<String> gidList) throws SQLException {
-        return deleteTableByGidList(connection, DEFAULT_BEAN, gidList);
+    public static int deleteTableByGidList(List<String> gidList) throws SQLException {
+        return deleteTableByGidList(DEFAULT_BEAN, gidList);
     }
 
-    public static List<SysFile> selectTableByIdList(Connection connection, List<Integer> idList) throws SQLException {
-        return selectTableByIdList(connection, DEFAULT_BEAN, idList);
+    public static List<SysFile> selectTableByIdList(List<Integer> idList) throws SQLException {
+        return selectTableByIdList(DEFAULT_BEAN, idList);
     }
 
-    public static List<SysFile> selectTableByGidList(Connection connection, List<String> gidList) throws SQLException {
-        return selectTableByGidList(connection, DEFAULT_BEAN, gidList);
+    public static List<SysFile> selectTableByGidList(List<String> gidList) throws SQLException {
+        return selectTableByGidList(DEFAULT_BEAN, gidList);
     }
 
-    public static List<SysFile> selectAllTable(Connection connection) throws SQLException {
-        return selectAllTable(connection, DEFAULT_BEAN);
+    public static List<SysFile> selectAllTable() throws SQLException {
+        return selectAllTable(DEFAULT_BEAN);
     }
 
     @SuppressWarnings("unchecked")
-    public static PageBean<SysFile> selectTableForCustomPage(Connection connection, SysFileVO bean) throws Exception {
+    public static PageBean<SysFile> selectTableForCustomPage(SysFileVO bean) throws Exception {
         List<Object> countParamList = new ArrayList<Object>();
         List<Object> paramList = new ArrayList<Object>();
         String countSql = setSearchCondition(bean, countParamList, true);
         String sql = setSearchCondition(bean, paramList, false);
         PageParamBean<SysFile> pageParamBean = new PageParamBean<SysFile>()
-                .setConnection(connection)
                 .setBean(bean)
                 .setCountSql(countSql)
                 .setCountParamList(countParamList)

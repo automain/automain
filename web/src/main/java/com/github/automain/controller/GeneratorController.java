@@ -9,6 +9,7 @@ import com.github.automain.common.generator.BeanGenerator;
 import com.github.automain.common.generator.CommonGenerator;
 import com.github.automain.common.generator.ControllerGenerator;
 import com.github.automain.common.generator.DaoGenerator;
+import com.github.automain.common.generator.GeneratorDao;
 import com.github.automain.common.generator.ServiceGenerator;
 import com.github.automain.common.generator.VOGenerator;
 import com.github.automain.common.generator.ViewGenerator;
@@ -20,7 +21,6 @@ import com.github.automain.util.SystemUtil;
 import com.github.automain.util.http.HTTPUtil;
 import com.github.automain.vo.SysDictionaryVO;
 import org.apache.commons.collections4.CollectionUtils;
-import redis.clients.jedis.Jedis;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,10 +29,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,15 +36,14 @@ import java.util.Map;
 public class GeneratorController extends BaseController {
 
     @RequestUri("/dev/databaseList")
-    public JsonResponse databaseList(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) {
-        return JsonResponse.getSuccessJson(selectDatabaseNameList(connection));
+    public JsonResponse databaseList() {
+        return JsonResponse.getSuccessJson(GeneratorDao.selectDatabaseNameList());
     }
 
     @RequestUri("/dev/tableList")
-    public JsonResponse tableList(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) {
-        GeneratorVO vo = getRequestParam(request, GeneratorVO.class);
+    public JsonResponse tableList(GeneratorVO vo) {
         if (vo != null) {
-            List<String> tableNameList = selectTableNameList(connection, vo.getDatabaseName());
+            List<String> tableNameList = GeneratorDao.selectTableNameList(vo.getDatabaseName());
             return JsonResponse.getSuccessJson(tableNameList);
         } else {
             return JsonResponse.getFailedJson();
@@ -56,16 +51,15 @@ public class GeneratorController extends BaseController {
     }
 
     @RequestUri("/dev/appTableList")
-    public JsonResponse appTableList(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) {
-        List<String> tableNameList = selectTableNameList(connection, SystemUtil.DATABASE_NAME);
+    public JsonResponse appTableList() {
+        List<String> tableNameList = GeneratorDao.selectTableNameList(SystemUtil.DATABASE_NAME);
         return JsonResponse.getSuccessJson(tableNameList);
     }
 
     @RequestUri("/dev/appColumnList")
-    public JsonResponse appColumnList(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) {
-        SysDictionaryVO vo = getRequestParam(request, SysDictionaryVO.class);
+    public JsonResponse appColumnList(SysDictionaryVO vo) {
         if (vo != null) {
-            List<ColumnBean> columnList = selectAllColumnList(connection, SystemUtil.DATABASE_NAME, vo.getTableName());
+            List<ColumnBean> columnList = GeneratorDao.selectAllColumnList(SystemUtil.DATABASE_NAME, vo.getTableName());
             return JsonResponse.getSuccessJson(columnList);
         } else {
             return JsonResponse.getFailedJson();
@@ -73,12 +67,11 @@ public class GeneratorController extends BaseController {
     }
 
     @RequestUri("/dev/columnList")
-    public JsonResponse columnList(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) {
-        GeneratorVO vo = getRequestParam(request, GeneratorVO.class);
+    public JsonResponse columnList(GeneratorVO vo) {
         if (vo != null) {
             String databaseName = vo.getDatabaseName();
             String tableName = vo.getTableName();
-            List<ColumnBean> columnList = selectAllColumnList(connection, databaseName, tableName);
+            List<ColumnBean> columnList = GeneratorDao.selectAllColumnList(databaseName, tableName);
             String upperTableName = CommonGenerator.convertToJavaName(tableName, true);
             String serviceName = upperTableName + "Service";
             String servicePropertyName = tableName.toUpperCase() + "_SERVICE";
@@ -96,8 +89,7 @@ public class GeneratorController extends BaseController {
     }
 
     @RequestUri("/dev/generate")
-    public JsonResponse generate(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        GeneratorVO generatorVO = getRequestParam(request, GeneratorVO.class);
+    public JsonResponse generate(HttpServletRequest request, HttpServletResponse response, GeneratorVO generatorVO) throws Exception {
         if (generatorVO != null) {
             String databaseName = generatorVO.getDatabaseName();
             String tableName = generatorVO.getTableName();
@@ -106,8 +98,8 @@ public class GeneratorController extends BaseController {
                 return JsonResponse.getFailedJson();
             }
             String prefix = generatorVO.getPrefix();
-            List<ColumnBean> columns = selectAllColumnList(connection, databaseName, tableName);
-            List<String> keyColumns = selectKeyColumnList(connection, databaseName, tableName);
+            List<ColumnBean> columns = GeneratorDao.selectAllColumnList(databaseName, tableName);
+            List<String> keyColumns = GeneratorDao.selectKeyColumnList(databaseName, tableName);
             String upperTableName = CommonGenerator.convertToJavaName(tableName, true);
             String upperPrefix = CommonGenerator.convertToJavaName(prefix, true);
 
@@ -125,7 +117,7 @@ public class GeneratorController extends BaseController {
             boolean hasCreateTime = hasCreateTime(columns);
             boolean hasUpdateTime = hasUpdateTime(columns);
 
-            List<String> dictionaryColumnList = SysDictionaryDao.selectDictionaryColumn(connection, tableName);
+            List<String> dictionaryColumnList = SysDictionaryDao.selectDictionaryColumn(tableName);
 
             String now = DateUtil.getNow("yyyyMMddHHmmss");
 
@@ -180,132 +172,6 @@ public class GeneratorController extends BaseController {
             }
         }
     }
-
-    private List<String> selectDatabaseNameList(Connection connection) {
-        List<String> databaseNameList = new ArrayList<String>();
-        try (PreparedStatement statement = connection.prepareStatement("SELECT SCHEMA_NAME FROM information_schema.SCHEMATA");
-             ResultSet rs = statement.executeQuery()) {
-            List<String> systemDatebaseList = List.of("information_schema", "mysql", "performance_schema", "sys");
-            while (rs.next()) {
-                String databaseName = rs.getString(1);
-                if (!systemDatebaseList.contains(databaseName)) {
-                    databaseNameList.add(databaseName);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return databaseNameList;
-    }
-
-    private List<String> selectTableNameList(Connection connection, String databaseName) {
-        List<String> tableNameList = new ArrayList<String>();
-        try (PreparedStatement statement = connection.prepareStatement("SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = '" + databaseName + "'");
-             ResultSet rs = statement.executeQuery()) {
-            while (rs.next()) {
-                tableNameList.add(rs.getString(1));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return tableNameList;
-    }
-
-    private List<ColumnBean> selectAllColumnList(Connection connection, String databaseName, String tableName) {
-        List<ColumnBean> columnList = new ArrayList<ColumnBean>();
-        try (PreparedStatement statement = connection.prepareStatement("SELECT c.COLUMN_NAME, c.DATA_TYPE, c.COLUMN_COMMENT, c.COLUMN_KEY, c.EXTRA, c.CHARACTER_MAXIMUM_LENGTH, c.IS_NULLABLE FROM information_schema.COLUMNS c WHERE c.TABLE_SCHEMA = '" + databaseName + "' AND c.TABLE_NAME = '" + tableName + "'" + " ORDER BY c.ORDINAL_POSITION");
-             ResultSet rs = statement.executeQuery()) {
-            ColumnBean bean = null;
-            List<String> textAreaColumnList = List.of("longtext", "mediumtext", "text", "tinytext");
-            while (rs.next()) {
-                bean = new ColumnBean();
-                bean.setColumnName(rs.getString("COLUMN_NAME"));
-                String dataType = rs.getString("DATA_TYPE");
-                long maxLength = rs.getLong("CHARACTER_MAXIMUM_LENGTH");
-                if ((("varchar".equals(dataType) || "char".equals(dataType)) && maxLength > 128L) || textAreaColumnList.contains(dataType)) {
-                    bean.setIsTextArea(true);
-                } else {
-                    bean.setIsTextArea(false);
-                }
-                bean.setDataType(getDataType(dataType));
-                bean.setColumnComment(rs.getString("COLUMN_COMMENT"));
-                bean.setColumnKey(rs.getString("COLUMN_KEY"));
-                bean.setExtra(rs.getString("EXTRA"));
-                bean.setIsNullAble("YES".equals(rs.getString("IS_NULLABLE")));
-                columnList.add(bean);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return columnList;
-    }
-
-
-    private List<String> selectKeyColumnList(Connection connection, String databaseName, String tableName) {
-        List<String> keyColumnList = new ArrayList<String>();
-        try (PreparedStatement statement = connection.prepareStatement("SELECT st.COLUMN_NAME FROM information_schema.STATISTICS st WHERE st.TABLE_SCHEMA = '" + databaseName + "' AND st.TABLE_NAME = '" + tableName + "' AND st.INDEX_NAME != 'PRIMARY' ORDER BY st.INDEX_NAME,st.SEQ_IN_INDEX");
-             ResultSet rs = statement.executeQuery()) {
-            while (rs.next()) {
-                keyColumnList.add(rs.getString(1));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return keyColumnList;
-    }
-
-    private String getDataType(String data_type) {
-        switch (data_type) {
-            case "bigint":
-                return "Long";
-            case "binary":
-            case "blob":
-            case "longblob":
-            case "mediumblob":
-            case "tinyblob":
-            case "varbinary":
-                return "byte[]";
-            case "bit":
-            case "bool":
-            case "boolean":
-                return "Boolean";
-            case "char":
-            case "enum":
-            case "longtext":
-            case "mediumtext":
-            case "set":
-            case "text":
-            case "tinytext":
-            case "varchar":
-                return "String";
-            case "date":
-            case "year":
-                return "Date";
-            case "datetime":
-            case "timestamp":
-                return "Timestamp";
-            case "decimal":
-                return "BigDecimal";
-            case "double":
-            case "numeric":
-            case "real":
-                return "Double";
-            case "float":
-                return "Float";
-            case "int":
-            case "mediumint":
-            case "smallint":
-            case "tinyint":
-                return "Integer";
-            case "time":
-                return "Time";
-            default:
-                return null;
-        }
-    }
-
-
-
     private boolean hasIsValid(List<ColumnBean> columns) {
         for (ColumnBean column : columns) {
             if ("is_valid".equals(column.getColumnName()) && "Integer".equals(column.getDataType())) {

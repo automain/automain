@@ -8,7 +8,6 @@ import com.github.fastjdbc.PageBean;
 import com.github.fastjdbc.PageParamBean;
 import org.apache.commons.lang3.StringUtils;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,26 +16,25 @@ public class SysRoleDao extends BaseDao {
 
     private static final SysRole DEFAULT_BEAN = new SysRole();
 
-    public static int deleteTableByIdList(Connection connection, List<Integer> idList) throws SQLException {
-        return deleteTableByIdList(connection, DEFAULT_BEAN, idList);
+    public static int deleteTableByIdList(List<Integer> idList) throws SQLException {
+        return deleteTableByIdList(DEFAULT_BEAN, idList);
     }
 
-    public static List<SysRole> selectTableByIdList(Connection connection, List<Integer> idList) throws SQLException {
-        return selectTableByIdList(connection, DEFAULT_BEAN, idList);
+    public static List<SysRole> selectTableByIdList(List<Integer> idList) throws SQLException {
+        return selectTableByIdList(DEFAULT_BEAN, idList);
     }
 
-    public static List<SysRole> selectAllTable(Connection connection) throws SQLException {
-        return selectAllTable(connection, DEFAULT_BEAN);
+    public static List<SysRole> selectAllTable() throws SQLException {
+        return selectAllTable(DEFAULT_BEAN);
     }
 
     @SuppressWarnings("unchecked")
-    public static PageBean<SysRole> selectTableForCustomPage(Connection connection, SysRoleVO bean) throws Exception {
+    public static PageBean<SysRole> selectTableForCustomPage(SysRoleVO bean) throws Exception {
         List<Object> countParamList = new ArrayList<Object>();
         List<Object> paramList = new ArrayList<Object>();
         String countSql = setSearchCondition(bean, countParamList, true);
         String sql = setSearchCondition(bean, paramList, false);
         PageParamBean<SysRole> pageParamBean = new PageParamBean<SysRole>()
-                .setConnection(connection)
                 .setBean(bean)
                 .setCountSql(countSql)
                 .setCountParamList(countParamList)
@@ -64,16 +62,16 @@ public class SysRoleDao extends BaseDao {
         return sql.toString();
     }
 
-    public static List<RoleVO> selectAllRoleVO(Connection connection) throws SQLException {
-        return executeSelectReturnList(connection, "SELECT sr.role_name,sr.role_label FROM sys_role sr", null, new RoleVO());
+    public static List<RoleVO> selectAllRoleVO() throws SQLException {
+        return executeSelectReturnList("SELECT sr.role_name,sr.role_label FROM sys_role sr", null, new RoleVO());
     }
 
-    public static List<Integer> selectRoleIdByLabelList(Connection connection, List<String> labelList) throws SQLException {
-        return executeSelectReturnIntegerList(connection, "SELECT sr.id FROM sys_role sr WHERE sr.role_label" + makeInStr(labelList), labelList);
+    public static List<Integer> selectRoleIdByLabelList(List<String> labelList) throws SQLException {
+        return executeSelectReturnIntegerList("SELECT sr.id FROM sys_role sr WHERE sr.role_label" + makeInStr(labelList), labelList);
     }
 
-    public static boolean checkRoleLabelUseable(Connection connection, String roleLabel, Integer id) throws SQLException {
-        Integer existId = executeSelectReturnInteger(connection, "SELECT sr.id FROM sys_role sr WHERE sr.role_label = ? LIMIT 1", List.of(roleLabel));
+    public static boolean checkRoleLabelUseable(String roleLabel, Integer id) throws SQLException {
+        Integer existId = executeSelectReturnInteger("SELECT sr.id FROM sys_role sr WHERE sr.role_label = ? LIMIT 1", List.of(roleLabel));
         return existId == null || existId.equals(id);
     }
 }

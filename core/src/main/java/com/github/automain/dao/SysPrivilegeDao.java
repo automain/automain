@@ -8,7 +8,6 @@ import com.github.fastjdbc.PageBean;
 import com.github.fastjdbc.PageParamBean;
 import org.apache.commons.lang3.StringUtils;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -19,26 +18,25 @@ public class SysPrivilegeDao extends BaseDao {
 
     private static final SysPrivilege DEFAULT_BEAN = new SysPrivilege();
 
-    public static int deleteTableByIdList(Connection connection, List<Integer> idList) throws SQLException {
-        return deleteTableByIdList(connection, DEFAULT_BEAN, idList);
+    public static int deleteTableByIdList(List<Integer> idList) throws SQLException {
+        return deleteTableByIdList(DEFAULT_BEAN, idList);
     }
 
-    public static List<SysPrivilege> selectTableByIdList(Connection connection, List<Integer> idList) throws SQLException {
-        return selectTableByIdList(connection, DEFAULT_BEAN, idList);
+    public static List<SysPrivilege> selectTableByIdList(List<Integer> idList) throws SQLException {
+        return selectTableByIdList(DEFAULT_BEAN, idList);
     }
 
-    public static List<SysPrivilege> selectAllTable(Connection connection) throws SQLException {
-        return selectAllTable(connection, DEFAULT_BEAN);
+    public static List<SysPrivilege> selectAllTable() throws SQLException {
+        return selectAllTable(DEFAULT_BEAN);
     }
 
     @SuppressWarnings("unchecked")
-    public static PageBean<SysPrivilege> selectTableForCustomPage(Connection connection, SysPrivilegeVO bean) throws Exception {
+    public static PageBean<SysPrivilege> selectTableForCustomPage(SysPrivilegeVO bean) throws Exception {
         List<Object> countParamList = new ArrayList<Object>();
         List<Object> paramList = new ArrayList<Object>();
         String countSql = setSearchCondition(bean, countParamList, true);
         String sql = setSearchCondition(bean, paramList, false);
         PageParamBean<SysPrivilege> pageParamBean = new PageParamBean<SysPrivilege>()
-                .setConnection(connection)
                 .setBean(bean)
                 .setCountSql(countSql)
                 .setCountParamList(countParamList)
@@ -70,11 +68,11 @@ public class SysPrivilegeDao extends BaseDao {
         return sql.toString();
     }
 
-    public static Set<String> selectUserPrivilege(Connection connection, String userGid) throws SQLException {
-        return new HashSet<String>(executeSelectReturnStringList(connection, "SELECT sp.privilege_label FROM sys_user_role sur INNER JOIN sys_role_privilege srp ON sur.role_id = srp.role_id INNER JOIN sys_privilege sp ON srp.privilege_id = sp.id WHERE sur.is_valid = 1 AND srp.is_valid = 1 AND sur.user_gid = ? GROUP BY sp.privilege_label", List.of(userGid)));
+    public static Set<String> selectUserPrivilege(String userGid) throws SQLException {
+        return new HashSet<String>(executeSelectReturnStringList("SELECT sp.privilege_label FROM sys_user_role sur INNER JOIN sys_role_privilege srp ON sur.role_id = srp.role_id INNER JOIN sys_privilege sp ON srp.privilege_id = sp.id WHERE sur.is_valid = 1 AND srp.is_valid = 1 AND sur.user_gid = ? GROUP BY sp.privilege_label", List.of(userGid)));
     }
 
-    public static List<IdNameVO> selectAllPrivilege(Connection connection) throws SQLException {
-        return executeSelectReturnList(connection, "SELECT sp.id, sp.privilege_name AS 'name' FROM sys_privilege sp", null, new IdNameVO());
+    public static List<IdNameVO> selectAllPrivilege() throws SQLException {
+        return executeSelectReturnList("SELECT sp.id, sp.privilege_name AS 'name' FROM sys_privilege sp", null, new IdNameVO());
     }
 }

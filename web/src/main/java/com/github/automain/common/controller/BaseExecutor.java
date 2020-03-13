@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
@@ -37,16 +36,15 @@ public abstract class BaseExecutor implements Runnable {
     @Override
     public void run() {
         Jedis jedis = null;
-        Connection connection = null;
         HttpServletRequest request = (HttpServletRequest) asyncContext.getRequest();
         HttpServletResponse response = (HttpServletResponse) asyncContext.getResponse();
         try {
             jedis = RedisUtil.getJedis();
             String uri = HTTPUtil.getRequestUri(request);
-            connection = ConnectionPool.getConnection(DispatcherController.SLAVE_POOL_MAP.get(uri));
+            ConnectionPool.getConnection(DispatcherController.SLAVE_POOL_MAP.get(uri));
             JsonResponse jsonResponse = null;
-            if (checkUserAuthority(connection, jedis, request, response)) {
-                jsonResponse = execute(connection, jedis, request, response);
+            if (checkUserAuthority(jedis, request, response)) {
+                jsonResponse = execute(jedis, request, response);
             } else {
                 jsonResponse = JsonResponse.getJson(403, "无权限访问或登录已过期");
             }
@@ -81,13 +79,13 @@ public abstract class BaseExecutor implements Runnable {
                 e1.printStackTrace();
             } finally {
                 try {
-                    ConnectionPool.rollback(connection);
+                    ConnectionPool.rollback();
                 } catch (SQLException e2) {
                     e2.printStackTrace();
                 }
             }
         } finally {
-            SystemUtil.closeJedisAndConnection(jedis, connection);
+            SystemUtil.closeJedisAndConnection(jedis);
             asyncContext.complete();
         }
     }
@@ -95,13 +93,12 @@ public abstract class BaseExecutor implements Runnable {
     /**
      * 由子类继承，处理请求
      *
-     * @param connection
      * @param jedis
      * @param request
      * @param response
      * @return
      */
-    protected abstract JsonResponse execute(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception;
+    protected abstract JsonResponse execute(Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception;
 
     /**
      * 公用检查用户权限
@@ -112,12 +109,12 @@ public abstract class BaseExecutor implements Runnable {
      * @return
      * @throws Exception
      */
-    private boolean checkUserAuthority(Connection connection, Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    private boolean checkUserAuthority(Jedis jedis, HttpServletRequest request, HttpServletResponse response) throws Exception {
         String uri = HTTPUtil.getRequestUri(request);
         if (WHITE_LIST_URL.contains(uri)) {
             return true;
         }
-        SysUser user = BaseController.getSessionUser(connection, jedis, request, response);
+        SysUser user = BaseController.getSessionUser(jedis, request, response);
         if (user == null) {
             return false;
         }

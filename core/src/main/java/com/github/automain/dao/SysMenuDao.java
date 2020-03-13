@@ -8,7 +8,6 @@ import com.github.fastjdbc.PageBean;
 import com.github.fastjdbc.PageParamBean;
 import org.apache.commons.lang3.StringUtils;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,26 +16,25 @@ public class SysMenuDao extends BaseDao {
 
     private static final SysMenu DEFAULT_BEAN = new SysMenu();
 
-    public static int deleteTableByIdList(Connection connection, List<Integer> idList) throws SQLException {
-        return deleteTableByIdList(connection, DEFAULT_BEAN, idList);
+    public static int deleteTableByIdList(List<Integer> idList) throws SQLException {
+        return deleteTableByIdList(DEFAULT_BEAN, idList);
     }
 
-    public static List<SysMenu> selectTableByIdList(Connection connection, List<Integer> idList) throws SQLException {
-        return selectTableByIdList(connection, DEFAULT_BEAN, idList);
+    public static List<SysMenu> selectTableByIdList(List<Integer> idList) throws SQLException {
+        return selectTableByIdList(DEFAULT_BEAN, idList);
     }
 
-    public static List<SysMenu> selectAllTable(Connection connection) throws SQLException {
-        return selectAllTable(connection, DEFAULT_BEAN);
+    public static List<SysMenu> selectAllTable() throws SQLException {
+        return selectAllTable(DEFAULT_BEAN);
     }
 
     @SuppressWarnings("unchecked")
-    public static PageBean<SysMenu> selectTableForCustomPage(Connection connection, SysMenuVO bean) throws Exception {
+    public static PageBean<SysMenu> selectTableForCustomPage(SysMenuVO bean) throws Exception {
         List<Object> countParamList = new ArrayList<Object>();
         List<Object> paramList = new ArrayList<Object>();
         String countSql = setSearchCondition(bean, countParamList, true);
         String sql = setSearchCondition(bean, paramList, false);
         PageParamBean<SysMenu> pageParamBean = new PageParamBean<SysMenu>()
-                .setConnection(connection)
                 .setBean(bean)
                 .setCountSql(countSql)
                 .setCountParamList(countParamList)
@@ -68,11 +66,11 @@ public class SysMenuDao extends BaseDao {
         return sql.toString();
     }
 
-    public static List<IdNameVO> allValidMenu(Connection connection) throws SQLException {
-        return executeSelectReturnList(connection, "SELECT sm.id, sm.menu_name AS 'name' FROM sys_menu sm", null, new IdNameVO());
+    public static List<IdNameVO> allValidMenu() throws SQLException {
+        return executeSelectReturnList("SELECT sm.id, sm.menu_name AS 'name' FROM sys_menu sm", null, new IdNameVO());
     }
 
-    public static List<SysMenu> selectAuthorityMenu(Connection connection, String userGid) throws SQLException {
-        return executeSelectReturnList(connection, "SELECT sm.* FROM sys_user_role sur INNER JOIN sys_role_menu srm ON sur.role_id = srm.role_id INNER JOIN sys_menu sm ON srm.menu_id = sm.id WHERE sur.is_valid = 1 AND sur.user_gid = ? AND srm.is_valid = 1", List.of(userGid), new SysMenu());
+    public static List<SysMenu> selectAuthorityMenu(String userGid) throws SQLException {
+        return executeSelectReturnList("SELECT sm.* FROM sys_user_role sur INNER JOIN sys_role_menu srm ON sur.role_id = srm.role_id INNER JOIN sys_menu sm ON srm.menu_id = sm.id WHERE sur.is_valid = 1 AND sur.user_gid = ? AND srm.is_valid = 1", List.of(userGid), new SysMenu());
     }
 }
